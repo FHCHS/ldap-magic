@@ -628,9 +628,9 @@ namespace WindowsApplication1
             // 
             this.user_group_source.Controls.Add(this.tabPage1);
             this.user_group_source.Controls.Add(this.tabPage2);
-            this.user_group_source.Controls.Add(this.tabPage3);
             this.user_group_source.Controls.Add(this.tabPage4);
             this.user_group_source.Controls.Add(this.tabPage5);
+            this.user_group_source.Controls.Add(this.tabPage3);
             this.user_group_source.Location = new System.Drawing.Point(12, 12);
             this.user_group_source.Name = "user_group_source";
             this.user_group_source.SelectedIndex = 0;
