@@ -1,19 +1,20 @@
 using System;
+using System.Collections;
+using System.Configuration;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
-using System.Text;
-using System.Windows.Forms;
 using System.DirectoryServices;
 using System.DirectoryServices.ActiveDirectory;
 using System.Data.SqlClient;
-using System.Collections;
-using System.Reflection;
-using System.Configuration;
 using System.IO;
+using System.Reflection;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Text;
+using System.Threading;
+using System.Windows.Forms;
 
 
 // CONSIDERATIONS
@@ -430,6 +431,12 @@ namespace WindowsApplication1
                 returnvalue.Add("configDataServer",configDataServer);
                 returnvalue.Add("configDBCatalog",configDBCatalog);
                 return returnvalue;
+            }
+            public groupSynch Clone()
+            {
+                groupSynch retunvalue = new groupSynch();
+                retunvalue.load(this.ToDictionary());
+                return retunvalue;
             }
 
         }
@@ -1364,7 +1371,7 @@ namespace WindowsApplication1
             return returnvalue;
         }
 
-            public DataSet EnumerateGroupsInOUDS(string OuDN, ArrayList returnProperties)
+        public DataSet EnumerateGroupsInOUDS(string OuDN, ArrayList returnProperties)
             {
                 DataSet returnvalue = new DataSet();
                 // bind to the OU you want to enumerate
@@ -2125,7 +2132,8 @@ namespace WindowsApplication1
 
                 return "#" + table;
             }
-            public string temp_table_optimizations()
+        
+        public string temp_table_optimizations()
             {
                 DataSet mike = new DataSet();
                 DataSet mike2 = new DataSet();
@@ -2541,8 +2549,18 @@ namespace WindowsApplication1
 
         public class objectADSqlsyncGroup
         {
+           private groupSynch groupsyn;
+           private toolset tools;
+           private logFile log;
+
+           public void setobjectADSqlsyncGroup(groupSynch groupconfig1, toolset tools1, logFile log1)
+            {
+               groupconfig = groupconfig1.Clone();
+               tools = tools1;
+               log = log1;
+            }
          //open SQL conn
-           public void execute(groupSynch groupsyn, toolset tools, logFile log)
+           public void execute()
             {
                 string debug = "";
                 SqlDataReader debugreader;
@@ -2802,6 +2820,7 @@ namespace WindowsApplication1
                         {
                            // FORGET the real progress bar for now groupsyn.progress = i;
                             log.transactions.Add("adding now at item " + i);
+                            groupsyn.progress = i + " of debug";
                         }
                     }
                     time.Stop();
@@ -4125,6 +4144,8 @@ namespace WindowsApplication1
         }
         private void group_see_test_results_Click(object sender, EventArgs e)
         {
+            groupSynch hi = groupconfig.Clone();
+            groupSyncr.setobjectADSqlsyncGroup(hi, tools, log);
             // Loads of test example calls
             //
             // Grab the current domain controller root
@@ -4148,10 +4169,19 @@ namespace WindowsApplication1
             //
             // Create a SQL insert statement
             // tools.temp_Table(tools.EnumerateUsersInGroup("CN=_AtisRW,OU=Atis,OU=FHCHS,DC=FHCHS,DC=EDU"), "MikesADTest", "soniswebdatabase", "fhcsvdb");
-            groupSyncr.execute(groupconfig, tools, log);
+            Thread groupSyncrThread = new Thread(groupSyncr.execute);
+
+            while (!groupSyncrThread.IsAlive) ;
+            while (groupSyncrThread.IsAlive)
+            {
+                group_result1.Text = groupconfig.progress.ToString();
+                Thread.Sleep(500);
+            }
+            
+           // groupSyncr.execute(groupconfig, tools, log);
            // users_result1.Text log.transactions.ToString();
            // users_result2.Text = log.errors.ToString();
-            MessageBox.Show("compelete");
+            // MessageBox.Show("compelete");
         }
 
 
