@@ -2549,18 +2549,8 @@ namespace WindowsApplication1
 
         public class objectADSqlsyncGroup
         {
-           private groupSynch groupsyn;
-           private toolset tools;
-           private logFile log;
-
-           public void setobjectADSqlsyncGroup(groupSynch groupconfig1, toolset tools1, logFile log1)
-            {
-               groupconfig = groupconfig1.Clone();
-               tools = tools1;
-               log = log1;
-            }
          //open SQL conn
-           public void execute()
+            public void execute(groupSynch groupsyn, toolset tools, logFile log)
             {
                 string debug = "";
                 SqlDataReader debugreader;
@@ -4144,8 +4134,7 @@ namespace WindowsApplication1
         }
         private void group_see_test_results_Click(object sender, EventArgs e)
         {
-            groupSynch hi = groupconfig.Clone();
-            groupSyncr.setobjectADSqlsyncGroup(hi, tools, log);
+         
             // Loads of test example calls
             //
             // Grab the current domain controller root
@@ -4169,14 +4158,7 @@ namespace WindowsApplication1
             //
             // Create a SQL insert statement
             // tools.temp_Table(tools.EnumerateUsersInGroup("CN=_AtisRW,OU=Atis,OU=FHCHS,DC=FHCHS,DC=EDU"), "MikesADTest", "soniswebdatabase", "fhcsvdb");
-            Thread groupSyncrThread = new Thread(groupSyncr.execute);
-
-            while (!groupSyncrThread.IsAlive) ;
-            while (groupSyncrThread.IsAlive)
-            {
-                group_result1.Text = groupconfig.progress.ToString();
-                Thread.Sleep(500);
-            }
+            groupSyncr.execute(groupconfig, tools, log);
             
            // groupSyncr.execute(groupconfig, tools, log);
            // users_result1.Text log.transactions.ToString();
