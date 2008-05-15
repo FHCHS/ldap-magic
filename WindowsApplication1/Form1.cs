@@ -13,7 +13,7 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
-using System.Threading;
+using System.Web;
 using System.Windows.Forms;
 
 
@@ -1371,13 +1371,14 @@ namespace WindowsApplication1
                 return returnvalue;
             }
 
-            public DataSet EnumerateGroupsInOUDS(string OuDN, ArrayList returnProperties)
+            public DataTable EnumerateGroupsInOUDataTable(string OuDN, ArrayList returnProperties, string table)
             {
-                DataSet returnvalue = new DataSet();
+                DataTable returnvalue = new DataTable();
                 // bind to the OU you want to enumerate
                 DirectoryEntry deOU = new DirectoryEntry("LDAP://" + OuDN);
                 int i;
                 int count = returnProperties.Count;
+                DataRow row;
 
                 // create a directory searcher for that OU
                 DirectorySearcher dsUsers = new DirectorySearcher(deOU);
@@ -1387,34 +1388,25 @@ namespace WindowsApplication1
                 // make it non recursive in depth
                 dsUsers.SearchScope = SearchScope.OneLevel;
 
+                returnvalue.TableName = table;
                 // add the attributes you want to grab from the search
                 for (i = 0; i < count; i++)
                 {
                     dsUsers.PropertiesToLoad.Add(returnProperties[i].ToString());
-                    // returnvalue
-                }
-
-
+                    returnvalue.Columns.Add(returnProperties[i].ToString());
+                }                
                 // grab the users and do whatever you need to do with them 
                 dsUsers.PageSize = 500;
+                row = returnvalue.NewRow();
                 foreach (SearchResult oResult in dsUsers.FindAll())
                 {
                     //generate the array list with the user sam accounts
                     for (i = 0; i < count; i++)
                     {
-                        try
-                        {
-                            //users.Add(returnProperties[i].ToString(), oResult.Properties[returnProperties[i].ToString()][0].ToString());
-                        }
-                        catch (Exception e)
-                        {
-                            // users.Add(returnProperties[i].ToString(), string.Empty);
-                        }
+                        row[i] = System.Web.HttpUtility.UrlDecode(oResult.Properties[returnProperties[i].ToString()][0].ToString());
                     }
-
-
-                    // returnvalue.AddLast(users);
-                    //  users = new Dictionary<string, string>();
+                    returnvalue.Rows.Add(row);
+                    row = returnvalue.NewRow();
                 }
                 return returnvalue;
             }
@@ -1600,55 +1592,6 @@ namespace WindowsApplication1
                     return true;
                 }
             }
-            public void CreateGroup(string ouPath, string cn, string name)
-            {
-                //needs parent OU present to work
-                if (!DirectoryEntry.Exists("LDAP://CN=" + name + "," + ouPath))
-                {
-                    try
-                    {
-                        DirectoryEntry entry = new DirectoryEntry("LDAP://" + ouPath);
-                        DirectoryEntry group = entry.Children.Add("CN=" + cn, "group");
-                        group.Properties["sAmAccountName"].Value = name;
-                        group.CommitChanges();
-                    }
-                    catch (Exception e)
-                    {
-                        // MessageBox.Show(e.Message.ToString() + "create group LDAP://CN=" + name + "," + ouPath);
-                    }
-                }
-                else
-                { // MessageBox.Show(ouPath + " group already exists");
-                }
-            }
-            public void CreateGroup(string ouPath, string groupName, Dictionary<string, string> otherProperties)
-            {
-                // otherProperties is a mapping  <the key is the active driectory field, and the value is the the value>
-                // the keys must contain valid AD fields
-                // the value will relate to the specific key
-                //needs parent OU present to work
-                if (!DirectoryEntry.Exists("LDAP://CN=" + groupName + "," + ouPath))
-                {
-                    try
-                    {
-                        DirectoryEntry entry = new DirectoryEntry("LDAP://" + ouPath);
-                        DirectoryEntry group = entry.Children.Add("CN=" + groupName, "group");
-                        group.Properties["sAmAccountName"].Value = groupName;
-                        foreach (KeyValuePair<string, string> kvp in otherProperties)
-                        {
-                            group.Properties[kvp.Key.ToString()].Value = kvp.Value.ToString();
-                        }
-                        group.CommitChanges();
-                    }
-                    catch (Exception e)
-                    {
-                        // MessageBox.Show(e.Message.ToString() + "create group LDAP://CN=" + name + "," + ouPath);
-                    }
-                }
-                else
-                { // MessageBox.Show(ouPath + " group already exists");
-                }
-            }
             public void CreateGroup(string ouPath, Dictionary<string, string> properties)
             {
                 // otherProperties is a mapping  <the key is the active driectory field, and the value is the the value>
@@ -1664,7 +1607,8 @@ namespace WindowsApplication1
                         DirectoryEntry group = entry.Children.Add("CN=" + properties["CN"].ToString(), "group");
                         foreach (KeyValuePair<string, string> kvp in properties)
                         {
-                            group.Properties[kvp.Key.ToString()].Value = kvp.Value.ToString();
+                             group.Properties[kvp.Key.ToString()].Value = System.Web.HttpUtility.UrlEncode(kvp.Value.ToString()).Replace("+", " ");
+                             MessageBox.Show( System.Web.HttpUtility.UrlEncode(kvp.Value.ToString()).Replace("+", " "));
                         }
                         group.CommitChanges();
                     }
@@ -2133,6 +2077,41 @@ namespace WindowsApplication1
 
                 return "#" + table;
             }
+            public string temp_Table(DataTable data, string table, SqlConnection sqlConn)
+            {
+                
+                int i;
+                int Count;
+                StringBuilder sqlstring = new StringBuilder();
+                SqlCommand sqlComm;
+                Count = data.Columns.Count;
+                
+                // make the temp table
+                sqlstring.Append("Create table #" + table + "(");
+                for (i = 0; i < Count; i++)
+                {
+                    sqlstring.Append(data.Columns[i] + " VarChar(350), ");
+                }
+                sqlstring.Remove((sqlstring.Length - 2), 2);
+                sqlstring.Append(")");
+                sqlComm = new SqlCommand(sqlstring.ToString(), sqlConn);
+                try
+                {
+                    sqlComm.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "An Big poblem arose with the table create", MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+                }
+
+                // copy data into table
+                SqlBulkCopy sbc = new SqlBulkCopy(sqlConn);
+                sbc.DestinationTableName = "#" + table;
+                sbc.WriteToServer(data);
+                sbc.Close();
+                return "#" + table;
+            }
 
             public string temp_table_optimizations()
             {
@@ -2306,7 +2285,7 @@ namespace WindowsApplication1
 
 
             // SQL distributed import tools for AD
-            // Create linked server
+            // Linked server method not used
             public void linkedServer(SqlConnection sqlconn)
             {
                 SqlCommand sqlComm = new SqlCommand();
@@ -2545,6 +2524,58 @@ namespace WindowsApplication1
             {
                 return false;
             }
+            // end related tools for linked server method
+
+            // Deprecated for more generic versions or optimized
+            public void CreateGroup(string ouPath, string cn, string name)
+            {
+                //needs parent OU present to work
+                if (!DirectoryEntry.Exists("LDAP://CN=" + name + "," + ouPath))
+                {
+                    try
+                    {
+                        DirectoryEntry entry = new DirectoryEntry("LDAP://" + ouPath);
+                        DirectoryEntry group = entry.Children.Add("CN=" + cn, "group");
+                        group.Properties["sAmAccountName"].Value = name;
+                        group.CommitChanges();
+                    }
+                    catch (Exception e)
+                    {
+                        // MessageBox.Show(e.Message.ToString() + "create group LDAP://CN=" + name + "," + ouPath);
+                    }
+                }
+                else
+                { // MessageBox.Show(ouPath + " group already exists");
+                }
+            }
+            public void CreateGroup(string ouPath, string groupName, Dictionary<string, string> otherProperties)
+            {
+                // otherProperties is a mapping  <the key is the active driectory field, and the value is the the value>
+                // the keys must contain valid AD fields
+                // the value will relate to the specific key
+                //needs parent OU present to work
+                if (!DirectoryEntry.Exists("LDAP://CN=" + groupName + "," + ouPath))
+                {
+                    try
+                    {
+                        DirectoryEntry entry = new DirectoryEntry("LDAP://" + ouPath);
+                        DirectoryEntry group = entry.Children.Add("CN=" + groupName, "group");
+                        group.Properties["sAmAccountName"].Value = groupName;
+                        foreach (KeyValuePair<string, string> kvp in otherProperties)
+                        {
+                            group.Properties[kvp.Key.ToString()].Value = kvp.Value.ToString();
+                        }
+                        group.CommitChanges();
+                    }
+                    catch (Exception e)
+                    {
+                        // MessageBox.Show(e.Message.ToString() + "create group LDAP://CN=" + name + "," + ouPath);
+                    }
+                }
+                else
+                { // MessageBox.Show(ouPath + " group already exists");
+                }
+            }
 
         }
 
@@ -2625,6 +2656,291 @@ namespace WindowsApplication1
                 //MessageBox.Show("got " + groupsLinkedList.Count + "groups from ou in " + time.GetElapsedTime());
                 // insert groups from AD into a temp table
                 if (groupsLinkedList.Count > 0)
+                {
+                    time.Start();
+                    groupsTable = tools.temp_Table(groupsLinkedList, ADgroupsTable, sqlConn);
+                    time.Stop();
+                    //MessageBox.Show("temp table loaded " + groupsLinkedList.Count + " in " + time.GetElapsedTime());
+
+
+                    //debug = " groups table  data import from AD \n";
+                    //sqldebugComm = new SqlCommand("select top 10 * FROM " + groupsTable, sqlConn);
+                    //debugreader = sqldebugComm.ExecuteReader();
+                    //debugfieldcount = debugreader.FieldCount;
+                    //debugrecourdcount = debugreader.RecordsAffected.ToString();
+                    //for (i = 0; i < debugfieldcount; i++)
+                    //{
+                    //    debug += debugreader.GetName(i);
+                    //}
+                    //debug += "\n";
+                    //while (debugreader.Read())
+                    //{
+                    //    for (i = 0; i < debugfieldcount; i++)
+                    //    {
+                    //        debug += (string)debugreader[i] + ",";
+                    //    }
+                    //    debug += "\n";
+                    //}
+                    //debugreader.Close();
+                    //MessageBox.Show("table " + groupsTable + " has " + debugrecourdcount + " records \n " + debugfieldcount + " fields \n sample data" + debug);
+
+
+
+                    //debug = " groups from SQL to compare against AD \n";
+                    //sqldebugComm = new SqlCommand("select top 10 * FROM " + sqlgroupsTable, sqlConn);
+                    //debugreader = sqldebugComm.ExecuteReader();
+                    //debugfieldcount = debugreader.FieldCount;
+                    //debugrecourdcount = debugreader.RecordsAffected.ToString();
+                    //for (i = 0; i < debugfieldcount; i++)
+                    //{
+                    //   debug += debugreader.GetName(i);
+                    //}
+                    //debug += "\n";
+                    //while (debugreader.Read())
+                    //{
+                    //    for (i = 0; i < debugfieldcount; i++)
+                    //    {
+                    //        debug += (string)debugreader[i] + ",";
+                    //    }
+                    //    debug += "\n";
+                    //}
+                    //debugreader.Close();
+                    //MessageBox.Show("table " + sqlgroupsTable + " has " + debugrecourdcount + " records \n " + debugfieldcount + " fields \n sample data" + debug);
+
+
+                    // does not get columns from a temp table as they are not in the system objects database
+                    //debuglist = tools.GetColumns(groupsyn.DataServer, groupsyn.DBCatalog, sqlgroupsTable, sqlConn);
+                    //debug = " columns \n";
+                    //foreach (string a in debuglist)
+                    //{
+                    //    debug += a + "\n";
+                    //}
+                    //MessageBox.Show(debug);
+
+
+
+                    time.Start();
+                    add = tools.queryNotExists(sqlgroupsTable, groupsTable, sqlConn, groupsyn.Group_CN, ADupdateKeys[1].ToString());
+
+                    time.Stop();
+                    //MessageBox.Show("add query" + time.GetElapsedTime());
+
+
+
+                    //debug = "cols to add \n";
+                    //while (add.Read())
+                    //{
+                    //    debug += (string)add[0] + "\n";
+                    //}
+                    //MessageBox.Show(debug);
+
+                    // add nodes to AD
+
+                    time.Start();
+                    i = 0;
+                    while (add.Read())
+                    {
+                        i++;
+                        sAMAccountName = (string)add[1].ToString().Trim();
+                        description = (string)add[0].ToString().Trim();
+                        groupObject.Add("sAMAccountName", sAMAccountName);
+                        groupObject.Add("CN", sAMAccountName);
+                        groupObject.Add("description", description);
+                        tools.CreateGroup("OU=" + groupapp + "," + groupOU, groupObject);
+                        log.transactions.Add("Group added ;" + sAMAccountName + ",OU=" + groupapp + "," + groupOU + ";" + description);
+                        if (i % 1000 == 0)
+                        {
+                            // FORGET the real progress bar for now groupsyn.progress = i;
+                            gui.group_result1.Text = "Adding cause im still ALIVE !!!" + i;
+                            gui.Refresh();
+                            //MessageBox.Show("adding now at item " + i);
+                        }
+                        groupObject.Clear();
+                    }
+                    time.Stop();
+                    MessageBox.Show("add " + i + " objects " + time.GetElapsedTime());
+                    add.Close();
+
+
+                    time.Start();
+                    delete = tools.queryNotExists(groupsTable, sqlgroupsTable, sqlConn, ADupdateKeys[1].ToString(), groupsyn.Group_CN);
+                    // delete groups in AD
+                    i = 0;
+                    while (delete.Read())
+                    {
+                        i++;
+                        tools.DeleteGroup("OU=" + groupapp + "," + groupOU, (string)delete[ADupdateKeys[1].ToString()].ToString().Trim());
+                        log.transactions.Add("Group deleted ;" + (string)delete[ADupdateKeys[1].ToString()].ToString().Trim() + ",OU=" + groupapp + groupOU);
+                        if (i % 1000 == 0)
+                        {
+                            // FORGET the real progress bar for now groupsyn.progress = i;
+                            gui.group_result1.Text = "Deleting cause im still ALIVE !!!" + i;
+                            gui.Refresh();
+                            //MessageBox.Show("Deleting now at item " + i);
+                        }
+                    }
+                    delete.Close();
+                    time.Stop();
+                    MessageBox.Show("Delete " + i + " objects " + time.GetElapsedTime());
+
+
+                    // Get columns from sqlgroupsTable temp table in database get columns deprcated in favor of manual building due to cannot figure out how to get the columns of a temporary table
+                    // SQLupdateKeys = tools.GetColumns(groupsyn.DataServer, groupsyn.DBCatalog, sqlgroupsTable);
+                    // make the list of fields for the sql to check when updating
+                    SQLupdateKeys.Add(groupsyn.Group_sAMAccount);
+                    SQLupdateKeys.Add(groupsyn.Group_CN);
+                    time.Start();
+                    // update assumes the both ADupdateKeys and SQLupdateKeys have the same fields, listed in the same order check  call to EnumerateGroupsInOU if this is wrong should be sAMAccountName, CN matching the SQL order
+                    update = tools.checkUpdate(sqlgroupsTable, groupsTable, groupsyn.Group_CN, ADupdateKeys[1].ToString(), SQLupdateKeys, ADupdateKeys, sqlConn);
+                    time.Stop();
+                    //MessageBox.Show("update query" + time.GetElapsedTime());
+
+                    // update groups in ad
+                    time.Start();
+                    i = 0;
+                    // last record which matches the primary key is the one which gets inserted into the database
+                    while (update.Read())
+                    {
+                        i++;
+                        sAMAccountName = (string)update[1].ToString().Trim();
+                        description = (string)update[0].ToString().Trim();
+                        groupObject.Add("sAMAccountName", sAMAccountName);
+                        groupObject.Add("CN", sAMAccountName);
+                        groupObject.Add("description", description);
+
+                        if (tools.Exists("CN=" + groupObject["CN"] + ", OU=" + groupapp + "," + groupOU) == true)
+                        {
+                            // group exists in place just needs updating
+                            tools.UpdateGroup("OU=" + groupapp + "," + groupOU, groupObject);
+                            log.transactions.Add("Group update ; " + sAMAccountName + ",OU=" + groupapp + "," + groupOU + ";" + description);
+                        }
+                        else
+                        {
+                            // find it its on the server somewhere we will log the exception
+                            groupDN = tools.GetObjectDistinguishedName(objectClass.group, returnType.distinguishedName, groupObject["CN"], DC);
+                            // what if user is disabled will user mapping handle it?
+                            // groups needs to be moved and updated
+                            // tools.MoveADObject(groupDN, "LDAP://OU=" + groupapp + ',' + groupOU);
+                            // tools.UpdateGroup("OU=" + groupapp + "," + groupOU, groupObject);
+                            log.errors.Add("Group cannot be updated user probabally should be in ; " + "OU=" + groupapp + "," + groupOU + " ; but was found in ; " + groupDN);
+                        }
+                        if (i % 1000 == 0)
+                        {
+                            // FORGET the real progress bar for now groupsyn.progress = i;
+                            gui.group_result1.Text = "updating cause im still ALIVE !!!" + i;
+                            gui.Refresh();
+                            //MessageBox.Show("updating now at item " + i);
+                        }
+                        groupObject.Clear();
+                    }
+                    update.Close();
+                    time.Stop();
+                    //MessageBox.Show("update objects somehow found " + i + " objects to finished in "  + time.GetElapsedTime());
+                }
+                else
+                {
+                    sqlComm = new SqlCommand("select * FROM " + sqlgroupsTable, sqlConn);
+                    add = sqlComm.ExecuteReader();
+                    time.Start();
+                    i = 0;
+                    while (add.Read())
+                    {
+                        i++;
+                        groupObject.Add("sAMAccountName", (string)add[1]);
+                        groupObject.Add("CN", (string)add[1]);
+                        groupObject.Add("description", (string)add[0]);
+                        tools.CreateGroup("OU=" + groupapp + "," + groupOU, groupObject);
+                        log.transactions.Add("Group added ;" + groupObject["sAMAccountName"] + ",OU=" + groupapp + "," + groupOU + ";" + groupObject["description"]);
+
+                        groupObject.Clear();
+                        if (i % 500 == 0)
+                        {
+                            // FORGET the real progress bar for now groupsyn.progress = i;
+                            gui.group_result1.AppendText("cause im still ALIVE !!!" + i);
+                            gui.Refresh();
+                            // MessageBox.Show("avoiding message pumping add progress now at item " + i);
+                        }
+                    }
+                    time.Stop();
+                    //MessageBox.Show("initial add objects " + i + " time taken" + time.GetElapsedTime());
+                }
+                sqlConn.Close();
+            }
+            public void executeBulkcopy(groupSynch groupsyn, toolset tools, logFile log, Form1 gui)
+            {
+                string debug = "";
+                SqlDataReader debugreader;
+                ArrayList debuglist = new ArrayList();
+                int debugfieldcount;
+                string debugrecourdcount;
+                int i;
+                StopWatch time = new StopWatch();
+
+                string groupapp = groupsyn.Group_Append;
+                string groupOU = groupsyn.BaseGroupOU;
+                string sAMAccountName = "";
+                string description = "";
+                string sqlgroupsTable = "#SQLgroupsTable";
+                string ADgroupsTable = "ADgroupsTable";
+                string DC = groupOU.Substring(groupOU.IndexOf("DC"));
+                string groupDN;
+                string groupsTable;
+                SqlDataReader add;
+                SqlDataReader delete;
+                SqlDataReader update;
+                ArrayList ADupdateKeys = new ArrayList();
+                ArrayList SQLupdateKeys = new ArrayList();
+                ArrayList fields = new ArrayList();
+                DataTable groupsLinkedList = new DataTable();
+                Dictionary<string, string> groupObject = new Dictionary<string, string>();
+                SqlConnection sqlConn = new SqlConnection("Data Source=" + groupsyn.DataServer + ";Initial Catalog=" + groupsyn.DBCatalog + ";Integrated Security=SSPI;");
+
+
+                sqlConn.Open();
+                // Setup the OU for the program
+                tools.createOURecursive("OU=" + groupapp + "," + groupOU);
+
+                // grab list of groups from SQL insert into a temp table
+                SqlCommand sqlComm = new SqlCommand();
+                if (groupsyn.Group_where == "")
+                {
+                    sqlComm = new SqlCommand("SELECT DISTINCT RTRIM(" + groupsyn.Group_sAMAccount + ") AS " + groupsyn.Group_sAMAccount + ", RTRIM(" + groupsyn.Group_CN + ") + '" + groupapp + "' AS " + groupsyn.Group_CN + " INTO " + sqlgroupsTable + " FROM " + groupsyn.Group_dbTable + " ORDER BY " + groupsyn.Group_CN, sqlConn);
+                }
+                else
+                {
+                    sqlComm = new SqlCommand("SELECT DISTINCT RTRIM(" + groupsyn.Group_sAMAccount + ") AS " + groupsyn.Group_sAMAccount + ", RTRIM(" + groupsyn.Group_CN + ") + '" + groupapp + "' AS " + groupsyn.Group_CN + " INTO " + sqlgroupsTable + " FROM " + groupsyn.Group_dbTable + " WHERE " + groupsyn.Group_where + " ORDER BY " + groupsyn.Group_CN, sqlConn);
+                }
+
+                sqlComm.ExecuteNonQuery();
+
+
+                //SqlCommand sqldebugComm = new SqlCommand("select count(" + groupsyn.Group_sAMAccount + ") FROM " + sqlgroupsTable, sqlConn);
+                //debugreader = sqldebugComm.ExecuteReader();
+                //debugfieldcount = debugreader.FieldCount;
+                //while (debugreader.Read())
+                //{
+                //    for (i = 0; i < debugfieldcount; i++)
+                //    {
+                //        debug += (string)debugreader[0].ToString();
+                //    }
+                //}
+                //MessageBox.Show(debug);
+                //debugreader.Close();
+
+
+                // generate a list of fields to ask from AD
+                ADupdateKeys.Add("description");
+                ADupdateKeys.Add("CN");
+
+
+                // grab groups from AD
+                time.Start();
+                groupsLinkedList = tools.EnumerateGroupsInOUDataTable("OU=" + groupapp + "," + groupOU, ADupdateKeys, ADgroupsTable);
+                time.Stop();
+                gui.Refresh();
+                //MessageBox.Show("got " + groupsLinkedList.Count + "groups from ou in " + time.GetElapsedTime());
+                // insert groups from AD into a temp table
+                if (groupsLinkedList.Rows.Count > 0)
                 {
                     time.Start();
                     groupsTable = tools.temp_Table(groupsLinkedList, ADgroupsTable, sqlConn);
@@ -3947,7 +4263,7 @@ namespace WindowsApplication1
             //
             // Create a SQL insert statement
             // tools.temp_Table(tools.EnumerateUsersInGroup("CN=_AtisRW,OU=Atis,OU=FHCHS,DC=FHCHS,DC=EDU"), "MikesADTest", "soniswebdatabase", "fhcsvdb");
-            groupSyncr.execute(groupconfig, tools, log, this);
+            groupSyncr.executeBulkcopy(groupconfig, tools, log, this);
             int i;
             for (i = 0; i < log.transactions.Count; i++)
             {
