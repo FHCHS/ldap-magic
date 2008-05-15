@@ -162,7 +162,7 @@ namespace WindowsApplication1
             private String configDataServer;
             private String configDBCatalog;
             private String configprogress;
-            
+
             // constructor creates blank strings
             public groupSynch()
             {
@@ -182,7 +182,7 @@ namespace WindowsApplication1
                 configDataServer = "";
                 configDBCatalog = "";
             }
-            public groupSynch(Dictionary<string,string> dictionary)
+            public groupSynch(Dictionary<string, string> dictionary)
             {
                 configBaseGroupOU = dictionary[configBaseGroupOU].ToString();
                 configBaseUserOU = dictionary[configBaseUserOU].ToString();
@@ -411,25 +411,25 @@ namespace WindowsApplication1
             }
 
             // creates a dictionay of values
-            public Dictionary<string,string> ToDictionary()
+            public Dictionary<string, string> ToDictionary()
             {
                 Dictionary<string, string> returnvalue = new Dictionary<string, string>();
-                returnvalue.Add("configBaseGroupOU",configBaseGroupOU);
-                returnvalue.Add("configBaseUserOU",configBaseUserOU);
-                returnvalue.Add("configNotes",configNotes);
-                returnvalue.Add("configGroup_CN",configGroup_CN);
-                returnvalue.Add("configGroup_table_view",configGroup_table_view);
-                returnvalue.Add("configGroup_sAMAccount",configGroup_sAMAccount);
-                returnvalue.Add("configGroup_dbTable",configGroup_dbTable);
-                returnvalue.Add("configGroup_where",configGroup_where);
+                returnvalue.Add("configBaseGroupOU", configBaseGroupOU);
+                returnvalue.Add("configBaseUserOU", configBaseUserOU);
+                returnvalue.Add("configNotes", configNotes);
+                returnvalue.Add("configGroup_CN", configGroup_CN);
+                returnvalue.Add("configGroup_table_view", configGroup_table_view);
+                returnvalue.Add("configGroup_sAMAccount", configGroup_sAMAccount);
+                returnvalue.Add("configGroup_dbTable", configGroup_dbTable);
+                returnvalue.Add("configGroup_where", configGroup_where);
                 returnvalue.Add("configGroup_Prepend", configGroup_Prepend);
-                returnvalue.Add("configUser_CN",configUser_CN);
-                returnvalue.Add("configUser_table_view",configUser_table_view);
-                returnvalue.Add("configUser_sAMAccount",configUser_sAMAccount);
-                returnvalue.Add("configUser_dbTable",configUser_dbTable);
-                returnvalue.Add("configUser_where",configUser_where);
-                returnvalue.Add("configDataServer",configDataServer);
-                returnvalue.Add("configDBCatalog",configDBCatalog);
+                returnvalue.Add("configUser_CN", configUser_CN);
+                returnvalue.Add("configUser_table_view", configUser_table_view);
+                returnvalue.Add("configUser_sAMAccount", configUser_sAMAccount);
+                returnvalue.Add("configUser_dbTable", configUser_dbTable);
+                returnvalue.Add("configUser_where", configUser_where);
+                returnvalue.Add("configDataServer", configDataServer);
+                returnvalue.Add("configDBCatalog", configDBCatalog);
                 return returnvalue;
             }
             public groupSynch Clone()
@@ -458,24 +458,24 @@ namespace WindowsApplication1
             private String configUser_where;
             private String configDataServer;
             private String configDBCatalog;
-            
+
             // constructor creates a blank instance
             public userSynch()
             {
-            configBaseUserOU = "";
-            configNotes = "";
-            configOU_CN = "";
-            configOU_table_view = "";
-            configOU_sAMAccount = "";
-            configOU_dbTable = "";
-            configOU_where = "";
-            configUser_CN = "";
-            configUser_table_view = "";
-            configUser_sAMAccount = "";
-            configUser_dbTable = "";
-            configUser_where = "";
-            configDataServer = "";
-            configDBCatalog = "";
+                configBaseUserOU = "";
+                configNotes = "";
+                configOU_CN = "";
+                configOU_table_view = "";
+                configOU_sAMAccount = "";
+                configOU_dbTable = "";
+                configOU_where = "";
+                configUser_CN = "";
+                configUser_table_view = "";
+                configUser_sAMAccount = "";
+                configUser_dbTable = "";
+                configUser_where = "";
+                configDataServer = "";
+                configDBCatalog = "";
             }
             public void load(Dictionary<string, string> dictionary)
             {
@@ -651,7 +651,7 @@ namespace WindowsApplication1
                     configDBCatalog = value;
                 }
             }
-            
+
             // output to a dictionary list
             public Dictionary<string, string> ToDictionary()
             {
@@ -696,26 +696,26 @@ namespace WindowsApplication1
             private String configBaseOU;
             private String configDataServer;
             private String configDBCatalog;
-                
+
             // constructor creates a blank instance
             public userStateChange()
             {
-            configUser_CN = "";
-            configUser_table_view = "";
-            configUser_sAMAccount = "";
-            configUser_dbTable = "";
-            configUser_where = "";
-            configDataServer = "";
-            configDBCatalog = "";
-            configDBorAD = "";
-            configADOU = "";
-            configADGroups = "";
-            configMoveOrDelete = "";
-            configBaseOU = "";
-            configDisableTime = "";
-            configFromOU = "";
-            configToOU = "";
-            configActiveDisabled = "";
+                configUser_CN = "";
+                configUser_table_view = "";
+                configUser_sAMAccount = "";
+                configUser_dbTable = "";
+                configUser_where = "";
+                configDataServer = "";
+                configDBCatalog = "";
+                configDBorAD = "";
+                configADOU = "";
+                configADGroups = "";
+                configMoveOrDelete = "";
+                configBaseOU = "";
+                configDisableTime = "";
+                configFromOU = "";
+                configToOU = "";
+                configActiveDisabled = "";
             }
             public void load(Dictionary<string, string> dictionary)
             {
@@ -924,7 +924,7 @@ namespace WindowsApplication1
                 returnvalue.Add("configActiveDisabled", configActiveDisabled);
                 return returnvalue;
             }
-            
+
         }
         public class executionOrder
         {
@@ -993,385 +993,385 @@ namespace WindowsApplication1
         }
         public class toolset
         {
-            
-        //Functions
 
-        // all functions pulling from AD are limited to 1500 results or immediate failure to fix this things need to be paged max page size 1000
-        public LinkedList<Dictionary<string, string>> linkedlistadd(LinkedList<Dictionary<string, string>> lista, LinkedList<Dictionary<string, string>> listb)
-        {
-            LinkedListNode<Dictionary<string,string>> nodeb;
-            nodeb = listb.First;
-            while (nodeb != null)
-            {
-                lista.AddLast(nodeb.Value);
-                nodeb = nodeb.Next;
-            }
-            return lista;
-        }
-        public void MoveADObject(string objectLocation, string newLocation)
-        {
-            //For brevity, removed existence checks
-            // EXPECTS FULL Distinguished Name for both variables "LDAP://CN=xxx,DC=xxx,DC=xxx"
+            //Functions
 
-            DirectoryEntry eLocation = new DirectoryEntry(objectLocation);
-            DirectoryEntry nLocation = new DirectoryEntry(newLocation);
-            string newName = eLocation.Name;
-            eLocation.MoveTo(nLocation, newName);
-            nLocation.Close();
-            eLocation.Close();
-        }
-        public string getNewUserName(string firstName, string MI, string lastName, string ouDN)
-        {
-            // ouDN = "OU=fakeou,DC=mydomain,DC=com
-            string returnvalue = "CN=" + firstName + "." + lastName + "," + ouDN;
-            int i = 1;
-            if (Exists(returnvalue))
+            // all functions pulling from AD are limited to 1500 results or immediate failure to fix this things need to be paged max page size 1000
+            public LinkedList<Dictionary<string, string>> linkedlistadd(LinkedList<Dictionary<string, string>> lista, LinkedList<Dictionary<string, string>> listb)
             {
-                returnvalue = "CN=" + firstName + "." + MI + "." + lastName + "," + ouDN;
-            }
-            while (Exists(returnvalue))
-            {
-                returnvalue = "CN=" + firstName + "." + MI + "." + lastName + i + "," + ouDN;
-                i++;
-            }
-            return returnvalue;
-        }
-        public void Diff(LinkedList<Dictionary<string, string>> lista, LinkedList<Dictionary<string, string>> listb, ArrayList listakeys, ArrayList listbkeys)
-        {
-            // two lists a and b
-            // nodes left in list a are not in list b and vice versa
-            // listakeys contains an array with the string values for the keys of the dictionaries in a
-            // it is used to generate a string with all the values of the dictionary concatenated together
-
-            LinkedListNode<Dictionary<string, string>> nodelista = lista.First;
-            LinkedListNode<Dictionary<string, string>> nodelistb = listb.First;
-            string compare_a = "";
-            string compare_b = "";
-
-            // flag represents if there hse been a removed node in lista to check if we need to move next  or not
-            bool flag = false;
-            // holds a temp value to be removed from both lists
-            string deletevalue;
-            //begin iteration of lista
-            while (nodelista != null)
-            {
-                // generate the comparison string for the current node
-                foreach (string key in listakeys)
+                LinkedListNode<Dictionary<string, string>> nodeb;
+                nodeb = listb.First;
+                while (nodeb != null)
                 {
-                    compare_a = compare_a + " " + nodelista.Value[key];
+                    lista.AddLast(nodeb.Value);
+                    nodeb = nodeb.Next;
                 }
-                //for each lista begin iteration of listb
-                while (nodelistb != null)
+                return lista;
+            }
+            public void MoveADObject(string objectLocation, string newLocation)
+            {
+                //For brevity, removed existence checks
+                // EXPECTS FULL Distinguished Name for both variables "LDAP://CN=xxx,DC=xxx,DC=xxx"
+
+                DirectoryEntry eLocation = new DirectoryEntry(objectLocation);
+                DirectoryEntry nLocation = new DirectoryEntry(newLocation);
+                string newName = eLocation.Name;
+                eLocation.MoveTo(nLocation, newName);
+                nLocation.Close();
+                eLocation.Close();
+            }
+            public string getNewUserName(string firstName, string MI, string lastName, string ouDN)
+            {
+                // ouDN = "OU=fakeou,DC=mydomain,DC=com
+                string returnvalue = "CN=" + firstName + "." + lastName + "," + ouDN;
+                int i = 1;
+                if (Exists(returnvalue))
+                {
+                    returnvalue = "CN=" + firstName + "." + MI + "." + lastName + "," + ouDN;
+                }
+                while (Exists(returnvalue))
+                {
+                    returnvalue = "CN=" + firstName + "." + MI + "." + lastName + i + "," + ouDN;
+                    i++;
+                }
+                return returnvalue;
+            }
+            public void Diff(LinkedList<Dictionary<string, string>> lista, LinkedList<Dictionary<string, string>> listb, ArrayList listakeys, ArrayList listbkeys)
+            {
+                // two lists a and b
+                // nodes left in list a are not in list b and vice versa
+                // listakeys contains an array with the string values for the keys of the dictionaries in a
+                // it is used to generate a string with all the values of the dictionary concatenated together
+
+                LinkedListNode<Dictionary<string, string>> nodelista = lista.First;
+                LinkedListNode<Dictionary<string, string>> nodelistb = listb.First;
+                string compare_a = "";
+                string compare_b = "";
+
+                // flag represents if there hse been a removed node in lista to check if we need to move next  or not
+                bool flag = false;
+                // holds a temp value to be removed from both lists
+                string deletevalue;
+                //begin iteration of lista
+                while (nodelista != null)
                 {
                     // generate the comparison string for the current node
-                    foreach (string key in listbkeys)
+                    foreach (string key in listakeys)
                     {
-                        compare_b = compare_b + " " + nodelistb.Value[key];
+                        compare_a = compare_a + " " + nodelista.Value[key];
                     }
-                    if (compare_b == compare_a)
+                    //for each lista begin iteration of listb
+                    while (nodelistb != null)
                     {
-                        // remove nodes from both lists
-                        nodelista = RemoveNode(lista, nodelista);
-                        nodelistb = RemoveNode(listb, nodelistb);
-                        //set dirty flag on lista to make sure we check befor moving next
-                        flag = true;
+                        // generate the comparison string for the current node
+                        foreach (string key in listbkeys)
+                        {
+                            compare_b = compare_b + " " + nodelistb.Value[key];
+                        }
+                        if (compare_b == compare_a)
+                        {
+                            // remove nodes from both lists
+                            nodelista = RemoveNode(lista, nodelista);
+                            nodelistb = RemoveNode(listb, nodelistb);
+                            //set dirty flag on lista to make sure we check befor moving next
+                            flag = true;
+                        }
+                        else
+                        {
+                            nodelistb = nodelistb.Next;
+                        }
+                        //clear the comparison string
+                        compare_b = "";
                     }
-                    else
+                    if (flag == false)
                     {
-                        nodelistb = nodelistb.Next;
+                        nodelista = nodelista.Next;
                     }
-                    //clear the comparison string
-                    compare_b = "";
-                }
-                if (flag == false)
-                {
-                    nodelista = nodelista.Next;
-                }
 
-                flag = false;
-                nodelistb = listb.First;
-                compare_a = "";
+                    flag = false;
+                    nodelistb = listb.First;
+                    compare_a = "";
+                }
             }
-        }
-        public void Diff(LinkedList<Dictionary<string, string>> lista, LinkedList<Dictionary<string, string>> listb, ArrayList listakeys, ArrayList listbkeys, ArrayList listaupdate, ArrayList listbupdate)
-        {
-            // two lists a and b
-            // nodes left in list a are not in list b and vice versa
-            // listakeys contains an array with the string values for the keys of the dictionaries in a
-            // it is used to generate a string with all the values of the dictionary concatenated together
-
-            LinkedListNode<Dictionary<string, string>> nodelista = lista.First;
-            LinkedListNode<Dictionary<string, string>> nodelistb = listb.First;
-            string compare_a = "";
-            string update_a = "";
-            string compare_b = "";
-            string update_b = "";
-
-            // flag represents if there hse been a removed node in lista to check if we need to move next  or not
-            bool flag = false;
-            //begin iteration of lista
-            while (nodelista != null)
+            public void Diff(LinkedList<Dictionary<string, string>> lista, LinkedList<Dictionary<string, string>> listb, ArrayList listakeys, ArrayList listbkeys, ArrayList listaupdate, ArrayList listbupdate)
             {
-                // generate the comparison string for the current node
-                foreach (string key in listakeys)
-                {
-                    compare_a = compare_a + " " + nodelista.Value[key];
-                }
-                foreach (string key in listaupdate)
-                {
-                    update_a = update_a + " " + nodelista.Value[key];
-                }
-                //for each lista begin iteration of listb
-                while (nodelistb != null)
+                // two lists a and b
+                // nodes left in list a are not in list b and vice versa
+                // listakeys contains an array with the string values for the keys of the dictionaries in a
+                // it is used to generate a string with all the values of the dictionary concatenated together
+
+                LinkedListNode<Dictionary<string, string>> nodelista = lista.First;
+                LinkedListNode<Dictionary<string, string>> nodelistb = listb.First;
+                string compare_a = "";
+                string update_a = "";
+                string compare_b = "";
+                string update_b = "";
+
+                // flag represents if there hse been a removed node in lista to check if we need to move next  or not
+                bool flag = false;
+                //begin iteration of lista
+                while (nodelista != null)
                 {
                     // generate the comparison string for the current node
-                    foreach (string key in listbkeys)
+                    foreach (string key in listakeys)
                     {
-                        compare_b = compare_b + " " + nodelistb.Value[key];
+                        compare_a = compare_a + " " + nodelista.Value[key];
                     }
-                    foreach (string key in listbupdate)
+                    foreach (string key in listaupdate)
                     {
-                        update_b = update_b + " " + nodelistb.Value[key];
+                        update_a = update_a + " " + nodelista.Value[key];
                     }
-                    // there is a discrepency we need to update the update fields
-                    if (update_b != update_a && compare_b == compare_a)
+                    //for each lista begin iteration of listb
+                    while (nodelistb != null)
                     {
-                        // remove the offending node so it is not deleted rather it will get updated
-                        nodelistb = RemoveNode(listb, nodelistb);
-                        compare_a = "";
+                        // generate the comparison string for the current node
+                        foreach (string key in listbkeys)
+                        {
+                            compare_b = compare_b + " " + nodelistb.Value[key];
+                        }
+                        foreach (string key in listbupdate)
+                        {
+                            update_b = update_b + " " + nodelistb.Value[key];
+                        }
+                        // there is a discrepency we need to update the update fields
+                        if (update_b != update_a && compare_b == compare_a)
+                        {
+                            // remove the offending node so it is not deleted rather it will get updated
+                            nodelistb = RemoveNode(listb, nodelistb);
+                            compare_a = "";
+                        }
+                        else if (compare_b == compare_a)
+                        {
+                            // remove nodes from both lists
+                            nodelista = RemoveNode(lista, nodelista);
+                            nodelistb = RemoveNode(listb, nodelistb);
+                            //set dirty flag on lista to make sure we check befor moving next
+                            flag = true;
+                        }
+                        else
+                        {
+                            nodelistb = nodelistb.Next;
+                        }
+                        //clear the comparison strings
+                        compare_b = "";
+                        update_b = "";
                     }
-                    else if (compare_b == compare_a)
+                    if (flag == false)
                     {
-                        // remove nodes from both lists
-                        nodelista = RemoveNode(lista, nodelista);
-                        nodelistb = RemoveNode(listb, nodelistb);
-                        //set dirty flag on lista to make sure we check befor moving next
-                        flag = true;
+                        nodelista = nodelista.Next;
                     }
-                    else
-                    {
-                        nodelistb = nodelistb.Next;
-                    }
-                    //clear the comparison strings
-                    compare_b = "";
-                    update_b = "";
-                }
-                if (flag == false)
-                {
-                    nodelista = nodelista.Next;
-                }
 
-                flag = false;
-                nodelistb = listb.First;
-                compare_a = "";
-                update_a = "";
+                    flag = false;
+                    nodelistb = listb.First;
+                    compare_a = "";
+                    update_a = "";
+                }
             }
-        }
-    /*    public void Diff(Dictionary<string, Dictionary<string, string>> lista, Dictionary<string, Dictionary<string, string>> listb, ArrayList listakeys, ArrayList listbkeys)
-        {
-            Dictionary<string,string> gottenValue;
-            // get enumerator of lista
-            ICollection<string> c = lista.Keys;
-
-            foreach (string str in c)
-            {
-                if (listb.TryGetValue(str, gottenValue))
+            /*    public void Diff(Dictionary<string, Dictionary<string, string>> lista, Dictionary<string, Dictionary<string, string>> listb, ArrayList listakeys, ArrayList listbkeys)
                 {
-                    //the value exists in listb now we can check it if it needs to be updated
+                    Dictionary<string,string> gottenValue;
+                    // get enumerator of lista
+                    ICollection<string> c = lista.Keys;
+
+                    foreach (string str in c)
+                    {
+                        if (listb.TryGetValue(str, gottenValue))
+                        {
+                            //the value exists in listb now we can check it if it needs to be updated
+                        }
+                        else
+                        {
+                            // the value does not exist in listb we need to add it listb
+                            listb.Add(str, gottenValue);
+                        }
+                    }
+                    // for each in lista tryget value of listb
+                    // create/concantenate update values of lista values and compare to listb's concantenated values
+                    // if needs update remove from listb only
+                    // if matches delete from both
+
+
+                }*/
+            public LinkedListNode<Dictionary<string, string>> RemoveNode(LinkedList<Dictionary<string, string>> List, LinkedListNode<Dictionary<string, string>> deleteNode)
+            {
+                LinkedListNode<Dictionary<string, string>> tmp;
+                if (deleteNode.Next == null && deleteNode.Previous == null)
+                {
+                    List.Remove(deleteNode);
+                    return null;
+                }
+                if (deleteNode.Next != null)
+                {
+                    tmp = deleteNode.Next;
                 }
                 else
                 {
-                    // the value does not exist in listb we need to add it listb
-                    listb.Add(str, gottenValue);
+                    tmp = deleteNode.Previous;
                 }
-            }
-            // for each in lista tryget value of listb
-            // create/concantenate update values of lista values and compare to listb's concantenated values
-            // if needs update remove from listb only
-            // if matches delete from both
-
-
-        }*/
-        public LinkedListNode<Dictionary<string, string>> RemoveNode(LinkedList<Dictionary<string, string>> List, LinkedListNode<Dictionary<string, string>> deleteNode)
-        {
-            LinkedListNode<Dictionary<string, string>> tmp;
-            if (deleteNode.Next == null && deleteNode.Previous == null)
-            {
                 List.Remove(deleteNode);
-                return null;
+                return tmp;
             }
-            if (deleteNode.Next != null)
+            public LinkedListNode<string> RemoveAll(LinkedList<string> List, string value)
             {
-                tmp = deleteNode.Next;
-            }
-            else
-            {
-                tmp = deleteNode.Previous;
-            }
-            List.Remove(deleteNode);
-            return tmp;
-        }
-        public LinkedListNode<string> RemoveAll(LinkedList<string> List, string value)
-        {
-            LinkedListNode<string> listnode = List.First;
-            LinkedListNode<string> tmp;
-            LinkedListNode<string> retvalue = List.First;
-            bool flag = false;
-            while (listnode != null)
-            {
-                if (listnode.Value.ToString() == value)
+                LinkedListNode<string> listnode = List.First;
+                LinkedListNode<string> tmp;
+                LinkedListNode<string> retvalue = List.First;
+                bool flag = false;
+                while (listnode != null)
                 {
-                    if (listnode.Next != null && flag == false && listnode.Next.Value != value)
+                    if (listnode.Value.ToString() == value)
                     {
-                        retvalue = listnode.Next;
-                        flag = true;
+                        if (listnode.Next != null && flag == false && listnode.Next.Value != value)
+                        {
+                            retvalue = listnode.Next;
+                            flag = true;
+                        }
+                        else if (listnode.Next == null)
+                        {
+                            retvalue = listnode.Previous;
+                        }
+                        tmp = listnode.Next;
+                        List.Remove(listnode);
+                        listnode = tmp;
                     }
-                    else if (listnode.Next == null)
+                    else
                     {
-                        retvalue = listnode.Previous;
+                        listnode = listnode.Next;
                     }
-                    tmp = listnode.Next;
-                    List.Remove(listnode);
-                    listnode = tmp;
                 }
-                else
+                return retvalue;
+            }
+            public LinkedListNode<Dictionary<string, string>> RemoveAll(LinkedList<Dictionary<string, string>> List, string value, string field)
+            {
+                LinkedListNode<Dictionary<string, string>> listnode = List.First;
+                LinkedListNode<Dictionary<string, string>> tmp;
+                LinkedListNode<Dictionary<string, string>> retvalue = List.First;
+                bool flag = false;
+                while (listnode != null)
                 {
-                    listnode = listnode.Next;
+                    if (listnode.Value[field].ToString() == value)
+                    {
+                        if (listnode.Next.Value[field] != null && flag == false && listnode.Next.Value[field] != value)
+                        {
+                            retvalue = listnode.Next;
+                            //flags if it has found a match in the string
+                            flag = true;
+                        }
+                        else if (listnode.Next.Value[field] == null)
+                        {
+                            retvalue = listnode.Previous;
+                        }
+                        tmp = listnode.Next;
+                        List.Remove(listnode);
+                        listnode = tmp;
+                    }
+                    else
+                    {
+                        listnode = listnode.Next;
+                    }
+                }
+                return retvalue;
+            }
+            public string getDomain()
+            {
+                using (Domain d = Domain.GetCurrentDomain())
+                using (DirectoryEntry entry = d.GetDirectoryEntry())
+                {
+                    return entry.Path;
                 }
             }
-            return retvalue;
-        }
-        public LinkedListNode<Dictionary<string, string>> RemoveAll(LinkedList<Dictionary<string, string>> List, string value, string field)
-        {
-            LinkedListNode<Dictionary<string, string>> listnode = List.First;
-            LinkedListNode<Dictionary<string, string>> tmp;
-            LinkedListNode<Dictionary<string, string>> retvalue = List.First;
-            bool flag = false;
-            while (listnode != null)
+            public LinkedList<Dictionary<string, string>> EnumerateGroupsInOU(string OuDN)
             {
-                if (listnode.Value[field].ToString() == value)
-                {
-                    if (listnode.Next.Value[field] != null && flag == false && listnode.Next.Value[field] != value)
-                    {
-                        retvalue = listnode.Next;
-                        //flags if it has found a match in the string
-                        flag = true;
-                    }
-                    else if (listnode.Next.Value[field] == null)
-                    {
-                        retvalue = listnode.Previous;
-                    }
-                    tmp = listnode.Next;
-                    List.Remove(listnode);
-                    listnode = tmp;
-                }
-                else
-                {
-                    listnode = listnode.Next;
-                }
-            }
-            return retvalue;
-        }
-        public string getDomain()
-        {
-            using (Domain d = Domain.GetCurrentDomain())
-            using (DirectoryEntry entry = d.GetDirectoryEntry())
-            {
-                return entry.Path;
-            }
-        }
-        public LinkedList<Dictionary<string, string>> EnumerateGroupsInOU(string OuDN)
-        {
 
 
-            LinkedList<Dictionary<string, string>> returnvalue = new LinkedList<Dictionary<string, string>>();
-            Dictionary<string, string> users;
-            // bind to the OU you want to enumerate
-            DirectoryEntry deOU = new DirectoryEntry("LDAP://" + OuDN); //ou=test,ou=fhchs,DC=fhchs,DC=edu
+                LinkedList<Dictionary<string, string>> returnvalue = new LinkedList<Dictionary<string, string>>();
+                Dictionary<string, string> users;
+                // bind to the OU you want to enumerate
+                DirectoryEntry deOU = new DirectoryEntry("LDAP://" + OuDN); //ou=test,ou=fhchs,DC=fhchs,DC=edu
 
-            // create a directory searcher for that OU
-            DirectorySearcher dsUsers = new DirectorySearcher(deOU);
+                // create a directory searcher for that OU
+                DirectorySearcher dsUsers = new DirectorySearcher(deOU);
 
-            // set the filter to get just the users
-            dsUsers.Filter = "(&(objectClass=group))";
-            // make it non recursive in depth
-            dsUsers.SearchScope = SearchScope.OneLevel;
+                // set the filter to get just the users
+                dsUsers.Filter = "(&(objectClass=group))";
+                // make it non recursive in depth
+                dsUsers.SearchScope = SearchScope.OneLevel;
 
 
-            // add the attributes you want to grab from the search
-            // COULD CHANGE OUT FOR A FOR EACH AND GRAB PROPS FROM AN ARRAY
-            dsUsers.PropertiesToLoad.Add("sAMAccountName");
-            dsUsers.PropertiesToLoad.Add("CN");
-           
-            // grab the users and do whatever you need to do with them 
-            foreach (SearchResult oResult in dsUsers.FindAll())
-            {
-                //generate the array list with the user sam accounts
+                // add the attributes you want to grab from the search
                 // COULD CHANGE OUT FOR A FOR EACH AND GRAB PROPS FROM AN ARRAY
-                users = new Dictionary<string, string>();
-                users.Add("sAMAccountName", oResult.Properties["sAMAccountName"][0].ToString());
-                users.Add("CN", oResult.Properties["CN"][0].ToString());
-                returnvalue.AddLast(users);                
+                dsUsers.PropertiesToLoad.Add("sAMAccountName");
+                dsUsers.PropertiesToLoad.Add("CN");
+
+                // grab the users and do whatever you need to do with them 
+                foreach (SearchResult oResult in dsUsers.FindAll())
+                {
+                    //generate the array list with the user sam accounts
+                    // COULD CHANGE OUT FOR A FOR EACH AND GRAB PROPS FROM AN ARRAY
+                    users = new Dictionary<string, string>();
+                    users.Add("sAMAccountName", oResult.Properties["sAMAccountName"][0].ToString());
+                    users.Add("CN", oResult.Properties["CN"][0].ToString());
+                    returnvalue.AddLast(users);
+                }
+                return returnvalue;
             }
-            return returnvalue;
-        }
-        public LinkedList<Dictionary<string, string>> EnumerateGroupsInOU(string OuDN, ArrayList returnProperties)
-        {
-
-
-            LinkedList<Dictionary<string, string>> returnvalue = new LinkedList<Dictionary<string, string>>();
-            Dictionary<string, string> users = new Dictionary<string, string>();
-            // bind to the OU you want to enumerate
-            DirectoryEntry deOU = new DirectoryEntry("LDAP://" + OuDN);
-            int i;
-            int count = returnProperties.Count;
-
-            // create a directory searcher for that OU
-            DirectorySearcher dsUsers = new DirectorySearcher(deOU);
-
-            // set the filter to get just the users
-            dsUsers.Filter = "(&(objectClass=group))";
-            // make it non recursive in depth
-            dsUsers.SearchScope = SearchScope.OneLevel;
-
-            // add the attributes you want to grab from the search
-            for (i = 0; i < count; i++)
+            public LinkedList<Dictionary<string, string>> EnumerateGroupsInOU(string OuDN, ArrayList returnProperties)
             {
-                dsUsers.PropertiesToLoad.Add(returnProperties[i].ToString());
-            }
-            //foreach (string property in returnProperties)
-            //{
-            //    dsUsers.PropertiesToLoad.Add(property);
-            //}
 
 
-            // grab the users and do whatever you need to do with them 
-            dsUsers.PageSize = 500;
-            foreach (SearchResult oResult in dsUsers.FindAll())
-            {
-                //generate the array list with the user sam accounts
+                LinkedList<Dictionary<string, string>> returnvalue = new LinkedList<Dictionary<string, string>>();
+                Dictionary<string, string> users = new Dictionary<string, string>();
+                // bind to the OU you want to enumerate
+                DirectoryEntry deOU = new DirectoryEntry("LDAP://" + OuDN);
+                int i;
+                int count = returnProperties.Count;
+
+                // create a directory searcher for that OU
+                DirectorySearcher dsUsers = new DirectorySearcher(deOU);
+
+                // set the filter to get just the users
+                dsUsers.Filter = "(&(objectClass=group))";
+                // make it non recursive in depth
+                dsUsers.SearchScope = SearchScope.OneLevel;
+
+                // add the attributes you want to grab from the search
                 for (i = 0; i < count; i++)
                 {
-                    try
-                    {
-                        users.Add(returnProperties[i].ToString(), oResult.Properties[returnProperties[i].ToString()][0].ToString());
-                    }
-                    catch (Exception e)
-                    {
-                        users.Add(returnProperties[i].ToString(), string.Empty);
-                    }
+                    dsUsers.PropertiesToLoad.Add(returnProperties[i].ToString());
                 }
-                //users.Add("sAMAccountName", oResult.Properties["sAMAccountName"][0].ToString());
-                //users.Add("CN", oResult.Properties["CN"][0].ToString());
-                //users.Add("description", oResult.Properties["description"][0].ToString());
+                //foreach (string property in returnProperties)
+                //{
+                //    dsUsers.PropertiesToLoad.Add(property);
+                //}
 
-                returnvalue.AddLast(users);
-                users = new Dictionary<string, string>();
+
+                // grab the users and do whatever you need to do with them 
+                dsUsers.PageSize = 500;
+                foreach (SearchResult oResult in dsUsers.FindAll())
+                {
+                    //generate the array list with the user sam accounts
+                    for (i = 0; i < count; i++)
+                    {
+                        try
+                        {
+                            users.Add(returnProperties[i].ToString(), oResult.Properties[returnProperties[i].ToString()][0].ToString());
+                        }
+                        catch (Exception e)
+                        {
+                            users.Add(returnProperties[i].ToString(), string.Empty);
+                        }
+                    }
+                    //users.Add("sAMAccountName", oResult.Properties["sAMAccountName"][0].ToString());
+                    //users.Add("CN", oResult.Properties["CN"][0].ToString());
+                    //users.Add("description", oResult.Properties["description"][0].ToString());
+
+                    returnvalue.AddLast(users);
+                    users = new Dictionary<string, string>();
+                }
+                return returnvalue;
             }
-            return returnvalue;
-        }
 
-        public DataSet EnumerateGroupsInOUDS(string OuDN, ArrayList returnProperties)
+            public DataSet EnumerateGroupsInOUDS(string OuDN, ArrayList returnProperties)
             {
                 DataSet returnvalue = new DataSet();
                 // bind to the OU you want to enumerate
@@ -1391,7 +1391,7 @@ namespace WindowsApplication1
                 for (i = 0; i < count; i++)
                 {
                     dsUsers.PropertiesToLoad.Add(returnProperties[i].ToString());
-                   // returnvalue
+                    // returnvalue
                 }
 
 
@@ -1408,548 +1408,548 @@ namespace WindowsApplication1
                         }
                         catch (Exception e)
                         {
-                           // users.Add(returnProperties[i].ToString(), string.Empty);
+                            // users.Add(returnProperties[i].ToString(), string.Empty);
                         }
                     }
-                   
 
-                   // returnvalue.AddLast(users);
-                  //  users = new Dictionary<string, string>();
+
+                    // returnvalue.AddLast(users);
+                    //  users = new Dictionary<string, string>();
                 }
                 return returnvalue;
             }
 
-        // NEEDS PAGING
-        public LinkedList<Dictionary<string, string>> EnumerateUsersInOU(string OuDN)
-        {
-            // RETURNS ALL USERS IN AN OU NO MATTER HOW DEEP
-            
-
-            LinkedList<Dictionary<string, string>> returnvalue = new LinkedList<Dictionary<string, string>>();
-            Dictionary<string, string> users;
-            // bind to the OU you want to enumerate
-            DirectoryEntry deOU = new DirectoryEntry("LDAP://" + OuDN);
-
-            // create a directory searcher for that OU
-            DirectorySearcher dsUsers = new DirectorySearcher(deOU);
-
-            // set the filter to get just the users
-            dsUsers.Filter = "(&(objectClass=user)(objectCategory=Person))";
-
-            // add the attributes you want to grab from the search
-            // COULD OVERLOAD METHOD AND CHANGE OUT FOR A FOREACH AND GRAB PROPS FROM AN ARRAY
-            dsUsers.PropertiesToLoad.Add("sAMAccountName");
-
-            // grab the users and do whatever you need to do with them 
-            foreach (SearchResult oResult in dsUsers.FindAll())
+            // NEEDS PAGING
+            public LinkedList<Dictionary<string, string>> EnumerateUsersInOU(string OuDN)
             {
-                //generate the array list with the user sam accounts
-                // COULD CHANGE OUT FOR A FOR EACH AND GRAB PROPS FROM AN ARRAY
-                users = new Dictionary<string, string>();
-                users.Add("sAMAccountName", oResult.Properties["sAMAccountName"][0].ToString());
-                returnvalue.AddLast(users);
-                
-            }
-            return returnvalue;
-        }
-        // NEEDS PAGING
-        public LinkedList<Dictionary<string, string>> EnumerateUsersInGroup(string groupDN)
-        {
-            // groupDN "LDAP://CN=Sales,DC=Fabrikam,DC=COM"
+                // RETURNS ALL USERS IN AN OU NO MATTER HOW DEEP
 
-            LinkedList<Dictionary<string, string>> returnvalue = new LinkedList<Dictionary<string, string>>();
-            Dictionary<string, string> users;
-            DirectoryEntry group = new DirectoryEntry("LDAP://" + groupDN);
-            DirectorySearcher groupUsers = new DirectorySearcher(group);
-            foreach (object dn in group.Properties["member"])
-            {
-                users = new Dictionary<string, string>();
-                users.Add("sAMAccountName", dn.ToString());
-                users.Add("CN", groupDN);
-                returnvalue.AddLast(users);
-                
-            }
-            return returnvalue;
-        }
-        // NEEDS PAGING
-        public ArrayList EnumerateOU(string OuDn)
-        {
-            ArrayList alObjects = new ArrayList();
-            try
-            {
-                DirectoryEntry directoryObject = new DirectoryEntry("LDAP://" + OuDn);
 
-                foreach (DirectoryEntry child in directoryObject.Children)
+                LinkedList<Dictionary<string, string>> returnvalue = new LinkedList<Dictionary<string, string>>();
+                Dictionary<string, string> users;
+                // bind to the OU you want to enumerate
+                DirectoryEntry deOU = new DirectoryEntry("LDAP://" + OuDN);
+
+                // create a directory searcher for that OU
+                DirectorySearcher dsUsers = new DirectorySearcher(deOU);
+
+                // set the filter to get just the users
+                dsUsers.Filter = "(&(objectClass=user)(objectCategory=Person))";
+
+                // add the attributes you want to grab from the search
+                // COULD OVERLOAD METHOD AND CHANGE OUT FOR A FOREACH AND GRAB PROPS FROM AN ARRAY
+                dsUsers.PropertiesToLoad.Add("sAMAccountName");
+
+                // grab the users and do whatever you need to do with them 
+                foreach (SearchResult oResult in dsUsers.FindAll())
                 {
-                    string childPath = child.Path.ToString();
-                    alObjects.Add(childPath.Remove(0, 7));
-                    //remove the LDAP prefix from the path
+                    //generate the array list with the user sam accounts
+                    // COULD CHANGE OUT FOR A FOR EACH AND GRAB PROPS FROM AN ARRAY
+                    users = new Dictionary<string, string>();
+                    users.Add("sAMAccountName", oResult.Properties["sAMAccountName"][0].ToString());
+                    returnvalue.AddLast(users);
 
-                    child.Close();
-                    child.Dispose();
                 }
-                directoryObject.Close();
-                directoryObject.Dispose();
+                return returnvalue;
             }
-            catch (DirectoryServicesCOMException e)
+            // NEEDS PAGING
+            public LinkedList<Dictionary<string, string>> EnumerateUsersInGroup(string groupDN)
             {
-                Console.WriteLine("An Error Occurred: " + e.Message.ToString());
+                // groupDN "LDAP://CN=Sales,DC=Fabrikam,DC=COM"
+
+                LinkedList<Dictionary<string, string>> returnvalue = new LinkedList<Dictionary<string, string>>();
+                Dictionary<string, string> users;
+                DirectoryEntry group = new DirectoryEntry("LDAP://" + groupDN);
+                DirectorySearcher groupUsers = new DirectorySearcher(group);
+                foreach (object dn in group.Properties["member"])
+                {
+                    users = new Dictionary<string, string>();
+                    users.Add("sAMAccountName", dn.ToString());
+                    users.Add("CN", groupDN);
+                    returnvalue.AddLast(users);
+
+                }
+                return returnvalue;
             }
-            return alObjects;
-        }
-        public bool Authenticate(string userName, string password, string domain)
-        {
+            // NEEDS PAGING
+            public ArrayList EnumerateOU(string OuDn)
             {
-                bool authentic = false;
+                ArrayList alObjects = new ArrayList();
                 try
                 {
-                    DirectoryEntry entry = new DirectoryEntry("LDAP://" + domain,
-                        userName, password);
-                    object nativeObject = entry.NativeObject;
-                    authentic = true;
-                }
-                catch (DirectoryServicesCOMException) { }
-                return authentic;
-            }
-        }
-        public bool Exists(string objectPath)
-        {
-            // checks if there is a object for the distinguished name
-            bool found = false;
-            if ((objectPath != null) && (objectPath != string.Empty))
-            {
-                try
-                {
-                    if (DirectoryEntry.Exists("LDAP://" + objectPath))
+                    DirectoryEntry directoryObject = new DirectoryEntry("LDAP://" + OuDn);
+
+                    foreach (DirectoryEntry child in directoryObject.Children)
                     {
-                        found = true;
+                        string childPath = child.Path.ToString();
+                        alObjects.Add(childPath.Remove(0, 7));
+                        //remove the LDAP prefix from the path
+
+                        child.Close();
+                        child.Dispose();
+                    }
+                    directoryObject.Close();
+                    directoryObject.Dispose();
+                }
+                catch (DirectoryServicesCOMException e)
+                {
+                    Console.WriteLine("An Error Occurred: " + e.Message.ToString());
+                }
+                return alObjects;
+            }
+            public bool Authenticate(string userName, string password, string domain)
+            {
+                {
+                    bool authentic = false;
+                    try
+                    {
+                        DirectoryEntry entry = new DirectoryEntry("LDAP://" + domain,
+                            userName, password);
+                        object nativeObject = entry.NativeObject;
+                        authentic = true;
+                    }
+                    catch (DirectoryServicesCOMException) { }
+                    return authentic;
+                }
+            }
+            public bool Exists(string objectPath)
+            {
+                // checks if there is a object for the distinguished name
+                bool found = false;
+                if ((objectPath != null) && (objectPath != string.Empty))
+                {
+                    try
+                    {
+                        if (DirectoryEntry.Exists("LDAP://" + objectPath))
+                        {
+                            found = true;
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        // MessageBox.Show(e.Message.ToString() + "create group LDAP://CN=" + name + "," + ouPath);
+                        return found;
                     }
                 }
-                catch (Exception e)
+                return found;
+            }
+            public string AttributeValuesSingleString(string attributeName, string objectDn)
+            {
+                string strValue;
+                DirectoryEntry ent = new DirectoryEntry(objectDn);
+                strValue = ent.Properties[attributeName].Value.ToString();
+                ent.Close();
+                ent.Dispose();
+                return strValue;
+            }
+            public string GetObjectDistinguishedName(objectClass objectCls, returnType returnValue, string objectName, string LdapDomain)
+            {
+                // LdapDomain = "DC=Fabrikam,DC=COM" 
+
+                string distinguishedName = string.Empty;
+                string connectionPrefix = "LDAP://" + LdapDomain;
+                DirectoryEntry entry = new DirectoryEntry(connectionPrefix);
+                DirectorySearcher mySearcher = new DirectorySearcher(entry);
+
+                switch (objectCls)
                 {
-                    // MessageBox.Show(e.Message.ToString() + "create group LDAP://CN=" + name + "," + ouPath);
-                    return found;
+                    case objectClass.user:
+                        mySearcher.Filter = "(&(objectClass=user)(|(CN=" + objectName + ")(sAMAccountName=" + objectName + ")))";
+                        break;
+                    case objectClass.group:
+                        mySearcher.Filter = "(&(objectClass=group)(|(CN=" + objectName + ")(dn=" + objectName + ")))";
+                        break;
+                    case objectClass.computer:
+                        mySearcher.Filter = "(&(objectClass=computer)(|(CN=" + objectName + ")(dn=" + objectName + ")))";
+                        break;
+                }
+                SearchResult result = mySearcher.FindOne();
+
+                if (result == null)
+                {
+                    //throw new NullReferenceException
+                    //("unable to locate the distinguishedName for the object " +
+                    //objectName + " in the " + LdapDomain + " domain");
+                    return string.Empty;
+                }
+                DirectoryEntry directoryObject = result.GetDirectoryEntry();
+                if (returnValue.Equals(returnType.distinguishedName))
+                {
+                    distinguishedName = "LDAP://" + directoryObject.Properties
+                        ["distinguishedName"].Value;
+                }
+                if (returnValue.Equals(returnType.ObjectGUID))
+                {
+                    distinguishedName = directoryObject.Guid.ToString();
+                }
+                entry.Close();
+                entry.Dispose();
+                mySearcher.Dispose();
+                return distinguishedName;
+            }
+            public bool createOURecursive(string ou)
+            {
+                if (Exists(ou) == true)
+                {
+                    return true;
+                }
+                else
+                {
+                    createOURecursive(ou.Substring(ou.IndexOf(",") + 1));
+                    CreateOU(ou.Substring(ou.IndexOf(",") + 1), ou.Remove(ou.IndexOf(",")).Substring(ou.IndexOf("=") + 1));
+                    return true;
                 }
             }
-            return found;
-        }
-        public string AttributeValuesSingleString(string attributeName, string objectDn)
-        {
-            string strValue;
-            DirectoryEntry ent = new DirectoryEntry(objectDn);
-            strValue = ent.Properties[attributeName].Value.ToString();
-            ent.Close();
-            ent.Dispose();
-            return strValue;
-        }
-        public string GetObjectDistinguishedName(objectClass objectCls, returnType returnValue, string objectName, string LdapDomain)
-        {
-            // LdapDomain = "DC=Fabrikam,DC=COM" 
-
-            string distinguishedName = string.Empty;
-            string connectionPrefix = "LDAP://" + LdapDomain;
-            DirectoryEntry entry = new DirectoryEntry(connectionPrefix);
-            DirectorySearcher mySearcher = new DirectorySearcher(entry);
-
-            switch (objectCls)
+            public void CreateGroup(string ouPath, string cn, string name)
             {
-                case objectClass.user:
-                    mySearcher.Filter = "(&(objectClass=user)(|(CN=" + objectName + ")(sAMAccountName=" + objectName + ")))";
-                    break;
-                case objectClass.group:
-                    mySearcher.Filter = "(&(objectClass=group)(|(CN=" + objectName + ")(dn=" + objectName + ")))";
-                    break;
-                case objectClass.computer:
-                    mySearcher.Filter = "(&(objectClass=computer)(|(CN=" + objectName + ")(dn=" + objectName + ")))";
-                    break;
-            }
-            SearchResult result = mySearcher.FindOne();
-
-            if (result == null)
-            {
-                //throw new NullReferenceException
-                //("unable to locate the distinguishedName for the object " +
-                //objectName + " in the " + LdapDomain + " domain");
-                return string.Empty;
-            }
-            DirectoryEntry directoryObject = result.GetDirectoryEntry();
-            if (returnValue.Equals(returnType.distinguishedName))
-            {
-                distinguishedName = "LDAP://" + directoryObject.Properties
-                    ["distinguishedName"].Value;
-            }
-            if (returnValue.Equals(returnType.ObjectGUID))
-            {
-                distinguishedName = directoryObject.Guid.ToString();
-            }
-            entry.Close();
-            entry.Dispose();
-            mySearcher.Dispose();
-            return distinguishedName;
-        }
-        public bool createOURecursive(string ou)
-        {
-            if (Exists(ou) == true)
-            {
-                return true;
-            }
-            else
-            {
-                createOURecursive(ou.Substring(ou.IndexOf(",") + 1));
-                CreateOU(ou.Substring(ou.IndexOf(",") + 1), ou.Remove(ou.IndexOf(",")).Substring(ou.IndexOf("=") + 1));
-                return true;
-            }
-        }
-        public void CreateGroup(string ouPath, string cn, string name)
-        {
-            //needs parent OU present to work
-            if (!DirectoryEntry.Exists("LDAP://CN=" + name + "," + ouPath))
-            {
-                try
+                //needs parent OU present to work
+                if (!DirectoryEntry.Exists("LDAP://CN=" + name + "," + ouPath))
                 {
-                    DirectoryEntry entry = new DirectoryEntry("LDAP://" + ouPath);
-                    DirectoryEntry group = entry.Children.Add("CN=" + cn, "group");
-                    group.Properties["sAmAccountName"].Value = name;
-                    group.CommitChanges();
-                }
-                catch (Exception e)
-                {
-                    // MessageBox.Show(e.Message.ToString() + "create group LDAP://CN=" + name + "," + ouPath);
-                }
-            }
-            else
-            { // MessageBox.Show(ouPath + " group already exists");
-            }
-        }
-        public void CreateGroup(string ouPath, string groupName, Dictionary<string,string> otherProperties)
-        {
-            // otherProperties is a mapping  <the key is the active driectory field, and the value is the the value>
-            // the keys must contain valid AD fields
-            // the value will relate to the specific key
-            //needs parent OU present to work
-            if (!DirectoryEntry.Exists("LDAP://CN=" + groupName + "," + ouPath))
-            {
-                try
-                {
-                    DirectoryEntry entry = new DirectoryEntry("LDAP://" + ouPath);
-                    DirectoryEntry group = entry.Children.Add("CN=" + groupName, "group");
-                    group.Properties["sAmAccountName"].Value = groupName;
-                    foreach (KeyValuePair<string, string> kvp in otherProperties)
+                    try
                     {
-                        group.Properties[kvp.Key.ToString()].Value = kvp.Value.ToString();
+                        DirectoryEntry entry = new DirectoryEntry("LDAP://" + ouPath);
+                        DirectoryEntry group = entry.Children.Add("CN=" + cn, "group");
+                        group.Properties["sAmAccountName"].Value = name;
+                        group.CommitChanges();
                     }
-                    group.CommitChanges();
-                }
-                catch (Exception e)
-                {
-                    // MessageBox.Show(e.Message.ToString() + "create group LDAP://CN=" + name + "," + ouPath);
-                }
-            }
-            else
-            { // MessageBox.Show(ouPath + " group already exists");
-            }
-        }
-        public void CreateGroup(string ouPath, Dictionary<string, string> properties)
-        {
-            // otherProperties is a mapping  <the key is the active driectory field, and the value is the the value>
-            // the keys must contain valid AD fields
-            // the value will relate to the specific key
-            //needs parent OU present to work
-            try
-            {
-                if (!DirectoryEntry.Exists("LDAP://CN=" + properties["CN"].ToString() + "," + ouPath))
-                {
-
-                    DirectoryEntry entry = new DirectoryEntry("LDAP://" + ouPath);
-                    DirectoryEntry group = entry.Children.Add("CN=" + properties["CN"].ToString(), "group");
-                    foreach (KeyValuePair<string, string> kvp in properties)
+                    catch (Exception e)
                     {
-                        group.Properties[kvp.Key.ToString()].Value = kvp.Value.ToString();
+                        // MessageBox.Show(e.Message.ToString() + "create group LDAP://CN=" + name + "," + ouPath);
                     }
-                    group.CommitChanges();
                 }
                 else
                 { // MessageBox.Show(ouPath + " group already exists");
                 }
             }
-            catch (Exception e)
+            public void CreateGroup(string ouPath, string groupName, Dictionary<string, string> otherProperties)
             {
-                // MessageBox.Show(e.Message.ToString() + "create group LDAP://CN=" + name + "," + ouPath);
+                // otherProperties is a mapping  <the key is the active driectory field, and the value is the the value>
+                // the keys must contain valid AD fields
+                // the value will relate to the specific key
+                //needs parent OU present to work
+                if (!DirectoryEntry.Exists("LDAP://CN=" + groupName + "," + ouPath))
+                {
+                    try
+                    {
+                        DirectoryEntry entry = new DirectoryEntry("LDAP://" + ouPath);
+                        DirectoryEntry group = entry.Children.Add("CN=" + groupName, "group");
+                        group.Properties["sAmAccountName"].Value = groupName;
+                        foreach (KeyValuePair<string, string> kvp in otherProperties)
+                        {
+                            group.Properties[kvp.Key.ToString()].Value = kvp.Value.ToString();
+                        }
+                        group.CommitChanges();
+                    }
+                    catch (Exception e)
+                    {
+                        // MessageBox.Show(e.Message.ToString() + "create group LDAP://CN=" + name + "," + ouPath);
+                    }
+                }
+                else
+                { // MessageBox.Show(ouPath + " group already exists");
+                }
             }
-        }
-        public void UpdateGroup(string ouPath, Dictionary<string, string> properties)
-        {
-            // otherProperties is a mapping  <the key is the active driectory field, and the value is the the value>
-            // the keys must contain valid AD fields
-            // the value will relate to the specific key
-            // needs parent OU present to work
-            if (DirectoryEntry.Exists("LDAP://CN=" + properties["CN"].ToString() + "," + ouPath))
+            public void CreateGroup(string ouPath, Dictionary<string, string> properties)
             {
+                // otherProperties is a mapping  <the key is the active driectory field, and the value is the the value>
+                // the keys must contain valid AD fields
+                // the value will relate to the specific key
+                //needs parent OU present to work
                 try
                 {
-                    DirectoryEntry entry = new DirectoryEntry("LDAP://" + ouPath);
-                    DirectoryEntry group = entry.Children.Find("CN=" + properties["CN"].ToString());
-                    foreach (KeyValuePair<string, string> kvp in properties)
+                    if (!DirectoryEntry.Exists("LDAP://CN=" + properties["CN"].ToString() + "," + ouPath))
                     {
-                        if (kvp.Key.ToString() == "CN" || kvp.Key.ToString() == "sAMAccountName")
-                        {}
-                        else
+
+                        DirectoryEntry entry = new DirectoryEntry("LDAP://" + ouPath);
+                        DirectoryEntry group = entry.Children.Add("CN=" + properties["CN"].ToString(), "group");
+                        foreach (KeyValuePair<string, string> kvp in properties)
                         {
-                        group.Properties[kvp.Key.ToString()].Value = kvp.Value.ToString();
+                            group.Properties[kvp.Key.ToString()].Value = kvp.Value.ToString();
                         }
+                        group.CommitChanges();
                     }
-                    group.CommitChanges();
+                    else
+                    { // MessageBox.Show(ouPath + " group already exists");
+                    }
                 }
                 catch (Exception e)
                 {
                     // MessageBox.Show(e.Message.ToString() + "create group LDAP://CN=" + name + "," + ouPath);
                 }
             }
-            else
-            { // MessageBox.Show(ouPath + " group already exists");
+            public void UpdateGroup(string ouPath, Dictionary<string, string> properties)
+            {
+                // otherProperties is a mapping  <the key is the active driectory field, and the value is the the value>
+                // the keys must contain valid AD fields
+                // the value will relate to the specific key
+                // needs parent OU present to work
+                if (DirectoryEntry.Exists("LDAP://CN=" + properties["CN"].ToString() + "," + ouPath))
+                {
+                    try
+                    {
+                        DirectoryEntry entry = new DirectoryEntry("LDAP://" + ouPath);
+                        DirectoryEntry group = entry.Children.Find("CN=" + properties["CN"].ToString());
+                        foreach (KeyValuePair<string, string> kvp in properties)
+                        {
+                            if (kvp.Key.ToString() == "CN" || kvp.Key.ToString() == "sAMAccountName")
+                            { }
+                            else
+                            {
+                                group.Properties[kvp.Key.ToString()].Value = kvp.Value.ToString();
+                            }
+                        }
+                        group.CommitChanges();
+                    }
+                    catch (Exception e)
+                    {
+                        // MessageBox.Show(e.Message.ToString() + "create group LDAP://CN=" + name + "," + ouPath);
+                    }
+                }
+                else
+                { // MessageBox.Show(ouPath + " group already exists");
+                }
             }
-        }
-        public void DeleteGroup(string ouPath, string name)
-        {
-            if (DirectoryEntry.Exists("LDAP://CN=" + name + "," + ouPath))
+            public void DeleteGroup(string ouPath, string name)
+            {
+                if (DirectoryEntry.Exists("LDAP://CN=" + name + "," + ouPath))
+                {
+                    try
+                    {
+                        DirectoryEntry entry = new DirectoryEntry("LDAP://" + ouPath);
+                        DirectoryEntry group = new DirectoryEntry("LDAP://CN=" + name + "," + ouPath);
+                        entry.Children.Remove(group);
+                        group.CommitChanges();
+                    }
+                    catch (Exception e)
+                    {
+                        // MessageBox.Show(e.Message.ToString() + " error deleting LDAP://CN=" + name + "," + ouPath );
+                    }
+                }
+                else
+                {
+                    // MessageBox.Show("LDAP://CN=" + name + "," + ouPath);
+                }
+            }
+            public void CreateOU(string ouPath, string name)
+            {
+                //needs parent OU present to work
+                if (!DirectoryEntry.Exists("LDAP://OU=" + name + "," + ouPath))
+                {
+                    try
+                    {
+                        DirectoryEntry entry = new DirectoryEntry("LDAP://" + ouPath);
+                        DirectoryEntry OU = entry.Children.Add("OU=" + name, "organizationalUnit");
+                        //                   OU.Properties["sAmAccountName"].Value = name;
+                        OU.CommitChanges();
+                    }
+                    catch (Exception e)
+                    {
+                        MessageBox.Show(e.Message.ToString() + "create ou LDAP://OU=" + name + "," + ouPath);
+                    }
+                }
+                else
+                { // MessageBox.Show("LDAP://OU=" + name + "," + ouPath + " already exists"); 
+                }
+            }
+            public void DeleteOU(string ouPath, string name)
+            {
+                //needs parent OU present to work
+                if (!DirectoryEntry.Exists("LDAP://OU=" + name + "," + ouPath))
+                {
+                    try
+                    {
+                        DirectoryEntry entry = new DirectoryEntry("LDAP://" + ouPath);
+                        entry.DeleteTree();
+                    }
+                    catch (Exception e)
+                    {
+                        // MessageBox.Show(e.Message.ToString() + "create ou LDAP://OU=" + name + "," + ouPath);
+                    }
+                }
+                else
+                { // MessageBox.Show("LDAP://OU=" + name + "," + ouPath + " already exists"); 
+                }
+            }
+            public void AddUserToGroup(string userDn, string groupDn)
             {
                 try
                 {
-                    DirectoryEntry entry = new DirectoryEntry("LDAP://" + ouPath);
-                    DirectoryEntry group = new DirectoryEntry("LDAP://CN=" + name + "," + ouPath);
-                    entry.Children.Remove(group);
-                    group.CommitChanges();
+                    if (Exists(userDn))
+                    {
+                        DirectoryEntry dirEntry = new DirectoryEntry("LDAP://" + groupDn);
+                        dirEntry.Properties["member"].Add(userDn);
+                        dirEntry.CommitChanges();
+                        dirEntry.Close();
+                    }
                 }
-                catch (Exception e)
+                catch (System.DirectoryServices.DirectoryServicesCOMException E)
                 {
-                    // MessageBox.Show(e.Message.ToString() + " error deleting LDAP://CN=" + name + "," + ouPath );
+                    // MessageBox.Show(E.Message.ToString() + " error adding " + userDn + " to LDAP://" + groupDn);
+
                 }
             }
-            else
-            {
-                // MessageBox.Show("LDAP://CN=" + name + "," + ouPath);
-            }
-        }
-        public void CreateOU(string ouPath, string name)
-        {
-            //needs parent OU present to work
-            if (!DirectoryEntry.Exists("LDAP://OU=" + name + "," + ouPath))
+            public void RemoveUserFromGroup(string userDn, string groupDn)
             {
                 try
-                {
-                    DirectoryEntry entry = new DirectoryEntry("LDAP://" + ouPath);
-                    DirectoryEntry OU = entry.Children.Add("OU=" + name, "organizationalUnit");
-                    //                   OU.Properties["sAmAccountName"].Value = name;
-                    OU.CommitChanges();
-                }
-                catch (Exception e)
-                {
-                    MessageBox.Show(e.Message.ToString() + "create ou LDAP://OU=" + name + "," + ouPath);
-                }
-            }
-            else
-            { // MessageBox.Show("LDAP://OU=" + name + "," + ouPath + " already exists"); 
-            }
-        }
-        public void DeleteOU(string ouPath, string name)
-        {
-            //needs parent OU present to work
-            if (!DirectoryEntry.Exists("LDAP://OU=" + name + "," + ouPath))
-            {
-                try
-                {
-                    DirectoryEntry entry = new DirectoryEntry("LDAP://" + ouPath);
-                    entry.DeleteTree();
-                }
-                catch (Exception e)
-                {
-                    // MessageBox.Show(e.Message.ToString() + "create ou LDAP://OU=" + name + "," + ouPath);
-                }
-            }
-            else
-            { // MessageBox.Show("LDAP://OU=" + name + "," + ouPath + " already exists"); 
-            }
-        }
-        public void AddUserToGroup(string userDn, string groupDn)
-        {
-            try
-            {
-                if (Exists(userDn))
                 {
                     DirectoryEntry dirEntry = new DirectoryEntry("LDAP://" + groupDn);
-                    dirEntry.Properties["member"].Add(userDn);
+                    try
+                    {
+                        dirEntry.Properties["member"].Remove(userDn);
+                    }
+                    catch (System.DirectoryServices.DirectoryServicesCOMException E)
+                    { }
                     dirEntry.CommitChanges();
                     dirEntry.Close();
                 }
-            }
-            catch (System.DirectoryServices.DirectoryServicesCOMException E)
-            {
-                // MessageBox.Show(E.Message.ToString() + " error adding " + userDn + " to LDAP://" + groupDn);
+                catch (System.DirectoryServices.DirectoryServicesCOMException E)
+                {
+                    // MessageBox.Show(E.Message.ToString() + " error removing " + userDn + " from LDAP://" + groupDn);
 
+                }
             }
-        }
-        public void RemoveUserFromGroup(string userDn, string groupDn)
-        {
-            try
+            // move user OU
+            public bool createUserAccount(string parentOUDN, string samName, string userPassword, string firstName, string lastName)
             {
-                DirectoryEntry dirEntry = new DirectoryEntry("LDAP://" + groupDn);
                 try
                 {
-                    dirEntry.Properties["member"].Remove(userDn);
+                    string connectionPrefix = "LDAP://" + parentOUDN;
+                    DirectoryEntry de = new DirectoryEntry(connectionPrefix);
+                    DirectoryEntry newUser = de.Children.Add("CN=" + firstName + " " + lastName, "user");
+                    newUser.Properties["samAccountName"].Value = samName;
+                    newUser.Properties["userPrincipalName"].Value = samName;
+                    newUser.Properties["sn"].Add(lastName);
+                    newUser.Properties["name"].Value = firstName + " " + lastName;
+                    newUser.Properties["givenName"].Add(firstName);
+
+
+                    newUser.CommitChanges();
+                    newUser.Invoke("SetPassword", new object[] { userPassword });
+                    newUser.CommitChanges();
+                    int val = (int)newUser.Properties["userAccountControl"].Value;
+                    newUser.Properties["userAccountControl"].Value = val | 0x0200;
+                    newUser.CommitChanges();
+                    de.Close();
+                    newUser.Close();
+                    return true;
                 }
-                catch (System.DirectoryServices.DirectoryServicesCOMException E)
-                { }
-                dirEntry.CommitChanges();
-                dirEntry.Close();
+                catch (Exception ex)
+                {
+                    string err = ex.Message.ToString();
+
+                    // MessageBox.Show("Velde.Utilities.AD.createUserAccount():\n\n" + err);
+
+                    return false;
+                }
+                /*
+                    //Add this to the create account method
+                    int val = (int)newUser.Properties["userAccountControl"].Value; 
+                         //newUser is DirectoryEntry object
+                    newUser.Properties["userAccountControl"].Value = val | 0x80000; 
+                        //ADS_UF_TRUSTED_FOR_DELEGATION
+                 
+                 * 
+                 * UserAccountControlFlags
+                 * CONST   HEX
+                    -------------------------------
+                    SCRIPT 0x0001
+                    ACCOUNTDISABLE 0x0002
+                    HOMEDIR_REQUIRED 0x0008
+                    LOCKOUT 0x0010
+                    PASSWD_NOTREQD 0x0020
+                    PASSWD_CANT_CHANGE 0x0040
+                    ENCRYPTED_TEXT_PWD_ALLOWED 0x0080
+                    TEMP_DUPLICATE_ACCOUNT 0x0100
+                    NORMAL_ACCOUNT 0x0200
+                    INTERDOMAIN_TRUST_ACCOUNT 0x0800
+                    WORKSTATION_TRUST_ACCOUNT 0x1000
+                    SERVER_TRUST_ACCOUNT 0x2000
+                    DONT_EXPIRE_PASSWORD 0x10000
+                    MNS_LOGON_ACCOUNT 0x20000
+                    SMARTCARD_REQUIRED 0x40000
+                    TRUSTED_FOR_DELEGATION 0x80000
+                    NOT_DELEGATED 0x100000
+                    USE_DES_KEY_ONLY 0x200000
+                    DONT_REQ_PREAUTH 0x400000
+                    PASSWORD_EXPIRED 0x800000
+                    TRUSTED_TO_AUTH_FOR_DELEGATION 0x1000000
+                 * */
             }
-            catch (System.DirectoryServices.DirectoryServicesCOMException E)
+            public bool disableUser(string sAMAccountName, string LdapDomain)
             {
-                // MessageBox.Show(E.Message.ToString() + " error removing " + userDn + " from LDAP://" + groupDn);
-
-            }
-        }
-        // move user OU
-        public bool createUserAccount(string parentOUDN, string samName, string userPassword, string firstName, string lastName)
-        {
-            try
-            {
-                string connectionPrefix = "LDAP://" + parentOUDN;
-                DirectoryEntry de = new DirectoryEntry(connectionPrefix);
-                DirectoryEntry newUser = de.Children.Add("CN=" + firstName + " " + lastName, "user");
-                newUser.Properties["samAccountName"].Value = samName;
-                newUser.Properties["userPrincipalName"].Value = samName;
-                newUser.Properties["sn"].Add(lastName);
-                newUser.Properties["name"].Value = firstName + " " + lastName;
-                newUser.Properties["givenName"].Add(firstName);
-
-
-                newUser.CommitChanges();
-                newUser.Invoke("SetPassword", new object[] { userPassword });
-                newUser.CommitChanges();
-                int val = (int)newUser.Properties["userAccountControl"].Value;
-                newUser.Properties["userAccountControl"].Value = val | 0x0200;
-                newUser.CommitChanges();
-                de.Close();
-                newUser.Close();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                string err = ex.Message.ToString();
-
-                // MessageBox.Show("Velde.Utilities.AD.createUserAccount():\n\n" + err);
-
+                string userDN;
+                userDN = GetObjectDistinguishedName(objectClass.user, returnType.distinguishedName, sAMAccountName, LdapDomain);
+                DirectoryEntry usr = new DirectoryEntry(userDN);
+                int val = (int)usr.Properties["userAccountControl"].Value;
+                usr.Properties["userAccountControl"].Value = val | (int)accountFlags.ADS_UF_ACCOUNTDISABLE;
+                usr.CommitChanges();
                 return false;
             }
-            /*
-                //Add this to the create account method
-                int val = (int)newUser.Properties["userAccountControl"].Value; 
-                     //newUser is DirectoryEntry object
-                newUser.Properties["userAccountControl"].Value = val | 0x80000; 
-                    //ADS_UF_TRUSTED_FOR_DELEGATION
-                 
-             * 
-             * UserAccountControlFlags
-             * CONST   HEX
-                -------------------------------
-                SCRIPT 0x0001
-                ACCOUNTDISABLE 0x0002
-                HOMEDIR_REQUIRED 0x0008
-                LOCKOUT 0x0010
-                PASSWD_NOTREQD 0x0020
-                PASSWD_CANT_CHANGE 0x0040
-                ENCRYPTED_TEXT_PWD_ALLOWED 0x0080
-                TEMP_DUPLICATE_ACCOUNT 0x0100
-                NORMAL_ACCOUNT 0x0200
-                INTERDOMAIN_TRUST_ACCOUNT 0x0800
-                WORKSTATION_TRUST_ACCOUNT 0x1000
-                SERVER_TRUST_ACCOUNT 0x2000
-                DONT_EXPIRE_PASSWORD 0x10000
-                MNS_LOGON_ACCOUNT 0x20000
-                SMARTCARD_REQUIRED 0x40000
-                TRUSTED_FOR_DELEGATION 0x80000
-                NOT_DELEGATED 0x100000
-                USE_DES_KEY_ONLY 0x200000
-                DONT_REQ_PREAUTH 0x400000
-                PASSWORD_EXPIRED 0x800000
-                TRUSTED_TO_AUTH_FOR_DELEGATION 0x1000000
-             * */
-        }
-        public bool disableUser(string sAMAccountName, string LdapDomain)
-        {
-            string userDN;
-            userDN = GetObjectDistinguishedName(objectClass.user, returnType.distinguishedName, sAMAccountName, LdapDomain);
-            DirectoryEntry usr = new DirectoryEntry(userDN);
-            int val = (int)usr.Properties["userAccountControl"].Value;
-            usr.Properties["userAccountControl"].Value = val | (int)accountFlags.ADS_UF_ACCOUNTDISABLE;
-            usr.CommitChanges();
-            return false;
-        }
-        public bool enableUser(string sAMAccountName, string LdapDomain)
-        {
-            string userDN;
-            userDN = GetObjectDistinguishedName(objectClass.user, returnType.distinguishedName, sAMAccountName, LdapDomain);
-            DirectoryEntry usr = new DirectoryEntry(userDN);
-            int val = (int)usr.Properties["userAccountControl"].Value;
-            usr.Properties["userAccountControl"].Value = val | (int)accountFlags.ADS_UF_ACCOUNTDISABLE;
-            usr.CommitChanges();
-            return false;
-        }
-        public ArrayList GetColumns(string DataServer, string DBCatalog, string table)
-        {
-            // only valid for SQL server 2000
-            ArrayList columnList = new ArrayList();
-            if (DBCatalog != "" && DataServer != "")
+            public bool enableUser(string sAMAccountName, string LdapDomain)
             {
-                //populates columns dialog with columns depending on the results of a query
-                
-                SqlConnection sqlConn = new SqlConnection("Data Source=" + DataServer + ";Initial Catalog=" + DBCatalog + ";Integrated Security=SSPI;");
-
-                sqlConn.Open();
-                // create the command object
-                SqlCommand sqlComm = new SqlCommand("SELECT column_name FROM information_schema.columns WHERE table_name = '" + table + "'", sqlConn);
-                SqlDataReader r = sqlComm.ExecuteReader();
-                while (r.Read())
+                string userDN;
+                userDN = GetObjectDistinguishedName(objectClass.user, returnType.distinguishedName, sAMAccountName, LdapDomain);
+                DirectoryEntry usr = new DirectoryEntry(userDN);
+                int val = (int)usr.Properties["userAccountControl"].Value;
+                usr.Properties["userAccountControl"].Value = val | (int)accountFlags.ADS_UF_ACCOUNTDISABLE;
+                usr.CommitChanges();
+                return false;
+            }
+            public ArrayList GetColumns(string DataServer, string DBCatalog, string table)
+            {
+                // only valid for SQL server 2000
+                ArrayList columnList = new ArrayList();
+                if (DBCatalog != "" && DataServer != "")
                 {
-                    columnList.Add((string)r[0].ToString().Trim());
-                }
-                r.Close();
-                sqlConn.Close();
-                
-            }
-            else
-            {
-                MessageBox.Show("Please set the dataserver and catalog");                   
-            }
-            return columnList;
-        }
-        public ArrayList GetColumns(string DataServer, string DBCatalog, string table, SqlConnection sqlConn)
-        {
+                    //populates columns dialog with columns depending on the results of a query
 
-            // only valid for SQL server 2000
-            // Another potential querry
-            // SELECT name 
-            // FROM syscolumns 
-            // WHERE [id] = OBJECT_ID('tablename') 
-            ArrayList columnList = new ArrayList();
-            if (DBCatalog != "" && DataServer != "")
-            {
-                // create the command object
-                SqlCommand sqlComm = new SqlCommand("SELECT column_name FROM information_schema.columns WHERE table_name = '" + table + "'", sqlConn);
-                SqlDataReader r = sqlComm.ExecuteReader();
-                while (r.Read())
-                {
-                    columnList.Add((string)r[0].ToString().Trim());
+                    SqlConnection sqlConn = new SqlConnection("Data Source=" + DataServer + ";Initial Catalog=" + DBCatalog + ";Integrated Security=SSPI;");
+
+                    sqlConn.Open();
+                    // create the command object
+                    SqlCommand sqlComm = new SqlCommand("SELECT column_name FROM information_schema.columns WHERE table_name = '" + table + "'", sqlConn);
+                    SqlDataReader r = sqlComm.ExecuteReader();
+                    while (r.Read())
+                    {
+                        columnList.Add((string)r[0].ToString().Trim());
+                    }
+                    r.Close();
+                    sqlConn.Close();
+
                 }
-                r.Close();
+                else
+                {
+                    MessageBox.Show("Please set the dataserver and catalog");
+                }
+                return columnList;
             }
-            else
+            public ArrayList GetColumns(string DataServer, string DBCatalog, string table, SqlConnection sqlConn)
             {
-                MessageBox.Show("Please set the dataserver and catalog");
+
+                // only valid for SQL server 2000
+                // Another potential querry
+                // SELECT name 
+                // FROM syscolumns 
+                // WHERE [id] = OBJECT_ID('tablename') 
+                ArrayList columnList = new ArrayList();
+                if (DBCatalog != "" && DataServer != "")
+                {
+                    // create the command object
+                    SqlCommand sqlComm = new SqlCommand("SELECT column_name FROM information_schema.columns WHERE table_name = '" + table + "'", sqlConn);
+                    SqlDataReader r = sqlComm.ExecuteReader();
+                    while (r.Read())
+                    {
+                        columnList.Add((string)r[0].ToString().Trim());
+                    }
+                    r.Close();
+                }
+                else
+                {
+                    MessageBox.Show("Please set the dataserver and catalog");
+                }
+                return columnList;
             }
-            return columnList;
-        }
-        public string temp_Table(LinkedList<Dictionary<string, string>> list, string table, string database, string dataserver)
+            public string temp_Table(LinkedList<Dictionary<string, string>> list, string table, string database, string dataserver)
             {
                 /*
                INSERT INTO MyTable  (FirstCol, SecondCol)
@@ -2032,7 +2032,7 @@ namespace WindowsApplication1
                 sqlConn.Close();
                 return "#" + table;
             }
-        public string temp_Table(LinkedList<Dictionary<string, string>> list, string table, SqlConnection sqlConn)
+            public string temp_Table(LinkedList<Dictionary<string, string>> list, string table, SqlConnection sqlConn)
             {
                 // string concatenation replaced with stringbuilder due to rumored performance increases
                 /*
@@ -2075,7 +2075,7 @@ namespace WindowsApplication1
                     MessageBox.Show(ex.Message, "An Big poblem arose with the table create", MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
                 }
-                
+
                 // insert 500 records at a time
                 while (listnode.Next != null)
                 {
@@ -2113,7 +2113,8 @@ namespace WindowsApplication1
                         //MessageBox.Show("suck sess");
                     }
                     catch
-                    {  MessageBox.Show("DB insert failuer");
+                    {
+                        MessageBox.Show("DB insert failuer");
                     }
                 }
 
@@ -2132,8 +2133,8 @@ namespace WindowsApplication1
 
                 return "#" + table;
             }
-        
-        public string temp_table_optimizations()
+
+            public string temp_table_optimizations()
             {
                 DataSet mike = new DataSet();
                 DataSet mike2 = new DataSet();
@@ -2155,8 +2156,8 @@ namespace WindowsApplication1
                 // pull to dataset from AD
                 // query and get dataset from SQL
                 // dataset.merge
-                
-                
+
+
                 // pull to dataset from AD
                 // Query into temp table from SQL
                 // sqlbulkcopy into temp table from AD
@@ -2173,120 +2174,120 @@ namespace WindowsApplication1
                 // Command.Prepare  for multiple issues of the same command
                 return "hello world";
             }
-        
 
-        // not finished
-        public bool deleteUserAccount(string sAMAccountName, string LdapDomain)
-        {
-            string user;
 
-            user = GetObjectDistinguishedName(objectClass.user, returnType.distinguishedName, sAMAccountName, LdapDomain);
-            DirectoryEntry ent = new DirectoryEntry(user);
-            ent.DeleteTree();
-            return false;
-        }
-        // must fix query to use subquery for table 2
-        public SqlDataReader queryNotExists(string Table1, string Table2, SqlConnection sqlConn, string pkey1, string pkey2)
-        {
-            // finds items in table1 who do not exist in table2 and returns them
-            // SqlCommand sqlComm = new SqlCommand("Select Table1.* Into #Table3ADTransfer From " + Table1 + " AS Table1, " + Table2 + " AS Table2 Where Table1." + pkey1 + " = Table2." + pkey2 + " And Table2." + pkey2 + " is null", sqlConn);
-            SqlCommand sqlComm = new SqlCommand("SELECT uptoDate.* FROM " + Table1 + " uptoDate LEFT OUTER JOIN " + Table2 + " outofDate ON outofDate." + pkey2 + " = uptoDate." + pkey1 + " WHERE outofDate." + pkey2 + " IS NULL;", sqlConn);
-            // create the command object
-            SqlDataReader r = sqlComm.ExecuteReader();
-            return r;
-        }
-        public SqlDataReader checkUpdate(string table1, string table2, string pkey1, string pkey2, ArrayList compareFields1, ArrayList compareFields2, SqlConnection sqlConn)
-        {
-            // Assumes table1 holds the correct data and returns a data reader with the update fields columns from table1
-            // returns the rows which table2 differs from table1
-            string compare1 = "";
-            string compare2 = "";
-            string fields = "";
-            // need a comand builder and research on the best way to compare all fields in a row
-            // this basically will just issue a concatenation sql query to the DB for each field to compare
-            foreach (string key in compareFields1)
+            // not finished
+            public bool deleteUserAccount(string sAMAccountName, string LdapDomain)
             {
-                compare1 = compare1 + table1 + "." + key + " + ";
-                fields += table1 + "." + key + ", ";
+                string user;
+
+                user = GetObjectDistinguishedName(objectClass.user, returnType.distinguishedName, sAMAccountName, LdapDomain);
+                DirectoryEntry ent = new DirectoryEntry(user);
+                ent.DeleteTree();
+                return false;
             }
-            foreach (string key in compareFields2)
+            // must fix query to use subquery for table 2
+            public SqlDataReader queryNotExists(string Table1, string Table2, SqlConnection sqlConn, string pkey1, string pkey2)
             {
-                compare2 = compare2 + table2 + "." + key + " + ";
+                // finds items in table1 who do not exist in table2 and returns them
+                // SqlCommand sqlComm = new SqlCommand("Select Table1.* Into #Table3ADTransfer From " + Table1 + " AS Table1, " + Table2 + " AS Table2 Where Table1." + pkey1 + " = Table2." + pkey2 + " And Table2." + pkey2 + " is null", sqlConn);
+                SqlCommand sqlComm = new SqlCommand("SELECT uptoDate.* FROM " + Table1 + " uptoDate LEFT OUTER JOIN " + Table2 + " outofDate ON outofDate." + pkey2 + " = uptoDate." + pkey1 + " WHERE outofDate." + pkey2 + " IS NULL;", sqlConn);
+                // create the command object
+                SqlDataReader r = sqlComm.ExecuteReader();
+                return r;
             }
-            // remove trailing comma and + 
-            compare2 = compare2.Remove(compare2.Length - 2);
-            compare1 = compare1.Remove(compare1.Length - 2);
-            fields = fields.Remove(fields.Length - 2);
-            SqlCommand sqlComm = new SqlCommand("SELECT " + fields + " FROM " + table1 + " INNER JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2 + " WHERE (" + compare2 + ") <> (" + compare1 + ")", sqlConn);
-            SqlDataReader r = sqlComm.ExecuteReader();
-            return r;
-        }
-
-        // additional stuff
-        public bool setUserExpiration(int days, string LdapDomain, string sAMAccountName)
-        {
-            string usrDN;
-            usrDN = GetObjectDistinguishedName(objectClass.user, returnType.distinguishedName, sAMAccountName, LdapDomain);
-            DirectoryEntry usr = new DirectoryEntry(usrDN);
-            Type type = usr.NativeObject.GetType();
-            Object adsNative = usr.NativeObject;
-            string formattedDate;
-
-            // Calculating the new date
-            DateTime yesterday = DateTime.Today.AddDays(days);
-            formattedDate = yesterday.ToString("dd/MM/yyyy");
-
-            type.InvokeMember("AccountExpirationDate", BindingFlags.SetProperty, null, adsNative, new object[] { formattedDate });
-            usr.CommitChanges();
-            return true;
-        }
-        public ArrayList setMultiPropertyUser(LinkedList<Dictionary<string, string>> userList, ArrayList propertyArray, string LdapDomain)
-        {
-            /*
-             * takes a dictionary like such
-             * sAMAccountName, userName
-             * property1, value
-             * property2, value
-             * ....
-             * 
-             * and an arraylist of strings with the names of the keys for the properties
-             * ["property1", "property2", ...etc]
-             * 
-             * RETURNS
-             * users not found
-             */
-
-            LinkedListNode<Dictionary<string, string>> userListNode = userList.First;
-            string sAMAccountName;
-            string userProperty;
-            string usrDN;
-            ArrayList returnvalue = new ArrayList();
-
-            while (userListNode != null)
+            public SqlDataReader checkUpdate(string table1, string table2, string pkey1, string pkey2, ArrayList compareFields1, ArrayList compareFields2, SqlConnection sqlConn)
             {
+                // Assumes table1 holds the correct data and returns a data reader with the update fields columns from table1
+                // returns the rows which table2 differs from table1
+                string compare1 = "";
+                string compare2 = "";
+                string fields = "";
+                // need a comand builder and research on the best way to compare all fields in a row
+                // this basically will just issue a concatenation sql query to the DB for each field to compare
+                foreach (string key in compareFields1)
+                {
+                    compare1 = compare1 + table1 + "." + key + " + ";
+                    fields += table1 + "." + key + ", ";
+                }
+                foreach (string key in compareFields2)
+                {
+                    compare2 = compare2 + table2 + "." + key + " + ";
+                }
+                // remove trailing comma and + 
+                compare2 = compare2.Remove(compare2.Length - 2);
+                compare1 = compare1.Remove(compare1.Length - 2);
+                fields = fields.Remove(fields.Length - 2);
+                SqlCommand sqlComm = new SqlCommand("SELECT " + fields + " FROM " + table1 + " INNER JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2 + " WHERE (" + compare2 + ") <> (" + compare1 + ")", sqlConn);
+                SqlDataReader r = sqlComm.ExecuteReader();
+                return r;
+            }
 
-                userListNode.Value.TryGetValue("sAMAccountName", out sAMAccountName);
+            // additional stuff
+            public bool setUserExpiration(int days, string LdapDomain, string sAMAccountName)
+            {
+                string usrDN;
                 usrDN = GetObjectDistinguishedName(objectClass.user, returnType.distinguishedName, sAMAccountName, LdapDomain);
-                if (usrDN == "")
-                {
-                    returnvalue.Add(sAMAccountName);
-                }
+                DirectoryEntry usr = new DirectoryEntry(usrDN);
+                Type type = usr.NativeObject.GetType();
+                Object adsNative = usr.NativeObject;
+                string formattedDate;
 
-                //// get usr object for manipulation
-                DirectoryEntry user = new DirectoryEntry(usrDN);
+                // Calculating the new date
+                DateTime yesterday = DateTime.Today.AddDays(days);
+                formattedDate = yesterday.ToString("dd/MM/yyyy");
 
-
-                foreach (string props in propertyArray)
-                {
-                    userListNode.Value.TryGetValue(props, out userProperty);
-                    user.Properties[props].Value = userProperty;
-                }
-                user.CommitChanges();
-                userListNode = userListNode.Next;
+                type.InvokeMember("AccountExpirationDate", BindingFlags.SetProperty, null, adsNative, new object[] { formattedDate });
+                usr.CommitChanges();
+                return true;
             }
-            return returnvalue;
-        }
-        public static string ReplaceEscapeChars(string str)
+            public ArrayList setMultiPropertyUser(LinkedList<Dictionary<string, string>> userList, ArrayList propertyArray, string LdapDomain)
+            {
+                /*
+                 * takes a dictionary like such
+                 * sAMAccountName, userName
+                 * property1, value
+                 * property2, value
+                 * ....
+                 * 
+                 * and an arraylist of strings with the names of the keys for the properties
+                 * ["property1", "property2", ...etc]
+                 * 
+                 * RETURNS
+                 * users not found
+                 */
+
+                LinkedListNode<Dictionary<string, string>> userListNode = userList.First;
+                string sAMAccountName;
+                string userProperty;
+                string usrDN;
+                ArrayList returnvalue = new ArrayList();
+
+                while (userListNode != null)
+                {
+
+                    userListNode.Value.TryGetValue("sAMAccountName", out sAMAccountName);
+                    usrDN = GetObjectDistinguishedName(objectClass.user, returnType.distinguishedName, sAMAccountName, LdapDomain);
+                    if (usrDN == "")
+                    {
+                        returnvalue.Add(sAMAccountName);
+                    }
+
+                    //// get usr object for manipulation
+                    DirectoryEntry user = new DirectoryEntry(usrDN);
+
+
+                    foreach (string props in propertyArray)
+                    {
+                        userListNode.Value.TryGetValue(props, out userProperty);
+                        user.Properties[props].Value = userProperty;
+                    }
+                    user.CommitChanges();
+                    userListNode = userListNode.Next;
+                }
+                return returnvalue;
+            }
+            public static string ReplaceEscapeChars(string str)
             {
                 //If the string is null
                 if (str == null)
@@ -2304,264 +2305,264 @@ namespace WindowsApplication1
             }
 
 
-        // SQL distributed import tools for AD
-        // Create linked server
-        public void linkedServer ( SqlConnection sqlconn)
-        {
-            SqlCommand sqlComm = new SqlCommand();
-            sqlComm = new SqlCommand("EXEC sp_addlinkedserver 'ADSI', 'Active Directory Services 2.5', 'ADSDSOObject', 'adsdatasource'", sqlconn);
-            sqlComm.ExecuteReader();
-         
-        }
-        // pass in the ou get back a table with the columns as defined in properties in the database defined by the sqlconn
-        public string getTableUsersInOU ( string OU, List<string> properties, SqlConnection sqlconn )
-        {
-            string propertiesString = "";
-            string sqlstring = "";
-            int i, count;
-            SqlCommand sqlComm;
-            count = properties.Count;
-            for(i = 0; i < count; i++)
+            // SQL distributed import tools for AD
+            // Create linked server
+            public void linkedServer(SqlConnection sqlconn)
             {
-                propertiesString += properties[i] + ", ";
-            }
-            propertiesString = propertiesString.Remove(propertiesString.Length -2);
-            // create view
-            //
-            // SQL dialect*****
-            //*****************
-            //SELECT [ALL] * | select-list FROM 'ADsPath' [WHERE search-condition] [ORDER BY sort-list]
-            //
-            //EAXMPLES
-            //*****************
-            // SELECT ADsPath, cn FROM ''LDAP://OU=Sales,DC=Fabrikam,DC=COM'' WHERE objectCategory=''person'' AND objectClass=''user'' AND sn = ''H*'' ORDER BY sn
-            // SELECT * FROM OpenQuery(ADSI, 'SELECT title, displayName, sAMAccountName, givenName, telephoneNumber, facsimileTelephoneNumber, sn FROM ''LDAP://DC=whaever,DC=domain,DC=org'' where objectClass = ''User''')
-            //
-            //
-            // LDAP dialect****
-            //*****************
-            //<LDAP://server/adsidn>;ldapfilter;attributescsv;scope
-            // scope : subtree base onelevel
-            //
-            // EXAMPLES
-            //*****************
-            // '<LDAP://DC=Fabrikam,DC=com>;(objectClass=*);AdsPath, cn;subTree'
-            // '<LDAP://DC=Fabrikam,DC=com>;(&(objectCategory=Person)(objectClass=user));name, adspath, title;subtree'
-            //
-                    //            select
-                    //    *
-                    //from
-                    //    openquery
-                    //    (
-                    //    ADSI,
-                    //    'SELECT
-                    //        sAMAccountName,
-                    //        displayName
-                    //    FROM
-                    //        ''LDAP://OU=Atis,OU=FHCHS,DC=FHCHS,DC=EDU''
-                    //    WHERE
-                    //        objectCategory = ''Person''
-                    //        AND objectClass = ''user''
-                    //    ')
+                SqlCommand sqlComm = new SqlCommand();
+                sqlComm = new SqlCommand("EXEC sp_addlinkedserver 'ADSI', 'Active Directory Services 2.5', 'ADSDSOObject', 'adsdatasource'", sqlconn);
+                sqlComm.ExecuteReader();
 
-                    // exec spqueryad 'SELECT
-                    //        sAMAccountName,
-                    //        displayName
-                    //    FROM
-                    //        ''LDAP://OU=Atis,OU=FHCHS,DC=FHCHS,DC=EDU''
-                    //    WHERE
-                    //        objectCategory = ''Person''
-                    //        AND objectClass = ''user''
-                    //    '
+            }
+            // pass in the ou get back a table with the columns as defined in properties in the database defined by the sqlconn
+            public string getTableUsersInOU(string OU, List<string> properties, SqlConnection sqlconn)
+            {
+                string propertiesString = "";
+                string sqlstring = "";
+                int i, count;
+                SqlCommand sqlComm;
+                count = properties.Count;
+                for (i = 0; i < count; i++)
+                {
+                    propertiesString += properties[i] + ", ";
+                }
+                propertiesString = propertiesString.Remove(propertiesString.Length - 2);
+                // create view
+                //
+                // SQL dialect*****
+                //*****************
+                //SELECT [ALL] * | select-list FROM 'ADsPath' [WHERE search-condition] [ORDER BY sort-list]
+                //
+                //EAXMPLES
+                //*****************
+                // SELECT ADsPath, cn FROM ''LDAP://OU=Sales,DC=Fabrikam,DC=COM'' WHERE objectCategory=''person'' AND objectClass=''user'' AND sn = ''H*'' ORDER BY sn
+                // SELECT * FROM OpenQuery(ADSI, 'SELECT title, displayName, sAMAccountName, givenName, telephoneNumber, facsimileTelephoneNumber, sn FROM ''LDAP://DC=whaever,DC=domain,DC=org'' where objectClass = ''User''')
+                //
+                //
+                // LDAP dialect****
+                //*****************
+                //<LDAP://server/adsidn>;ldapfilter;attributescsv;scope
+                // scope : subtree base onelevel
+                //
+                // EXAMPLES
+                //*****************
+                // '<LDAP://DC=Fabrikam,DC=com>;(objectClass=*);AdsPath, cn;subTree'
+                // '<LDAP://DC=Fabrikam,DC=com>;(&(objectCategory=Person)(objectClass=user));name, adspath, title;subtree'
+                //
+                //            select
+                //    *
+                //from
+                //    openquery
+                //    (
+                //    ADSI,
+                //    'SELECT
+                //        sAMAccountName,
+                //        displayName
+                //    FROM
+                //        ''LDAP://OU=Atis,OU=FHCHS,DC=FHCHS,DC=EDU''
+                //    WHERE
+                //        objectCategory = ''Person''
+                //        AND objectClass = ''user''
+                //    ')
 
-                    //            select
-                    //    * into #ADrecords
-                    //from
-                    //    OPENROWSET
-                    //    (
-                    //    'AdsDsoObject',
-                    //    'PageSize=3;CacheSize=3;filter=3;absolutepage=3;CursorLocation=3;CursorType=3;LockType=3',
-                    //    'SELECT
-                    //        sAMAccountName,
-                    //        displayName
-                    //    FROM
-                    //        ''GC://OU=Active Students,OU=Student Accounts,DC=STUDENTS,DC=FHCHS,DC=EDU''
-                    //    WHERE
-                    //        objectCategory = ''Person''
-                    //        AND objectClass = ''user''
-                    //    ')
+                // exec spqueryad 'SELECT
+                //        sAMAccountName,
+                //        displayName
+                //    FROM
+                //        ''LDAP://OU=Atis,OU=FHCHS,DC=FHCHS,DC=EDU''
+                //    WHERE
+                //        objectCategory = ''Person''
+                //        AND objectClass = ''user''
+                //    '
 
-            // OPENROWSET  may need to be used to override the 1000 row limit of  OpenQuery
-            // SQL dialect
-            // sqlstring = "CREATE VIEW viewADUsers AS SELECT * FROM OpenQuery( ADSI, ' Select " + propertiesString + " FORM ''LDAP://" + OU + "'' WHERE objectCategory=''Person'' objectClass=''user''')";
-            // ADSI dialect
-            sqlstring = "CREATE VIEW viewADUsers AS SELECT * FROM OpenQuery( ADSI, '<LDAP://" + OU + ";(&(objectCategory=Person)(objectClass=user));" + propertiesString + ";onelevel ')";
-            sqlComm = new SqlCommand(sqlstring, sqlconn);
-            try
-            {
-                sqlComm.ExecuteNonQuery();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "An Big poblem arose dropping the view", MessageBoxButtons.OK,
-                MessageBoxIcon.Error);
-            }
-            
-            
-            // make the temp table
-            sqlstring = "Create table #usersInOU(";
-            for (i = 0; i < count; i++)
-            {
-                sqlstring += properties[i] + " VarChar(350), ";
-            }
-            sqlstring = sqlstring.Remove(sqlstring.Length - 2);
-            sqlstring = sqlstring + ")";
-            sqlComm = new SqlCommand(sqlstring, sqlconn);
-            try
-            {
-                sqlComm.ExecuteNonQuery();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "An Big poblem arose with the table create", MessageBoxButtons.OK,
-                MessageBoxIcon.Error);
-            }
+                //            select
+                //    * into #ADrecords
+                //from
+                //    OPENROWSET
+                //    (
+                //    'AdsDsoObject',
+                //    'PageSize=3;CacheSize=3;filter=3;absolutepage=3;CursorLocation=3;CursorType=3;LockType=3',
+                //    'SELECT
+                //        sAMAccountName,
+                //        displayName
+                //    FROM
+                //        ''GC://OU=Active Students,OU=Student Accounts,DC=STUDENTS,DC=FHCHS,DC=EDU''
+                //    WHERE
+                //        objectCategory = ''Person''
+                //        AND objectClass = ''user''
+                //    ')
 
-            // create temp table
-            sqlstring = "SELECT * into #usersInOU from viewADUsers";
-            sqlComm = new SqlCommand(sqlstring, sqlconn);
-            try
-            {
-                sqlComm.ExecuteNonQuery();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "An Big poblem arose with the table data fill", MessageBoxButtons.OK,
-                MessageBoxIcon.Error);
-            }
-            // drop view
-            sqlstring = "DROP VIEW viewADUsers";
-            sqlComm = new SqlCommand(sqlstring, sqlconn);
-            try
-            {
-                sqlComm.ExecuteNonQuery();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "An Big poblem arose dropping the view", MessageBoxButtons.OK,
-                MessageBoxIcon.Error);
-            }
-            return "#usersInOU";
-        }
-        public string getTableGroupsInOU ( string OU, List<string> properties, SqlConnection sqlconn )
-        {
-            string propertiesString = "";
-            string sqlstring = "";
-            int i, count;
-            SqlCommand sqlComm;
-            count = properties.Count;
-            for (i = 0; i < count; i++)
-            {
-                propertiesString += properties[i] + ", ";
-            }
-            propertiesString = propertiesString.Remove(propertiesString.Length - 2);
-            // create view
-            // SELECT ADsPath, cn FROM 'LDAP://DC=Fabrikam,DC=COM' WHERE objectCategory='group'
-            sqlstring = "CREATE VIEW viewADUsers AS SELECT * FROM OpenQuery( ADSI, '<LDAP://" + OU + ">;(objectCategory=group);" + propertiesString + ";onelevel ')";
-            sqlComm = new SqlCommand(sqlstring, sqlconn);
-            try
-            {
-                sqlComm.ExecuteNonQuery();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "An Big poblem arose dropping the view", MessageBoxButtons.OK,
-                MessageBoxIcon.Error);
-            }
+                // OPENROWSET  may need to be used to override the 1000 row limit of  OpenQuery
+                // SQL dialect
+                // sqlstring = "CREATE VIEW viewADUsers AS SELECT * FROM OpenQuery( ADSI, ' Select " + propertiesString + " FORM ''LDAP://" + OU + "'' WHERE objectCategory=''Person'' objectClass=''user''')";
+                // ADSI dialect
+                sqlstring = "CREATE VIEW viewADUsers AS SELECT * FROM OpenQuery( ADSI, '<LDAP://" + OU + ";(&(objectCategory=Person)(objectClass=user));" + propertiesString + ";onelevel ')";
+                sqlComm = new SqlCommand(sqlstring, sqlconn);
+                try
+                {
+                    sqlComm.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "An Big poblem arose dropping the view", MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+                }
 
 
-            // make the temp table
-            sqlstring = "Create table #usersInOU(";
-            for (i = 0; i < count; i++)
-            {
-                sqlstring += properties[i] + " VarChar(350), ";
-            }
-            sqlstring = sqlstring.Remove(sqlstring.Length - 2);
-            sqlstring = sqlstring + ")";
-            sqlComm = new SqlCommand(sqlstring, sqlconn);
-            try
-            {
-                sqlComm.ExecuteNonQuery();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "An Big poblem arose with the table create", MessageBoxButtons.OK,
-                MessageBoxIcon.Error);
-            }
+                // make the temp table
+                sqlstring = "Create table #usersInOU(";
+                for (i = 0; i < count; i++)
+                {
+                    sqlstring += properties[i] + " VarChar(350), ";
+                }
+                sqlstring = sqlstring.Remove(sqlstring.Length - 2);
+                sqlstring = sqlstring + ")";
+                sqlComm = new SqlCommand(sqlstring, sqlconn);
+                try
+                {
+                    sqlComm.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "An Big poblem arose with the table create", MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+                }
 
-            // create temp table
-            sqlstring = "SELECT * into #usersInOU from viewADUsers";
-            sqlComm = new SqlCommand(sqlstring, sqlconn);
-            try
-            {
-                sqlComm.ExecuteNonQuery();
+                // create temp table
+                sqlstring = "SELECT * into #usersInOU from viewADUsers";
+                sqlComm = new SqlCommand(sqlstring, sqlconn);
+                try
+                {
+                    sqlComm.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "An Big poblem arose with the table data fill", MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+                }
+                // drop view
+                sqlstring = "DROP VIEW viewADUsers";
+                sqlComm = new SqlCommand(sqlstring, sqlconn);
+                try
+                {
+                    sqlComm.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "An Big poblem arose dropping the view", MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+                }
+                return "#usersInOU";
             }
-            catch (Exception ex)
+            public string getTableGroupsInOU(string OU, List<string> properties, SqlConnection sqlconn)
             {
-                MessageBox.Show(ex.Message, "An Big poblem arose with the table data fill", MessageBoxButtons.OK,
-                MessageBoxIcon.Error);
-            }
-            // drop view
-            sqlstring = "DROP VIEW viewADUsers";
-            sqlComm = new SqlCommand(sqlstring, sqlconn);
-            try
-            {
-                sqlComm.ExecuteNonQuery();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "An Big poblem arose dropping the view", MessageBoxButtons.OK,
-                MessageBoxIcon.Error);
-            }
+                string propertiesString = "";
+                string sqlstring = "";
+                int i, count;
+                SqlCommand sqlComm;
+                count = properties.Count;
+                for (i = 0; i < count; i++)
+                {
+                    propertiesString += properties[i] + ", ";
+                }
+                propertiesString = propertiesString.Remove(propertiesString.Length - 2);
+                // create view
+                // SELECT ADsPath, cn FROM 'LDAP://DC=Fabrikam,DC=COM' WHERE objectCategory='group'
+                sqlstring = "CREATE VIEW viewADUsers AS SELECT * FROM OpenQuery( ADSI, '<LDAP://" + OU + ">;(objectCategory=group);" + propertiesString + ";onelevel ')";
+                sqlComm = new SqlCommand(sqlstring, sqlconn);
+                try
+                {
+                    sqlComm.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "An Big poblem arose dropping the view", MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+                }
 
-        
-            return "#groupsInOU";
-        }
-        public string getTableUsersInGroup ( string OU, List<string> properties, SqlConnection sqlconn )
-        {
-            return "#usersInGroup";
-        }
-        public string getGroupsForUser ( string OU, List<string> properties, SqlConnection sqlconn )
-        {
-            return "#usersGroups";
-        }
-        //public SqlDataReader queryInANotB (string Table1, string Table2, string pkey1, string pkey2, SqlConnection sqlConn)
-        //{
-        //    SqlDataReader returnreader;
-        //    return returnreader;
-        //}
-        public bool exists(string Table, string key ) 
-        {
-            return false;
-        }
+
+                // make the temp table
+                sqlstring = "Create table #usersInOU(";
+                for (i = 0; i < count; i++)
+                {
+                    sqlstring += properties[i] + " VarChar(350), ";
+                }
+                sqlstring = sqlstring.Remove(sqlstring.Length - 2);
+                sqlstring = sqlstring + ")";
+                sqlComm = new SqlCommand(sqlstring, sqlconn);
+                try
+                {
+                    sqlComm.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "An Big poblem arose with the table create", MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+                }
+
+                // create temp table
+                sqlstring = "SELECT * into #usersInOU from viewADUsers";
+                sqlComm = new SqlCommand(sqlstring, sqlconn);
+                try
+                {
+                    sqlComm.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "An Big poblem arose with the table data fill", MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+                }
+                // drop view
+                sqlstring = "DROP VIEW viewADUsers";
+                sqlComm = new SqlCommand(sqlstring, sqlconn);
+                try
+                {
+                    sqlComm.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "An Big poblem arose dropping the view", MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+                }
+
+
+                return "#groupsInOU";
+            }
+            public string getTableUsersInGroup(string OU, List<string> properties, SqlConnection sqlconn)
+            {
+                return "#usersInGroup";
+            }
+            public string getGroupsForUser(string OU, List<string> properties, SqlConnection sqlconn)
+            {
+                return "#usersGroups";
+            }
+            //public SqlDataReader queryInANotB (string Table1, string Table2, string pkey1, string pkey2, SqlConnection sqlConn)
+            //{
+            //    SqlDataReader returnreader;
+            //    return returnreader;
+            //}
+            public bool sqlexists(string Table, string key)
+            {
+                return false;
+            }
 
         }
 
         public class objectADSqlsyncGroup
         {
-         //open SQL conn
-            public void execute(groupSynch groupsyn, toolset tools, logFile log)
+            public void execute(groupSynch groupsyn, toolset tools, logFile log, Form1 gui)
             {
                 string debug = "";
                 SqlDataReader debugreader;
                 ArrayList debuglist = new ArrayList();
                 int debugfieldcount;
+                string debugrecourdcount;
                 int i;
                 StopWatch time = new StopWatch();
-                
+
                 string groupapp = groupsyn.Group_Append;
                 string groupOU = groupsyn.BaseGroupOU;
-                string sAMAccountName ="";
+                string sAMAccountName = "";
                 string description = "";
                 string sqlgroupsTable = "#SQLgroupsTable";
                 string ADgroupsTable = "ADgroupsTable";
@@ -2574,10 +2575,10 @@ namespace WindowsApplication1
                 ArrayList ADupdateKeys = new ArrayList();
                 ArrayList SQLupdateKeys = new ArrayList();
                 ArrayList fields = new ArrayList();
-                LinkedList<Dictionary<string,string>> groupsLinkedList = new LinkedList<Dictionary<string,string>>();
-                Dictionary<string, string> groupObject = new Dictionary<string,string>();
+                LinkedList<Dictionary<string, string>> groupsLinkedList = new LinkedList<Dictionary<string, string>>();
+                Dictionary<string, string> groupObject = new Dictionary<string, string>();
                 SqlConnection sqlConn = new SqlConnection("Data Source=" + groupsyn.DataServer + ";Initial Catalog=" + groupsyn.DBCatalog + ";Integrated Security=SSPI;");
-                
+
 
                 sqlConn.Open();
                 // Setup the OU for the program
@@ -2597,18 +2598,18 @@ namespace WindowsApplication1
                 sqlComm.ExecuteNonQuery();
 
 
-                SqlCommand sqldebugComm = new SqlCommand("select count(" + groupsyn.Group_sAMAccount + ") FROM " + sqlgroupsTable, sqlConn);
-                debugreader = sqldebugComm.ExecuteReader();
-                debugfieldcount = debugreader.FieldCount;
-                while (debugreader.Read())
-                {
-                    for (i = 0; i < debugfieldcount; i++)
-                    {
-                        debug += (string)debugreader[0].ToString();
-                    }
-                }
-                MessageBox.Show(debug);
-                debugreader.Close();
+                //SqlCommand sqldebugComm = new SqlCommand("select count(" + groupsyn.Group_sAMAccount + ") FROM " + sqlgroupsTable, sqlConn);
+                //debugreader = sqldebugComm.ExecuteReader();
+                //debugfieldcount = debugreader.FieldCount;
+                //while (debugreader.Read())
+                //{
+                //    for (i = 0; i < debugfieldcount; i++)
+                //    {
+                //        debug += (string)debugreader[0].ToString();
+                //    }
+                //}
+                //MessageBox.Show(debug);
+                //debugreader.Close();
 
 
                 // generate a list of fields to ask from AD
@@ -2618,40 +2619,29 @@ namespace WindowsApplication1
 
                 // grab groups from AD
                 time.Start();
-                groupsLinkedList = tools.EnumerateGroupsInOU("OU=" + groupapp + "," + groupOU, ADupdateKeys);                
+                groupsLinkedList = tools.EnumerateGroupsInOU("OU=" + groupapp + "," + groupOU, ADupdateKeys);
                 time.Stop();
-                MessageBox.Show("got " + groupsLinkedList.Count + "groups from ou in " + time.GetElapsedTime());
+                gui.Refresh();
+                //MessageBox.Show("got " + groupsLinkedList.Count + "groups from ou in " + time.GetElapsedTime());
                 // insert groups from AD into a temp table
                 if (groupsLinkedList.Count > 0)
                 {
                     time.Start();
                     groupsTable = tools.temp_Table(groupsLinkedList, ADgroupsTable, sqlConn);
                     time.Stop();
-                    MessageBox.Show("temp table loaded " + groupsLinkedList.Count + " in " + time.GetElapsedTime());
+                    //MessageBox.Show("temp table loaded " + groupsLinkedList.Count + " in " + time.GetElapsedTime());
 
 
-                    debug = " groups table  data import from AD \n";
-                    sqldebugComm = new SqlCommand("select * FROM " + groupsTable, sqlConn);
-                    debugreader = sqldebugComm.ExecuteReader();
-                    debugfieldcount = debugreader.FieldCount;
-                    debug = debugreader.RecordsAffected.ToString();
-                    //while (debugreader.Read())
-                    //{
-                    //    for (i = 0; i < debugfieldcount; i++)
-                    //    {
-                    //        debug += (string)debugreader[i] + ",";
-                    //    }
-                    //    debug += "\n";
-                    //}
-                    debugreader.Close();
-                    MessageBox.Show(debug);
-
-
-
-                    //debug = " groups from SQL to compare against AD \n";
-                    //sqldebugComm = new SqlCommand("select * FROM " + sqlgroupsTable, sqlConn);
+                    //debug = " groups table  data import from AD \n";
+                    //sqldebugComm = new SqlCommand("select top 10 * FROM " + groupsTable, sqlConn);
                     //debugreader = sqldebugComm.ExecuteReader();
                     //debugfieldcount = debugreader.FieldCount;
+                    //debugrecourdcount = debugreader.RecordsAffected.ToString();
+                    //for (i = 0; i < debugfieldcount; i++)
+                    //{
+                    //    debug += debugreader.GetName(i);
+                    //}
+                    //debug += "\n";
                     //while (debugreader.Read())
                     //{
                     //    for (i = 0; i < debugfieldcount; i++)
@@ -2661,7 +2651,30 @@ namespace WindowsApplication1
                     //    debug += "\n";
                     //}
                     //debugreader.Close();
-                    //MessageBox.Show(debug);
+                    //MessageBox.Show("table " + groupsTable + " has " + debugrecourdcount + " records \n " + debugfieldcount + " fields \n sample data" + debug);
+
+
+
+                    //debug = " groups from SQL to compare against AD \n";
+                    //sqldebugComm = new SqlCommand("select top 10 * FROM " + sqlgroupsTable, sqlConn);
+                    //debugreader = sqldebugComm.ExecuteReader();
+                    //debugfieldcount = debugreader.FieldCount;
+                    //debugrecourdcount = debugreader.RecordsAffected.ToString();
+                    //for (i = 0; i < debugfieldcount; i++)
+                    //{
+                    //   debug += debugreader.GetName(i);
+                    //}
+                    //debug += "\n";
+                    //while (debugreader.Read())
+                    //{
+                    //    for (i = 0; i < debugfieldcount; i++)
+                    //    {
+                    //        debug += (string)debugreader[i] + ",";
+                    //    }
+                    //    debug += "\n";
+                    //}
+                    //debugreader.Close();
+                    //MessageBox.Show("table " + sqlgroupsTable + " has " + debugrecourdcount + " records \n " + debugfieldcount + " fields \n sample data" + debug);
 
 
                     // does not get columns from a temp table as they are not in the system objects database
@@ -2679,9 +2692,9 @@ namespace WindowsApplication1
                     add = tools.queryNotExists(sqlgroupsTable, groupsTable, sqlConn, groupsyn.Group_CN, ADupdateKeys[1].ToString());
 
                     time.Stop();
-                    MessageBox.Show("add query" + time.GetElapsedTime());
-                    
-                    
+                    //MessageBox.Show("add query" + time.GetElapsedTime());
+
+
 
                     //debug = "cols to add \n";
                     //while (add.Read())
@@ -2698,7 +2711,7 @@ namespace WindowsApplication1
                     {
                         i++;
                         sAMAccountName = (string)add[1].ToString().Trim();
-                        description =(string)add[0].ToString().Trim();
+                        description = (string)add[0].ToString().Trim();
                         groupObject.Add("sAMAccountName", sAMAccountName);
                         groupObject.Add("CN", sAMAccountName);
                         groupObject.Add("description", description);
@@ -2707,7 +2720,9 @@ namespace WindowsApplication1
                         if (i % 1000 == 0)
                         {
                             // FORGET the real progress bar for now groupsyn.progress = i;
-                            MessageBox.Show("adding now at item " + i);
+                            gui.group_result1.Text = "Adding cause im still ALIVE !!!" + i;
+                            gui.Refresh();
+                            //MessageBox.Show("adding now at item " + i);
                         }
                         groupObject.Clear();
                     }
@@ -2723,12 +2738,14 @@ namespace WindowsApplication1
                     while (delete.Read())
                     {
                         i++;
-                        tools.DeleteGroup("OU=" + groupapp + groupOU, (string)delete[ADupdateKeys[1].ToString()].ToString().Trim());
+                        tools.DeleteGroup("OU=" + groupapp + "," + groupOU, (string)delete[ADupdateKeys[1].ToString()].ToString().Trim());
                         log.transactions.Add("Group deleted ;" + (string)delete[ADupdateKeys[1].ToString()].ToString().Trim() + ",OU=" + groupapp + groupOU);
                         if (i % 1000 == 0)
                         {
                             // FORGET the real progress bar for now groupsyn.progress = i;
-                            MessageBox.Show("Deleting now at item " + i);
+                            gui.group_result1.Text = "Deleting cause im still ALIVE !!!" + i;
+                            gui.Refresh();
+                            //MessageBox.Show("Deleting now at item " + i);
                         }
                     }
                     delete.Close();
@@ -2745,11 +2762,12 @@ namespace WindowsApplication1
                     // update assumes the both ADupdateKeys and SQLupdateKeys have the same fields, listed in the same order check  call to EnumerateGroupsInOU if this is wrong should be sAMAccountName, CN matching the SQL order
                     update = tools.checkUpdate(sqlgroupsTable, groupsTable, groupsyn.Group_CN, ADupdateKeys[1].ToString(), SQLupdateKeys, ADupdateKeys, sqlConn);
                     time.Stop();
-                    MessageBox.Show("update query" + time.GetElapsedTime());
+                    //MessageBox.Show("update query" + time.GetElapsedTime());
 
                     // update groups in ad
                     time.Start();
                     i = 0;
+                    // last record which matches the primary key is the one which gets inserted into the database
                     while (update.Read())
                     {
                         i++;
@@ -2778,13 +2796,15 @@ namespace WindowsApplication1
                         if (i % 1000 == 0)
                         {
                             // FORGET the real progress bar for now groupsyn.progress = i;
-                            MessageBox.Show("updating now at item " + i);
+                            gui.group_result1.Text = "updating cause im still ALIVE !!!" + i;
+                            gui.Refresh();
+                            //MessageBox.Show("updating now at item " + i);
                         }
                         groupObject.Clear();
                     }
                     update.Close();
                     time.Stop();
-                    MessageBox.Show("update objects somehow found " + i + " objects to finished in "  + time.GetElapsedTime());
+                    //MessageBox.Show("update objects somehow found " + i + " objects to finished in "  + time.GetElapsedTime());
                 }
                 else
                 {
@@ -2798,254 +2818,23 @@ namespace WindowsApplication1
                         groupObject.Add("sAMAccountName", (string)add[1]);
                         groupObject.Add("CN", (string)add[1]);
                         groupObject.Add("description", (string)add[0]);
-                        try
-                        {
-                            tools.CreateGroup("OU=" + groupapp + "," + groupOU, groupObject);
-                        }
-                        catch 
-                        {
-                        }
+                        tools.CreateGroup("OU=" + groupapp + "," + groupOU, groupObject);
+                        log.transactions.Add("Group added ;" + groupObject["sAMAccountName"] + ",OU=" + groupapp + "," + groupOU + ";" + groupObject["description"]);
+
                         groupObject.Clear();
                         if (i % 500 == 0)
                         {
-                           // FORGET the real progress bar for now groupsyn.progress = i;
-                            log.transactions.Add("adding now at item " + i);
-                            groupsyn.progress = i + " of debug";
+                            // FORGET the real progress bar for now groupsyn.progress = i;
+                            gui.group_result1.AppendText("cause im still ALIVE !!!" + i);
+                            gui.Refresh();
+                            // MessageBox.Show("avoiding message pumping add progress now at item " + i);
                         }
                     }
                     time.Stop();
-                    MessageBox.Show("initial add objects " + i + " time taken" + time.GetElapsedTime());
+                    //MessageBox.Show("initial add objects " + i + " time taken" + time.GetElapsedTime());
                 }
                 sqlConn.Close();
             }
-            //public void execute(groupSynch groupsyn, toolset tools, logFile log)
-            //{
-            //    string debug = "";
-            //    SqlDataReader debugreader;
-            //    ArrayList debuglist = new ArrayList();
-            //    int debugfieldcount = 0;
-            //    int i = 0;
-            //    StopWatch time = new StopWatch();
-
-            //    string sAMAccountName = "";
-            //    string description = "";
-            //    string sqlgroupsTable = "#SQLgroupsTable";
-            //    string ADgroupsTable = "ADgroupsTable";
-            //    string DC = groupsyn.BaseGroupOU.Substring(groupsyn.BaseGroupOU.IndexOf("DC"));
-            //    string groupDN;
-            //    string groupsTable;
-            //    SqlDataReader add;
-            //    SqlDataReader delete;
-            //    SqlDataReader update;
-            //    List<string> ADupdateKeys = new List<string>();
-            //    ArrayList SQLupdateKeys = new ArrayList();
-            //    ArrayList fields = new ArrayList();
-            //    LinkedList<Dictionary<string, string>> groupsLinkedList = new LinkedList<Dictionary<string, string>>();
-            //    Dictionary<string, string> groupObject = new Dictionary<string, string>();
-            //    SqlConnection sqlConn = new SqlConnection("Data Source=" + groupsyn.DataServer + ";Initial Catalog=" + groupsyn.DBCatalog + ";Integrated Security=SSPI;");
-                
-
-            //    sqlConn.Open();
-            //    // Link up SQL with AD thru ADSI
-            //    // tools.linkedServer(sqlConn);
-            //    // Setup the OU for the program
-            //    tools.createOURecursive("OU=" + groupsyn.Group_Append + "," + groupsyn.BaseGroupOU);
-
-            //    // grab list of groups from SQL insert into a temp table
-            //    SqlCommand sqlComm = new SqlCommand();
-            //    if (groupsyn.Group_where == "")
-            //    {
-            //        sqlComm = new SqlCommand("SELECT DISTINCT RTRIM(" + groupsyn.Group_sAMAccount + ") AS " + groupsyn.Group_sAMAccount + ", RTRIM(" + groupsyn.Group_CN + ") + '" + groupsyn.Group_Append + "' AS " + groupsyn.Group_CN + " INTO " + sqlgroupsTable + " FROM " + groupsyn.Group_dbTable, sqlConn);
-            //    }
-            //    else
-            //    {
-            //        sqlComm = new SqlCommand("SELECT DISTINCT RTRIM(" + groupsyn.Group_sAMAccount + ") AS " + groupsyn.Group_sAMAccount + ", RTRIM(" + groupsyn.Group_CN + ") + '" + groupsyn.Group_Append + "' AS " + groupsyn.Group_CN + " INTO " + sqlgroupsTable + " FROM " + groupsyn.Group_dbTable + " WHERE " + groupsyn.Group_where, sqlConn);
-            //    }
-
-            //    sqlComm.ExecuteNonQuery();
-
-
-            //    //SqlCommand sqldebugComm = new SqlCommand("select * FROM " + sqlgroupsTable, sqlConn);
-            //    //debugreader = sqldebugComm.ExecuteReader();
-            //    //debugfieldcount = debugreader.FieldCount;
-            //    //while (debugreader.Read())
-            //    //{
-            //    //    for (i = 0; i < debugfieldcount; i++)
-            //    //    {
-            //    //        debug += (string)debugreader[0];
-            //    //    }
-            //    //}
-
-            //    //debugreader.Close();
-
-
-            //    // generate a list of fields to ask from AD
-            //    ADupdateKeys.Add("description");
-            //    ADupdateKeys.Add("CN");
-
-
-            //    // grab groups from AD
-            //    time.Start();
-            //    // groupsLinkedList = tools.EnumerateGroupsInOU("OU=" + groupsyn.Group_Append + "," + groupsyn.BaseGroupOU, ADupdateKeys);
-            //    ADgroupsTable = tools.getTableGroupsInOU("OU=" + groupsyn.Group_Append + "," + groupsyn.BaseGroupOU, ADupdateKeys , sqlConn);
-            //    time.Stop();
-            //    MessageBox.Show("add query" + time.GetElapsedTime());
-            //    sqlComm = new SqlCommand("SELECT * FROM " + ADgroupsTable,sqlConn);
-            //    add =  sqlComm.ExecuteReader();
-            //    while (add.Read())
-            //    {
-            //        for (i = 0; i < debugfieldcount; i++)
-            //        {
-            //            debug += (string)add[i] + ",";
-            //        }
-            //        debug += "\n";
-            //    }
-            //    MessageBox.Show(debug);
-            //    // insert groups from AD into a temp table
-            //    //if (groupsLinkedList.Count > 0)
-            //    //{
-                    
-            //    //    //debug = " groups from SQL to compare against AD \n";
-            //    //    //sqldebugComm = new SqlCommand("select * FROM " + sqlgroupsTable, sqlConn);
-            //    //    //debugreader = sqldebugComm.ExecuteReader();
-            //    //    //debugfieldcount = debugreader.FieldCount;
-            //    //    //while (debugreader.Read())
-            //    //    //{
-            //    //    //    for (i = 0; i < debugfieldcount; i++)
-            //    //    //    {
-            //    //    //        debug += (string)debugreader[i] + ",";
-            //    //    //    }
-            //    //    //    debug += "\n";
-            //    //    //}
-            //    //    //debugreader.Close();
-            //    //    //MessageBox.Show(debug);
-
-
-            //    //    // does not get columns from a temp table as they are not in the system objects database
-            //    //    //debuglist = tools.GetColumns(groupsyn.DataServer, groupsyn.DBCatalog, sqlgroupsTable, sqlConn);
-            //    //    //debug = " columns \n";
-            //    //    //foreach (string a in debuglist)
-            //    //    //{
-            //    //    //    debug += a + "\n";
-            //    //    //}
-            //    //    //MessageBox.Show(debug);
-
-
-
-            //    //    time.Start();
-            //    //    add = tools.queryNotExists(sqlgroupsTable, groupsTable, sqlConn, groupsyn.Group_CN, ADupdateKeys[1].ToString());
-
-            //    //    time.Stop();
-            //    //    MessageBox.Show("add query" + time.GetElapsedTime());
-
-
-
-            //    //    //debug = "cols to add \n";
-            //    //    //while (add.Read())
-            //    //    //{
-            //    //    //    debug += (string)add[0] + "\n";
-            //    //    //}
-            //    //    //MessageBox.Show(debug);
-
-            //    //    // add nodes to AD
-
-            //    //    time.Start();
-            //    //    while (add.Read())
-            //    //    {
-            //    //        sAMAccountName = (string)add[1].ToString().Trim();
-            //    //        description = (string)add[0].ToString().Trim();
-            //    //        groupObject.Add("sAMAccountName", sAMAccountName);
-            //    //        groupObject.Add("CN", sAMAccountName);
-            //    //        groupObject.Add("description", description);
-            //    //        tools.CreateGroup("OU=" + groupsyn.Group_Append + "," + groupsyn.BaseGroupOU, groupObject);
-            //    //        log.transactions.Add("Group added ;" + sAMAccountName + ",OU=" + groupsyn.Group_Append + "," + groupsyn.BaseGroupOU + ";" + description);
-            //    //        groupObject.Clear();
-            //    //    }
-            //    //    time.Stop();
-            //    //    MessageBox.Show("add objects" + time.GetElapsedTime());
-            //    //    add.Close();
-
-
-            //    //    time.Start();
-            //    //    delete = tools.queryNotExists(groupsTable, sqlgroupsTable, sqlConn, ADupdateKeys[1].ToString(), groupsyn.Group_CN);
-            //    //    // delete groups in AD
-            //    //    while (delete.Read())
-            //    //    {
-            //    //        tools.DeleteGroup("OU=" + groupsyn.Group_Append + groupsyn.BaseGroupOU, (string)delete[ADupdateKeys[1].ToString()].ToString().Trim());
-            //    //        log.transactions.Add("Group deleted ;" + (string)delete[ADupdateKeys[1].ToString()].ToString().Trim() + ",OU=" + groupsyn.Group_Append + groupsyn.BaseGroupOU);
-            //    //    }
-            //    //    delete.Close();
-            //    //    time.Stop();
-            //    //    MessageBox.Show("Delete objects" + time.GetElapsedTime());
-
-
-            //    //    // Get columns from sqlgroupsTable temp table in database get columns deprcated in favor of manual building due to cannot figure out how to get the columns of a temporary table
-            //    //    // SQLupdateKeys = tools.GetColumns(groupsyn.DataServer, groupsyn.DBCatalog, sqlgroupsTable);
-            //    //    // make the list of fields for the sql to check when updating
-            //    //    SQLupdateKeys.Add(groupsyn.Group_sAMAccount);
-            //    //    SQLupdateKeys.Add(groupsyn.Group_CN);
-            //    //    time.Start();
-            //    //    // update assumes the both ADupdateKeys and SQLupdateKeys have the same fields, listed in the same order check  call to EnumerateGroupsInOU if this is wrong should be sAMAccountName, CN matching the SQL order
-            //    //    update = tools.checkUpdate(sqlgroupsTable, groupsTable, groupsyn.Group_CN, ADupdateKeys[1].ToString(), SQLupdateKeys, ADupdateKeys, sqlConn);
-            //    //    time.Stop();
-            //    //    MessageBox.Show("update query" + time.GetElapsedTime());
-
-            //    //    // update groups in ad
-            //    //    time.Start();
-            //    //    while (update.Read())
-            //    //    {
-            //    //        sAMAccountName = (string)update[1].ToString().Trim();
-            //    //        description = (string)update[0].ToString().Trim();
-            //    //        groupObject.Add("sAMAccountName", sAMAccountName);
-            //    //        groupObject.Add("CN", sAMAccountName);
-            //    //        groupObject.Add("description", description);
-
-            //    //        if (tools.Exists("CN=" + groupObject["CN"] + ", OU=" + groupsyn.Group_Append + "," + groupsyn.BaseGroupOU) == true)
-            //    //        {
-            //    //            // group exists in place just needs updating
-            //    //            tools.UpdateGroup("OU=" + groupsyn.Group_Append + "," + groupsyn.BaseGroupOU, groupObject);
-            //    //            log.transactions.Add("Group update ; " + sAMAccountName + ",OU=" + groupsyn.Group_Append + "," + groupsyn.BaseGroupOU + ";" + description);
-            //    //        }
-            //    //        else
-            //    //        {
-            //    //            // find it its on the server somewhere we will log the exception
-            //    //            groupDN = tools.GetObjectDistinguishedName(objectClass.group, returnType.distinguishedName, groupObject["CN"], DC);
-            //    //            // what if user is disabled will user mapping handle it?
-            //    //            // groups needs to be moved and updated
-            //    //            // tools.MoveADObject(groupDN, "LDAP://OU=" + groupsyn.Group_Append + ',' + groupsyn.BaseGroupOU);
-            //    //            // tools.UpdateGroup("OU=" + groupsyn.Group_Append + "," + groupsyn.BaseGroupOU, groupObject);
-            //    //            log.errors.Add("Group cannot be updated user probabally should be in ; " + "OU=" + groupsyn.Group_Append + "," + groupsyn.BaseGroupOU + " ; but was found in ; " + groupDN);
-            //    //        }
-            //    //        groupObject.Clear();
-            //    //    }
-            //    //    update.Close();
-            //    //    time.Stop();
-            //    //    MessageBox.Show("update onjects" + time.GetElapsedTime());
-            //    //}
-            //    //else
-            //    //{
-            //    //    sqlComm = new SqlCommand("select * FROM " + sqlgroupsTable, sqlConn);
-            //    //    add = sqlComm.ExecuteReader();
-            //    //    time.Start();
-            //    //    while (add.Read())
-            //    //    {
-            //    //        groupObject.Add("sAMAccountName", (string)add[1]);
-            //    //        groupObject.Add("CN", (string)add[1]);
-            //    //        groupObject.Add("description", (string)add[0]);
-            //    //        try
-            //    //        {
-            //    //            tools.CreateGroup("OU=" + groupsyn.Group_Append + "," + groupsyn.BaseGroupOU, groupObject);
-            //    //        }
-            //    //        catch
-            //    //        {
-            //    //        }
-            //    //        groupObject.Clear();
-            //    //    }
-            //    //    time.Stop();
-            //    //    MessageBox.Show("initial add onjects" + time.GetElapsedTime());
-            //    //}
-            //    sqlConn.Close();
-            //}
         }
 
         // create objects to hold save data
@@ -3359,7 +3148,7 @@ namespace WindowsApplication1
         {
             userconfig.BaseUserOU = users_baseUserOU.Text.ToString();
         }
-      
+
 
 
         // UI DIALOG  DATA ENTRY EVENTS FOR USER SYNCH TAB
@@ -3494,7 +3283,7 @@ namespace WindowsApplication1
                 r.Close();
                 sqlConn.Close();
 
-                userconfig.User_dbTable= users_user_source.Text.ToString();
+                userconfig.User_dbTable = users_user_source.Text.ToString();
                 users_user_CN.DataSource = columnList;
                 users_user_sAMAccountName.DataSource = columnList.Clone();
             }
@@ -3523,7 +3312,7 @@ namespace WindowsApplication1
         {
             userconfig.Notes = users_mapping_description.Text.ToString();
         }
-            // BUTTONS FOR THE TAB
+        // BUTTONS FOR THE TAB
         private void users_see_query_Click(object sender, EventArgs e)
         {
             users_result1.Clear();
@@ -3538,7 +3327,7 @@ namespace WindowsApplication1
             {
                 users_result1.AppendText(" Where ");
                 users_result1.AppendText(userconfig.OU_where);
-            }            
+            }
             users_result1.AppendText("\n");
 
             users_result2.Clear();
@@ -3809,7 +3598,7 @@ namespace WindowsApplication1
         private void group_user_sAMAccountName_SelectedIndexChanged(object sender, EventArgs e)
         {
             groupconfig.User_sAMAccount = group_user_sAMAccountName.Text.ToString();
-        }        
+        }
         private void group_user_where_TextChanged(object sender, EventArgs e)
         {
             groupconfig.User_where = group_user_where.Text.ToString();
@@ -3827,7 +3616,7 @@ namespace WindowsApplication1
         {
             groupconfig.Notes = group_mapping_description.Text.ToString();
         }
-            // BUTTONS FOR THE TAB
+        // BUTTONS FOR THE TAB
         private void group_push_for_virus_Click(object sender, EventArgs e)
         {
 
@@ -3883,7 +3672,7 @@ namespace WindowsApplication1
                 userDictionary.Add("CN", (string)r["first_name"].ToString().Trim());
                 userDictionary.Add("description", (string)r["soc_sec"].ToString().Trim());
                 DBusers.AddLast(userDictionary);
-                
+
             }
             r.Close();
             sqlConn.Close();
@@ -3899,7 +3688,7 @@ namespace WindowsApplication1
                 ADuserDictionary.Add("CN", (string)r["first_name"].ToString().Trim());
                 ADuserDictionary.Add("description", (string)r["soc_sec"].ToString().Trim());
                 ADusers.AddLast(ADuserDictionary);
-                
+
             }
             r.Close();
             sqlConn.Close();
@@ -4048,7 +3837,7 @@ namespace WindowsApplication1
         }
         private void group_Save_button(object sender, EventArgs e)
         {
-            Dictionary<string,string> properties = new Dictionary<string,string>();
+            Dictionary<string, string> properties = new Dictionary<string, string>();
             int i = 0;
             SaveFileDialog saveFileDialog1 = new SaveFileDialog();
             saveFileDialog1.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
@@ -4056,34 +3845,34 @@ namespace WindowsApplication1
             saveFileDialog1.RestoreDirectory = true;
             if (saveFileDialog1.ShowDialog() == DialogResult.OK)
             {
-            // create a file stream, where "c:\\testing.txt" is the file path
-			System.IO.FileStream fs = new System.IO.FileStream(saveFileDialog1.FileName, System.IO.FileMode.OpenOrCreate, System.IO.FileAccess.Write, System.IO.FileShare.ReadWrite);
+                // create a file stream, where "c:\\testing.txt" is the file path
+                System.IO.FileStream fs = new System.IO.FileStream(saveFileDialog1.FileName, System.IO.FileMode.OpenOrCreate, System.IO.FileAccess.Write, System.IO.FileShare.ReadWrite);
 
-			// create a stream writer
-			System.IO.StreamWriter sw = new System.IO.StreamWriter(fs, System.Text.Encoding.ASCII);
-            
-			// write to file (buffer), where textbox1 is your text box
-            properties = groupconfig.ToDictionary();
-            ICollection<string> c = properties.Keys;
-            i = c.Count;
-            foreach (string str in c)
-            {
-                  sw.WriteLine("{0} | {1:C}", str, properties[str]);
-            }
+                // create a stream writer
+                System.IO.StreamWriter sw = new System.IO.StreamWriter(fs, System.Text.Encoding.ASCII);
 
-			// flush buffer (so the text really goes into the file)
-			sw.Flush();
+                // write to file (buffer), where textbox1 is your text box
+                properties = groupconfig.ToDictionary();
+                ICollection<string> c = properties.Keys;
+                i = c.Count;
+                foreach (string str in c)
+                {
+                    sw.WriteLine("{0} | {1:C}", str, properties[str]);
+                }
 
-			// close stream writer and file
-			sw.Close();
-            fs.Close();
+                // flush buffer (so the text really goes into the file)
+                sw.Flush();
+
+                // close stream writer and file
+                sw.Close();
+                fs.Close();
             }
         }
         private void group_open_Click(object sender, EventArgs e)
         {
-            Dictionary<string,string> properties = new Dictionary<string,string>();
-            
-            OpenFileDialog openFileDialog1 = new OpenFileDialog();            
+            Dictionary<string, string> properties = new Dictionary<string, string>();
+
+            OpenFileDialog openFileDialog1 = new OpenFileDialog();
             openFileDialog1.InitialDirectory = "c:\\";
             openFileDialog1.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
             openFileDialog1.FilterIndex = 2;
@@ -4091,12 +3880,12 @@ namespace WindowsApplication1
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 StreamReader re = File.OpenText(openFileDialog1.FileName);
-                
+
                 string input = null;
                 while ((input = re.ReadLine()) != null)
                 {
-                    string[] parts = input.Split('|'); 
-                    properties.Add(parts[0].Trim(),parts[1].Trim());
+                    string[] parts = input.Split('|');
+                    properties.Add(parts[0].Trim(), parts[1].Trim());
                 }
                 re.Close();
             }
@@ -4134,7 +3923,7 @@ namespace WindowsApplication1
         }
         private void group_see_test_results_Click(object sender, EventArgs e)
         {
-         
+
             // Loads of test example calls
             //
             // Grab the current domain controller root
@@ -4150,7 +3939,7 @@ namespace WindowsApplication1
             //ouUserNode = ouUsers.First;
             //while (ouUserNode != null)
             //{
-             //    group_result1.AppendText(ouUserNode.Value["sAMAccountName"] + "\n");
+            //    group_result1.AppendText(ouUserNode.Value["sAMAccountName"] + "\n");
             //    ouUserNode = ouUserNode.Next;
             //}
             //
@@ -4158,11 +3947,19 @@ namespace WindowsApplication1
             //
             // Create a SQL insert statement
             // tools.temp_Table(tools.EnumerateUsersInGroup("CN=_AtisRW,OU=Atis,OU=FHCHS,DC=FHCHS,DC=EDU"), "MikesADTest", "soniswebdatabase", "fhcsvdb");
-            groupSyncr.execute(groupconfig, tools, log);
-            
-           // groupSyncr.execute(groupconfig, tools, log);
-           // users_result1.Text log.transactions.ToString();
-           // users_result2.Text = log.errors.ToString();
+            groupSyncr.execute(groupconfig, tools, log, this);
+            int i;
+            for (i = 0; i < log.transactions.Count; i++)
+            {
+                group_result1.AppendText(log.transactions[i].ToString() + "\n");
+            }
+            for (i = 0; i < log.errors.Count; i++)
+            {
+                group_result2.AppendText(log.errors[i].ToString() + "\n");
+            }
+            // groupSyncr.execute(groupconfig, tools, log);
+            // users_result1.Text log.transactions.ToString();
+            // users_result2.Text = log.errors.ToString();
             // MessageBox.Show("compelete");
         }
 
@@ -4188,7 +3985,7 @@ namespace WindowsApplication1
                 DBserver.Text = "";
             }
         }
-            // BUTTONS FOR THE TAB
+        // BUTTONS FOR THE TAB
         private void DBserver_TextChanged(object sender, EventArgs e)
         {
             ArrayList tableList = new ArrayList();
@@ -4291,9 +4088,9 @@ namespace WindowsApplication1
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
             openFileDialog1.InitialDirectory = "c:\\";
             openFileDialog1.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
-            openFileDialog1.FilterIndex = 2; 
+            openFileDialog1.FilterIndex = 2;
             openFileDialog1.RestoreDirectory = true;
-            
+
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 execution.execution_order.Add(openFileDialog1.FileName.ToString().Clone());
@@ -4302,12 +4099,12 @@ namespace WindowsApplication1
         }
         private void execution_remove_Click(object sender, EventArgs e)
         {
-            if(execution_order_list.SelectedIndex > 0)
+            if (execution_order_list.SelectedIndex > 0)
             {
                 execution.execution_order.RemoveAt(execution.execution_order.IndexOf(execution_order_list.SelectedIndex.ToString()));
             }
         }
-  
+
 
 
     }
