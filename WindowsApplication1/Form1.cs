@@ -1354,7 +1354,7 @@ namespace WindowsApplication1
                     {
                         try
                         {
-                            users.Add(returnProperties[i].ToString(), oResult.Properties[returnProperties[i].ToString()][0].ToString());
+                            users.Add(returnProperties[i].ToString(), System.Web.HttpUtility.UrlDecode(oResult.Properties[returnProperties[i].ToString()][0].ToString()));
                         }
                         catch (Exception e)
                         {
@@ -1604,11 +1604,10 @@ namespace WindowsApplication1
                     {
 
                         DirectoryEntry entry = new DirectoryEntry("LDAP://" + ouPath);
-                        DirectoryEntry group = entry.Children.Add("CN=" + properties["CN"].ToString(), "group");
+                        DirectoryEntry group = entry.Children.Add("CN=" + System.Web.HttpUtility.UrlEncode(properties["CN"].ToString()).Replace("+", " ").Replace("*", "%2A"), "group");
                         foreach (KeyValuePair<string, string> kvp in properties)
                         {
-                             group.Properties[kvp.Key.ToString()].Value = System.Web.HttpUtility.UrlEncode(kvp.Value.ToString()).Replace("+", " ");
-                             MessageBox.Show( System.Web.HttpUtility.UrlEncode(kvp.Value.ToString()).Replace("+", " "));
+                             group.Properties[kvp.Key.ToString()].Value = System.Web.HttpUtility.UrlEncode(kvp.Value.ToString()).Replace("+", " ").Replace("*", "%2A");                            
                         }
                         group.CommitChanges();
                     }
@@ -2589,6 +2588,7 @@ namespace WindowsApplication1
                 int debugfieldcount;
                 string debugrecourdcount;
                 int i;
+                SqlCommand sqldebugComm;
                 StopWatch time = new StopWatch();
 
                 string groupapp = groupsyn.Group_Append;
@@ -2609,7 +2609,7 @@ namespace WindowsApplication1
                 LinkedList<Dictionary<string, string>> groupsLinkedList = new LinkedList<Dictionary<string, string>>();
                 Dictionary<string, string> groupObject = new Dictionary<string, string>();
                 SqlConnection sqlConn = new SqlConnection("Data Source=" + groupsyn.DataServer + ";Initial Catalog=" + groupsyn.DBCatalog + ";Integrated Security=SSPI;");
-
+                
 
                 sqlConn.Open();
                 // Setup the OU for the program
@@ -2629,7 +2629,7 @@ namespace WindowsApplication1
                 sqlComm.ExecuteNonQuery();
 
 
-                //SqlCommand sqldebugComm = new SqlCommand("select count(" + groupsyn.Group_sAMAccount + ") FROM " + sqlgroupsTable, sqlConn);
+                //sqldebugComm = new SqlCommand("select count(" + groupsyn.Group_sAMAccount + ") FROM " + sqlgroupsTable, sqlConn);
                 //debugreader = sqldebugComm.ExecuteReader();
                 //debugfieldcount = debugreader.FieldCount;
                 //while (debugreader.Read())
@@ -2663,49 +2663,49 @@ namespace WindowsApplication1
                     //MessageBox.Show("temp table loaded " + groupsLinkedList.Count + " in " + time.GetElapsedTime());
 
 
-                    //debug = " groups table  data import from AD \n";
-                    //sqldebugComm = new SqlCommand("select top 10 * FROM " + groupsTable, sqlConn);
-                    //debugreader = sqldebugComm.ExecuteReader();
-                    //debugfieldcount = debugreader.FieldCount;
-                    //debugrecourdcount = debugreader.RecordsAffected.ToString();
-                    //for (i = 0; i < debugfieldcount; i++)
-                    //{
-                    //    debug += debugreader.GetName(i);
-                    //}
-                    //debug += "\n";
-                    //while (debugreader.Read())
-                    //{
-                    //    for (i = 0; i < debugfieldcount; i++)
-                    //    {
-                    //        debug += (string)debugreader[i] + ",";
-                    //    }
-                    //    debug += "\n";
-                    //}
-                    //debugreader.Close();
-                    //MessageBox.Show("table " + groupsTable + " has " + debugrecourdcount + " records \n " + debugfieldcount + " fields \n sample data" + debug);
+                    debug = " groups table  data import from AD \n";
+                    sqldebugComm = new SqlCommand("select top 10 * FROM " + groupsTable, sqlConn);
+                    debugreader = sqldebugComm.ExecuteReader();
+                    debugfieldcount = debugreader.FieldCount;
+                    debugrecourdcount = debugreader.RecordsAffected.ToString();
+                    for (i = 0; i < debugfieldcount; i++)
+                    {
+                        debug += debugreader.GetName(i);
+                    }
+                    debug += "\n";
+                    while (debugreader.Read())
+                    {
+                        for (i = 0; i < debugfieldcount; i++)
+                        {
+                            debug += (string)debugreader[i] + ",";
+                        }
+                        debug += "\n";
+                    }
+                    debugreader.Close();
+                    MessageBox.Show("table " + groupsTable + " has " + debugrecourdcount + " records \n " + debugfieldcount + " fields \n sample data" + debug);
 
 
 
-                    //debug = " groups from SQL to compare against AD \n";
-                    //sqldebugComm = new SqlCommand("select top 10 * FROM " + sqlgroupsTable, sqlConn);
-                    //debugreader = sqldebugComm.ExecuteReader();
-                    //debugfieldcount = debugreader.FieldCount;
-                    //debugrecourdcount = debugreader.RecordsAffected.ToString();
-                    //for (i = 0; i < debugfieldcount; i++)
-                    //{
-                    //   debug += debugreader.GetName(i);
-                    //}
-                    //debug += "\n";
-                    //while (debugreader.Read())
-                    //{
-                    //    for (i = 0; i < debugfieldcount; i++)
-                    //    {
-                    //        debug += (string)debugreader[i] + ",";
-                    //    }
-                    //    debug += "\n";
-                    //}
-                    //debugreader.Close();
-                    //MessageBox.Show("table " + sqlgroupsTable + " has " + debugrecourdcount + " records \n " + debugfieldcount + " fields \n sample data" + debug);
+                    debug = " groups from SQL to compare against AD \n";
+                    sqldebugComm = new SqlCommand("select top 10 * FROM " + sqlgroupsTable, sqlConn);
+                    debugreader = sqldebugComm.ExecuteReader();
+                    debugfieldcount = debugreader.FieldCount;
+                    debugrecourdcount = debugreader.RecordsAffected.ToString();
+                    for (i = 0; i < debugfieldcount; i++)
+                    {
+                        debug += debugreader.GetName(i);
+                    }
+                    debug += "\n";
+                    while (debugreader.Read())
+                    {
+                        for (i = 0; i < debugfieldcount; i++)
+                        {
+                            debug += (string)debugreader[i] + ",";
+                        }
+                        debug += "\n";
+                    }
+                    debugreader.Close();
+                    MessageBox.Show("table " + sqlgroupsTable + " has " + debugrecourdcount + " records \n " + debugfieldcount + " fields \n sample data" + debug);
 
 
                     // does not get columns from a temp table as they are not in the system objects database
@@ -2758,7 +2758,7 @@ namespace WindowsApplication1
                         groupObject.Clear();
                     }
                     time.Stop();
-                    MessageBox.Show("add " + i + " objects " + time.GetElapsedTime());
+                    //MessageBox.Show("add " + i + " objects " + time.GetElapsedTime());
                     add.Close();
 
 
@@ -2781,7 +2781,7 @@ namespace WindowsApplication1
                     }
                     delete.Close();
                     time.Stop();
-                    MessageBox.Show("Delete " + i + " objects " + time.GetElapsedTime());
+                    // MessageBox.Show("Delete " + i + " objects " + time.GetElapsedTime());
 
 
                     // Get columns from sqlgroupsTable temp table in database get columns deprcated in favor of manual building due to cannot figure out how to get the columns of a temporary table
@@ -2894,6 +2894,7 @@ namespace WindowsApplication1
                 DataTable groupsLinkedList = new DataTable();
                 Dictionary<string, string> groupObject = new Dictionary<string, string>();
                 SqlConnection sqlConn = new SqlConnection("Data Source=" + groupsyn.DataServer + ";Initial Catalog=" + groupsyn.DBCatalog + ";Integrated Security=SSPI;");
+                SqlCommand sqldebugComm;
 
 
                 sqlConn.Open();
@@ -2914,7 +2915,7 @@ namespace WindowsApplication1
                 sqlComm.ExecuteNonQuery();
 
 
-                //SqlCommand sqldebugComm = new SqlCommand("select count(" + groupsyn.Group_sAMAccount + ") FROM " + sqlgroupsTable, sqlConn);
+                //sqldebugComm = new SqlCommand("select count(" + groupsyn.Group_sAMAccount + ") FROM " + sqlgroupsTable, sqlConn);
                 //debugreader = sqldebugComm.ExecuteReader();
                 //debugfieldcount = debugreader.FieldCount;
                 //while (debugreader.Read())
@@ -2948,49 +2949,49 @@ namespace WindowsApplication1
                     //MessageBox.Show("temp table loaded " + groupsLinkedList.Count + " in " + time.GetElapsedTime());
 
 
-                    //debug = " groups table  data import from AD \n";
-                    //sqldebugComm = new SqlCommand("select top 10 * FROM " + groupsTable, sqlConn);
-                    //debugreader = sqldebugComm.ExecuteReader();
-                    //debugfieldcount = debugreader.FieldCount;
-                    //debugrecourdcount = debugreader.RecordsAffected.ToString();
-                    //for (i = 0; i < debugfieldcount; i++)
-                    //{
-                    //    debug += debugreader.GetName(i);
-                    //}
-                    //debug += "\n";
-                    //while (debugreader.Read())
-                    //{
-                    //    for (i = 0; i < debugfieldcount; i++)
-                    //    {
-                    //        debug += (string)debugreader[i] + ",";
-                    //    }
-                    //    debug += "\n";
-                    //}
-                    //debugreader.Close();
-                    //MessageBox.Show("table " + groupsTable + " has " + debugrecourdcount + " records \n " + debugfieldcount + " fields \n sample data" + debug);
+                    debug = " groups table  data import from AD \n";
+                    sqldebugComm = new SqlCommand("select top 100 * FROM " + groupsTable, sqlConn);
+                    debugreader = sqldebugComm.ExecuteReader();
+                    debugfieldcount = debugreader.FieldCount;
+                    debugrecourdcount = debugreader.RecordsAffected.ToString();
+                    for (i = 0; i < debugfieldcount; i++)
+                    {
+                        debug += debugreader.GetName(i);
+                    }
+                    debug += "\n";
+                    while (debugreader.Read())
+                    {
+                        for (i = 0; i < debugfieldcount; i++)
+                        {
+                            debug += (string)debugreader[i] + ",";
+                        }
+                        debug += "\n";
+                    }
+                    debugreader.Close();
+                    gui.group_result1.Text = ("table " + groupsTable + " has " + debugrecourdcount + " records \n " + debugfieldcount + " fields \n sample data" + debug);
 
 
 
-                    //debug = " groups from SQL to compare against AD \n";
-                    //sqldebugComm = new SqlCommand("select top 10 * FROM " + sqlgroupsTable, sqlConn);
-                    //debugreader = sqldebugComm.ExecuteReader();
-                    //debugfieldcount = debugreader.FieldCount;
-                    //debugrecourdcount = debugreader.RecordsAffected.ToString();
-                    //for (i = 0; i < debugfieldcount; i++)
-                    //{
-                    //   debug += debugreader.GetName(i);
-                    //}
-                    //debug += "\n";
-                    //while (debugreader.Read())
-                    //{
-                    //    for (i = 0; i < debugfieldcount; i++)
-                    //    {
-                    //        debug += (string)debugreader[i] + ",";
-                    //    }
-                    //    debug += "\n";
-                    //}
-                    //debugreader.Close();
-                    //MessageBox.Show("table " + sqlgroupsTable + " has " + debugrecourdcount + " records \n " + debugfieldcount + " fields \n sample data" + debug);
+                    debug = " groups from SQL to compare against AD \n";
+                    sqldebugComm = new SqlCommand("select top 100 * FROM " + sqlgroupsTable, sqlConn);
+                    debugreader = sqldebugComm.ExecuteReader();
+                    debugfieldcount = debugreader.FieldCount;
+                    debugrecourdcount = debugreader.RecordsAffected.ToString();
+                    for (i = 0; i < debugfieldcount; i++)
+                    {
+                        debug += debugreader.GetName(i);
+                    }
+                    debug += "\n";
+                    while (debugreader.Read())
+                    {
+                        for (i = 0; i < debugfieldcount; i++)
+                        {
+                            debug += (string)debugreader[i] + ",";
+                        }
+                        debug += "\n";
+                    }
+                    debugreader.Close();
+                    gui.group_result2.Text = ("table " + sqlgroupsTable + " has " + debugrecourdcount + " records \n " + debugfieldcount + " fields \n sample data" + debug);
 
 
                     // does not get columns from a temp table as they are not in the system objects database
@@ -3043,7 +3044,7 @@ namespace WindowsApplication1
                         groupObject.Clear();
                     }
                     time.Stop();
-                    MessageBox.Show("add " + i + " objects " + time.GetElapsedTime());
+                    //MessageBox.Show("add " + i + " objects " + time.GetElapsedTime());
                     add.Close();
 
 
@@ -3066,7 +3067,7 @@ namespace WindowsApplication1
                     }
                     delete.Close();
                     time.Stop();
-                    MessageBox.Show("Delete " + i + " objects " + time.GetElapsedTime());
+                    //MessageBox.Show("Delete " + i + " objects " + time.GetElapsedTime());
 
 
                     // Get columns from sqlgroupsTable temp table in database get columns deprcated in favor of manual building due to cannot figure out how to get the columns of a temporary table
@@ -3079,6 +3080,21 @@ namespace WindowsApplication1
                     update = tools.checkUpdate(sqlgroupsTable, groupsTable, groupsyn.Group_CN, ADupdateKeys[1].ToString(), SQLupdateKeys, ADupdateKeys, sqlConn);
                     time.Stop();
                     //MessageBox.Show("update query" + time.GetElapsedTime());
+
+                    int  j = 0;
+                    debug = "Records to Update ";
+                    while (update.Read() && j < 30)
+                    {
+                        j++;
+                        for (i = 0; i < update.FieldCount; i++)
+                        {
+                            debug += (string)update[0].ToString() + ",";
+                        }
+                        debug += "\n";
+                    }
+                    gui.users_result1.Text = (debug);
+
+
 
                     // update groups in ad
                     time.Start();
@@ -3935,30 +3951,47 @@ namespace WindowsApplication1
         // BUTTONS FOR THE TAB
         private void group_push_for_virus_Click(object sender, EventArgs e)
         {
+            //MessageBox.Show(System.Web.HttpUtility.UrlEncode(", [ ] / \\ + * ? | = ; :", System.Text.Encoding.GetEncoding("utf-8")));
+            //MessageBox.Show(System.Web.HttpUtility.UrlDecode("free%2A+test+%2F%5C%5B%5D%27%3F%3A%3B%7C%3D%2C%2B%3E%3C%22+bob").Replace("+", " "));
 
-            if (tools.Authenticate("mne4d7", "blah", "OU=Atis,OU=FHCHS,DC=FHCHS,DC=EDU") == true)
-                group_result1.AppendText("found you");
-            else
-                group_result1.AppendText("failure you");
-            SqlConnection sqlConn = new SqlConnection("Data Source=fhcsvdb;Initial Catalog=soniswebdatabase;Integrated Security=SSPI;");
+            StopWatch timer = new StopWatch();
+            timer.Start();
+            groupSyncr.execute(groupconfig, tools, log, this);
+            timer.Stop();
+            MessageBox.Show("non bulk " + timer.GetElapsedTimeSecs().ToString());
+            int i;
+            for (i = 0; i < log.transactions.Count; i++)
+            {
+                group_result1.AppendText(log.transactions[i].ToString() + "\n");
+            }
+            for (i = 0; i < log.errors.Count; i++)
+            {
+                group_result2.AppendText(log.errors[i].ToString() + "\n");
+            }
 
-            sqlConn.Open();
-            // create the command object
-            SqlCommand sqlComm = new SqlCommand("SELECT soc_sec, first_name, ssn FROM name WHERE ssn = '594646633'", sqlConn);
-            SqlDataReader r = sqlComm.ExecuteReader();
-            while (r.Read())
-            {
-                string username = (string)r["first_name"];
-                string userID = (string)r["soc_sec"];
-                group_result1.AppendText(username);
-                group_result1.AppendText(userID);
-            }
-            r.Close();
-            sqlConn.Close();
-            foreach (string abc in tools.EnumerateOU("OU=Atis,OU=FHCHS,DC=FHCHS,DC=EDU"))
-            {
-                group_result1.AppendText(abc);
-            }
+            //if (tools.Authenticate("mne4d7", "blah", "OU=Atis,OU=FHCHS,DC=FHCHS,DC=EDU") == true)
+            //    group_result1.AppendText("found you");
+            //else
+            //    group_result1.AppendText("failure you");
+            //SqlConnection sqlConn = new SqlConnection("Data Source=fhcsvdb;Initial Catalog=soniswebdatabase;Integrated Security=SSPI;");
+
+            //sqlConn.Open();
+            //// create the command object
+            //SqlCommand sqlComm = new SqlCommand("SELECT soc_sec, first_name, ssn FROM name WHERE first_name like 'xa'", sqlConn);
+            //SqlDataReader r = sqlComm.ExecuteReader();
+            //while (r.Read())
+            //{
+            //    string username = (string)r["first_name"];
+            //    string userID = (string)r["soc_sec"];
+            //    group_result1.AppendText(username);
+            //    group_result1.AppendText(userID);
+            //}
+            //r.Close();
+            //sqlConn.Close();
+            //foreach (string abc in tools.EnumerateOU("OU=Atis,OU=FHCHS,DC=FHCHS,DC=EDU"))
+            //{
+            //    group_result1.AppendText(abc);
+            //}
         }
         private void group_cancel_Click(object sender, EventArgs e)
         {
@@ -4263,7 +4296,14 @@ namespace WindowsApplication1
             //
             // Create a SQL insert statement
             // tools.temp_Table(tools.EnumerateUsersInGroup("CN=_AtisRW,OU=Atis,OU=FHCHS,DC=FHCHS,DC=EDU"), "MikesADTest", "soniswebdatabase", "fhcsvdb");
+            StopWatch timer = new StopWatch();
+            timer.Start();
             groupSyncr.executeBulkcopy(groupconfig, tools, log, this);
+            timer.Stop();
+            MessageBox.Show("bulk " +timer.GetElapsedTimeSecs().ToString());
+
+
+
             int i;
             for (i = 0; i < log.transactions.Count; i++)
             {
