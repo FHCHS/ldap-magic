@@ -18,8 +18,8 @@ using System.Windows.Forms;
 
 
 // CONSIDERATIONS
-// This program is designed around SQL server 2000 and Active Directory 2003, SQLserver 2005 uses different methods fro accessing databases table information and column information this will need to upgraded when the move is made
-// This program depends on the existence of the columns picked in the save data, if columns names change the mapings will have to be remapped
+// This program is designed around SQL server 2000 and Active Directory 2003, SQLserver 2005 uses different methods for accessing databases table information and column information this will need to upgraded when the move is made
+// This program depends on the existence of the columns picked in the save data, if columns names change the mappings will have to be remapped
 // This program depends on the use of # temporary tables and therefore needs read & write capabilities to the selected database
 // This program attempts to check for empty lists and handle them robustly however there is a high chance if problem will occurs it is from a mishandeld empty list passed between functions
 // This program uses paging on expected large results from AD if too large of a pull (greater than 1499 records) comes from a  AD query it will break a non-paged function resulting in failed transactions

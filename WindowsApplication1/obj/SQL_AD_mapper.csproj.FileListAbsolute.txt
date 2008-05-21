@@ -1,0 +1,9 @@
+C:\Users\tcw6452\Code\.Net\SQL_AD_mapper\WindowsApplication1\bin\Release\WindowsApplication1.exe.config
+C:\Users\tcw6452\Code\.Net\SQL_AD_mapper\WindowsApplication1\obj\Release\WindowsApplication1.exe
+C:\Users\tcw6452\Code\.Net\SQL_AD_mapper\WindowsApplication1\obj\Release\WindowsApplication1.pdb
+C:\Users\tcw6452\Code\.Net\SQL_AD_mapper\WindowsApplication1\bin\Release\WindowsApplication1.exe
+C:\Users\tcw6452\Code\.Net\SQL_AD_mapper\WindowsApplication1\bin\Release\WindowsApplication1.pdb
+C:\Users\tcw6452\Code\.Net\SQL_AD_mapper\WindowsApplication1\obj\Release\ResolveAssemblyReference.cache
+C:\Users\tcw6452\Code\.Net\SQL_AD_mapper\WindowsApplication1\obj\Release\WindowsApplication1.Form1.resources
+C:\Users\tcw6452\Code\.Net\SQL_AD_mapper\WindowsApplication1\obj\Release\WindowsApplication1.Properties.Resources.resources
+C:\Users\tcw6452\Code\.Net\SQL_AD_mapper\WindowsApplication1\obj\Release\SQL_AD_mapper.csproj.GenerateResource.Cache
