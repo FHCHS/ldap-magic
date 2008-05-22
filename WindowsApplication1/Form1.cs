@@ -96,18 +96,6 @@ namespace WindowsApplication1
         {
             InitializeComponent();
         }
-        //public struct userObject
-        //{
-        //    public string sAMAccountName;
-        //    public string CN;
-        //    public Dictionary<string, string> properties;
-        //}
-        //public struct groupObject
-        //{
-        //    public string sAMAccountName;
-        //    public string CN;
-        //    public Dictionary<string, string> properties;
-        //}
         public class logFile
         {
             private List<string> logtransactions;
@@ -154,7 +142,7 @@ namespace WindowsApplication1
             private String configGroup_dbTable;
             private String configGroup_where;
             private String configGroup_Prepend;
-            private String configUser_CN;
+            private String configUser_Group_Reference;
             private String configUser_table_view;
             private String configUser_sAMAccount;
             private String configUser_dbTable;
@@ -174,7 +162,7 @@ namespace WindowsApplication1
                 configGroup_sAMAccount = "";
                 configGroup_dbTable = "";
                 configGroup_where = "";
-                configUser_CN = "";
+                configUser_Group_Reference = "";
                 configUser_table_view = "";
                 configUser_sAMAccount = "";
                 configUser_dbTable = "";
@@ -192,7 +180,7 @@ namespace WindowsApplication1
                 configGroup_sAMAccount = dictionary[configGroup_sAMAccount].ToString();
                 configGroup_dbTable = dictionary[configGroup_dbTable].ToString();
                 configGroup_where = dictionary[configGroup_where].ToString();
-                configUser_CN = dictionary[configUser_CN].ToString();
+                configUser_Group_Reference = dictionary[configUser_Group_Reference].ToString();
                 configUser_table_view = dictionary[configUser_table_view].ToString();
                 configUser_sAMAccount = dictionary[configUser_sAMAccount].ToString();
                 configUser_dbTable = dictionary[configUser_dbTable].ToString();
@@ -212,7 +200,7 @@ namespace WindowsApplication1
                 dictionary.TryGetValue("configGroup_dbTable", out configGroup_dbTable);
                 dictionary.TryGetValue("configGroup_where", out configGroup_where);
                 dictionary.TryGetValue("configGroup_Prepend", out configGroup_Prepend);
-                dictionary.TryGetValue("configUser_CN", out configUser_CN);
+                dictionary.TryGetValue("configUser_Group_Reference", out configUser_Group_Reference);
                 dictionary.TryGetValue("configUser_table_view", out configUser_table_view);
                 dictionary.TryGetValue("configUser_sAMAccount", out configUser_sAMAccount);
                 dictionary.TryGetValue("configUser_dbTable", out configUser_dbTable);
@@ -332,15 +320,15 @@ namespace WindowsApplication1
                     configGroup_Prepend = value;
                 }
             }
-            public String User_CN
+            public String User_Group_Reference
             {
                 get
                 {
-                    return configUser_CN;
+                    return configUser_Group_Reference;
                 }
                 set
                 {
-                    configUser_CN = value;
+                    configUser_Group_Reference = value;
                 }
             }
             public String User_table_view
@@ -423,7 +411,7 @@ namespace WindowsApplication1
                 returnvalue.Add("configGroup_dbTable", configGroup_dbTable);
                 returnvalue.Add("configGroup_where", configGroup_where);
                 returnvalue.Add("configGroup_Prepend", configGroup_Prepend);
-                returnvalue.Add("configUser_CN", configUser_CN);
+                returnvalue.Add("configUser_Group_Reference", configUser_Group_Reference);
                 returnvalue.Add("configUser_table_view", configUser_table_view);
                 returnvalue.Add("configUser_sAMAccount", configUser_sAMAccount);
                 returnvalue.Add("configUser_dbTable", configUser_dbTable);
@@ -1050,22 +1038,26 @@ namespace WindowsApplication1
                 }
                 return returnvalue;
             }
-            public DataTable EnumerateUsersInGroupDataTable(string groupDN)
+            public DataTable EnumerateUsersInGroupDataTable(string groupDN, string groupou, string coulumnNameForFQDN, string coulumnNameForGroup, string table)
             {
                 // note does not handle special/illegal characters for AD
+                // it is optimal to have the two field names match the coumn names pulled from SQL do not use group fro group name it will kill the SQL
                 // groupDN "CN=Sales,OU=test,DC=Fabrikam,DC=COM"
                 // returns FQDN "CN=user,OU=test,DC=Fabrikam,DC=COM" & group "CN=Sales,OU=test,DC=Fabrikam,DC=COM" of users in group 
                 DataTable returnvalue = new DataTable();
                 DataRow row;
-                DirectoryEntry group = new DirectoryEntry("LDAP://" + System.Web.HttpUtility.UrlEncode(groupDN).Replace("+", " ").Replace("*", "%2A"));
+
+                string bladh = "LDAP://" + "CN=" + System.Web.HttpUtility.UrlEncode(groupDN).Replace("+", " ").Replace("*", "%2A") + groupou;
+                DirectoryEntry group = new DirectoryEntry("LDAP://" + "CN=" + System.Web.HttpUtility.UrlEncode(groupDN).Replace("+", " ").Replace("*", "%2A") + groupou);
                 DirectorySearcher groupUsers = new DirectorySearcher(group);
-                returnvalue.Columns.Add("FQDN");
-                returnvalue.Columns.Add("group");
+                returnvalue.TableName = table;
+                returnvalue.Columns.Add(coulumnNameForFQDN);
+                returnvalue.Columns.Add(coulumnNameForGroup);
                 row = returnvalue.NewRow();
                 foreach (object dn in group.Properties["member"])
                 {
                     row[0] = dn.ToString();
-                    row[1] = groupDN;
+                    row[1] = groupDN;                    
                     returnvalue.Rows.Add(row);
                     row = returnvalue.NewRow();
                 }
@@ -1630,14 +1622,14 @@ namespace WindowsApplication1
         {
             public void executeBulkcopy(groupSynch groupsyn, toolset tools, logFile log, Form1 gui)
             {
-                //string debug = "";
-                //SqlDataReader debugreader;
-                //ArrayList debuglist = new ArrayList();
-                //int debugfieldcount;
-                //string debugrecourdcount;
-                //int i;
-                //StopWatch time = new StopWatch();
-                //SqlCommand sqldebugComm;
+                string debug = "";
+                SqlDataReader debugreader;
+                ArrayList debuglist = new ArrayList();
+                int debugfieldcount;
+                string debugrecourdcount;
+                int i;
+                StopWatch time = new StopWatch();
+                SqlCommand sqldebugComm;
 
                 string groupapp = groupsyn.Group_Append;
                 string groupOU = groupsyn.BaseGroupOU;
@@ -1945,11 +1937,11 @@ namespace WindowsApplication1
                 // grab users data from sql
                 if (groupsyn.User_where == "")
                 {
-                    sqlComm = new SqlCommand("SELECT DISTINCT RTRIM(" + groupsyn.User_sAMAccount + ") AS " + groupsyn.User_sAMAccount + ", RTRIM(" + groupsyn.User_CN + ") AS " + groupsyn.User_CN + " INTO " + sqlgroupMembersTable + " FROM " + groupsyn.User_dbTable, sqlConn);
+                    sqlComm = new SqlCommand("SELECT DISTINCT 'CN=' + RTRIM(" + groupsyn.User_sAMAccount + ") + ',OU=" + groupapp + "," + groupOU + "' AS " + groupsyn.User_sAMAccount + ", RTRIM(" + groupsyn.User_Group_Reference + ") + '" + groupapp + "' AS " + groupsyn.User_Group_Reference + " INTO " + sqlgroupMembersTable + " FROM " + groupsyn.User_dbTable, sqlConn);
                 }
                 else
                 {
-                    sqlComm = new SqlCommand("SELECT DISTINCT RTRIM(" + groupsyn.User_sAMAccount + ") AS " + groupsyn.User_sAMAccount + ", RTRIM(" + groupsyn.User_CN + ") AS " + groupsyn.User_CN + " INTO " + sqlgroupMembersTable + " FROM " + groupsyn.User_dbTable + " WHERE " + groupsyn.User_where, sqlConn);
+                    sqlComm = new SqlCommand("SELECT DISTINCT 'CN=' + RTRIM(" + groupsyn.User_sAMAccount + ") + ',OU=" + groupapp + "," + groupOU + "' AS " + groupsyn.User_sAMAccount + ", RTRIM(" + groupsyn.User_Group_Reference + ") + '" + groupapp + "' AS " + groupsyn.User_Group_Reference + " INTO " + sqlgroupMembersTable + " FROM " + groupsyn.User_dbTable + " WHERE " + groupsyn.User_where, sqlConn);
                 }
                 sqlComm.ExecuteNonQuery();
 
@@ -1959,17 +1951,63 @@ namespace WindowsApplication1
                 while (sqlgroups.Read())
                 {
                        // hopefully merge acts as an append
-                    ADusers.Merge(tools.EnumerateUsersInGroupDataTable("CN=" + (string)sqlgroups[0] + ",OU=" + groupapp + "," + groupOU));
+                    ADusers.Merge(tools.EnumerateUsersInGroupDataTable((string)sqlgroups[0], ",OU=" + groupapp + "," + groupOU, groupsyn.User_sAMAccount, groupsyn.User_Group_Reference, ADgroupMembersTable));
                 }
                 sqlgroups.Close();
 
                 // make the temp table for ou comparisons
                 tools.create_Table(ADusers, ADgroupMembersTable, sqlConn);
-                sqlComm = new SqlCommand("select count(" + ADusers.Columns[0].ColumnName + ") FROM " + ADgroupMembersTable, sqlConn);
-                MessageBox.Show("table " + ADgroupMembersTable + " has " + sqlComm.ExecuteScalar().ToString() + " records \n ");
+
+
+
+                debug = " total users in groups from AD \n";
+                sqldebugComm = new SqlCommand("select top 20 * FROM " + sqlgroupMembersTable, sqlConn);
+                debugreader = sqldebugComm.ExecuteReader();
+                debugfieldcount = debugreader.FieldCount;
+                for (i = 0; i < debugfieldcount; i++)
+                {
+                    debug += debugreader.GetName(i);
+                }
+                debug += "\n";
+                while (debugreader.Read())
+                {
+                    for (i = 0; i < debugfieldcount; i++)
+                    {
+                        debug += (string)debugreader[i] + ",";
+                    }
+                    debug += "\n";
+                }
+                sqldebugComm = new SqlCommand("select count(" + ADusers.Columns[0].ColumnName + ") FROM " + sqlgroupMembersTable, sqlConn);
+                debugreader.Close();
+                debugrecourdcount = sqldebugComm.ExecuteScalar().ToString();
+                MessageBox.Show("table " + sqlgroupMembersTable + " has " + debugrecourdcount + " records \n " + debugfieldcount + " fields \n sample data" + debug);
+
+                debug = " total users in groups from SQL \n";
+                sqldebugComm = new SqlCommand("select top 20 * FROM " + ADgroupMembersTable, sqlConn);
+                debugreader = sqldebugComm.ExecuteReader();
+                debugfieldcount = debugreader.FieldCount;
+                for (i = 0; i < debugfieldcount; i++)
+                {
+                    debug += debugreader.GetName(i);
+                }
+                debug += "\n";
+                while (debugreader.Read())
+                {
+                    for (i = 0; i < debugfieldcount; i++)
+                    {
+                        debug += (string)debugreader[i] + ",";
+                    }
+                    debug += "\n";
+                }
+                sqldebugComm = new SqlCommand("select count(" + ADusers.Columns[0].ColumnName + ") FROM " + ADgroupMembersTable, sqlConn);
+                debugreader.Close();
+                debugrecourdcount = sqldebugComm.ExecuteScalar().ToString();
+                MessageBox.Show("table " + ADgroupMembersTable + " has " + debugrecourdcount + " records \n " + debugfieldcount + " fields \n sample data" + debug);
+
+
                 
                 // compare and add/remove
-                add = tools.queryNotExists(sqlgroupMembersTable, ADgroupMembersTable, sqlConn, groupsyn.User_CN, ADusers.Columns[0].ColumnName);
+                add = tools.queryNotExists(sqlgroupMembersTable, ADgroupMembersTable, sqlConn, groupsyn.User_Group_Reference, ADusers.Columns[0].ColumnName);
                 while (add.Read())
                 {
                     tools.AddUserToGroup((string)add[0], (string)add[1]);
@@ -1978,13 +2016,129 @@ namespace WindowsApplication1
                 }
                 add.Close();
 
-                delete = tools.queryNotExists(sqlgroupMembersTable, ADgroupMembersTable, sqlConn, groupsyn.Group_CN, ADupdateKeys[1].ToString());
+                delete = tools.queryNotExists(ADgroupMembersTable, sqlgroupMembersTable, sqlConn, ADusers.Columns[0].ColumnName, groupsyn.User_Group_Reference);
                 // delete groups in AD
                 while (delete.Read())
                 {
 
                     tools.RemoveUserFromGroup((string)delete[0], (string)delete[1]);
                     log.transactions.Add("User removed ;" + (string)delete[ADupdateKeys[1].ToString()].ToString().Trim() + ",OU=" + groupapp + groupOU);
+
+                }
+                delete.Close();
+                sqlConn.Close();
+            }
+            public void executeUserSync(userSynch usersyn, toolset tools, logFile log, Form1 gui)
+            {
+                string debug = "";
+                SqlDataReader debugreader;
+                ArrayList debuglist = new ArrayList();
+                int debugfieldcount;
+                string debugrecourdcount;
+                int i;
+                StopWatch time = new StopWatch();
+                SqlCommand sqldebugComm;
+
+                string baseOU = usersyn.BaseUserOU;
+                string DC = baseOU.Substring(baseOU.IndexOf("DC"));
+
+                SqlDataReader add;
+                SqlDataReader delete;
+                SqlDataReader update;
+                ArrayList ADupdateKeys = new ArrayList();
+                ArrayList SQLupdateKeys = new ArrayList();
+                ArrayList fields = new ArrayList();
+                Dictionary<string, string> groupObject = new Dictionary<string, string>();
+                SqlConnection sqlConn = new SqlConnection("Data Source=" + usersyn.DataServer + ";Initial Catalog=" + usersyn.DBCatalog + ";Integrated Security=SSPI;");
+
+
+
+                string sqluserstable = "#sqlusersTable";
+                string ADuserstable = "#ADusersTable";
+                SqlDataReader sqlusers;
+                SqlCommand sqlComm;
+                DataTable ADusers = new DataTable();
+
+                // grab users data from sql
+                if (usersyn.User_where == "")
+                {
+                    sqlComm = new SqlCommand("SELECT DISTINCT RTRIM(" + usersyn.User_sAMAccount + ") AS " + usersyn.User_sAMAccount + ", RTRIM(" + usersyn.User_CN + ") AS " + usersyn.User_CN + " INTO " + sqluserstable + " FROM " + usersyn.User_dbTable, sqlConn);
+                }
+                else
+                {
+                    sqlComm = new SqlCommand("SELECT DISTINCT RTRIM(" + usersyn.User_sAMAccount + ") AS " + usersyn.User_sAMAccount + ", RTRIM(" + usersyn.User_CN + ") AS " + usersyn.User_CN + " INTO " + sqluserstable + " FROM " + usersyn.User_dbTable + " WHERE " + usersyn.User_where, sqlConn);
+                }
+                sqlComm.ExecuteNonQuery();
+
+                ADusers = tools.EnumerateUsersInOUDataTable(usersyn.BaseUserOU);
+                // make the temp table for ou comparisons
+                tools.create_Table(ADusers, ADuserstable, sqlConn);
+
+
+
+                debug = " total users from sql \n";
+                sqldebugComm = new SqlCommand("select top 20 * FROM " + sqluserstable, sqlConn);
+                debugreader = sqldebugComm.ExecuteReader();
+                debugfieldcount = debugreader.FieldCount;
+                for (i = 0; i < debugfieldcount; i++)
+                {
+                    debug += debugreader.GetName(i);
+                }
+                debug += "\n";
+                while (debugreader.Read())
+                {
+                    for (i = 0; i < debugfieldcount; i++)
+                    {
+                        debug += (string)debugreader[i] + ",";
+                    }
+                    debug += "\n";
+                }
+                sqldebugComm = new SqlCommand("select count(" + ADusers.Columns[0].ColumnName + ") FROM " + sqluserstable, sqlConn);
+                debugreader.Close();
+                debugrecourdcount = sqldebugComm.ExecuteScalar().ToString();
+                MessageBox.Show("table " + sqluserstable + " has " + debugrecourdcount + " records \n " + debugfieldcount + " fields \n sample data" + debug);
+
+                debug = " total users from AD \n";
+                sqldebugComm = new SqlCommand("select top 20 * FROM " + ADuserstable, sqlConn);
+                debugreader = sqldebugComm.ExecuteReader();
+                debugfieldcount = debugreader.FieldCount;
+                for (i = 0; i < debugfieldcount; i++)
+                {
+                    debug += debugreader.GetName(i);
+                }
+                debug += "\n";
+                while (debugreader.Read())
+                {
+                    for (i = 0; i < debugfieldcount; i++)
+                    {
+                        debug += (string)debugreader[i] + ",";
+                    }
+                    debug += "\n";
+                }
+                sqldebugComm = new SqlCommand("select count(" + ADusers.Columns[0].ColumnName + ") FROM " + ADuserstable, sqlConn);
+                debugreader.Close();
+                debugrecourdcount = sqldebugComm.ExecuteScalar().ToString();
+                MessageBox.Show("table " + ADuserstable + " has " + debugrecourdcount + " records \n " + debugfieldcount + " fields \n sample data" + debug);
+
+
+
+                // compare and add/remove
+                add = tools.queryNotExists(sqluserstable, ADuserstable, sqlConn, usersyn.User_CN, ADusers.Columns[0].ColumnName);
+                while (add.Read())
+                {
+                    tools.AddUserToGroup((string)add[0], (string)add[1]);
+                    log.transactions.Add("User added ;" + (string)add[0]);
+                    groupObject.Clear();
+                }
+                add.Close();
+
+                delete = tools.queryNotExists(sqluserstable, ADuserstable, sqlConn, usersyn.User_CN, ADupdateKeys[1].ToString());
+                // delete groups in AD
+                while (delete.Read())
+                {
+
+                    tools.RemoveUserFromGroup((string)delete[0], (string)delete[1]);
+                    log.transactions.Add("User removed ;" + (string)delete[ADupdateKeys[1].ToString()].ToString().Trim());
 
                 }
                 delete.Close();
@@ -2307,82 +2461,6 @@ namespace WindowsApplication1
 
 
         // UI DIALOG  DATA ENTRY EVENTS FOR USER SYNCH TAB
-        private void users_ou_Table_View_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            // only valid for SQL server 2000
-            if (userconfig.DBCatalog != "" && userconfig.DataServer != "")
-            {
-                //populates table dialog with tables or views depending on the results of a query
-                ArrayList tableList = new ArrayList();
-                SqlConnection sqlConn = new SqlConnection("Data Source=" + userconfig.DataServer.ToString() + ";Initial Catalog=" + userconfig.DBCatalog.ToString() + ";Integrated Security=SSPI;");
-                SqlCommand sqlComm;
-                sqlConn.Open();
-                // create the command object
-                if (users_ou_Table_View.Text.ToLower() == "table")
-                {
-                    sqlComm = new SqlCommand("SELECT name FROM sysobjects where TYPE = 'U' order by NAME", sqlConn);
-                }
-                else
-                {
-                    sqlComm = new SqlCommand("select name from SYSOBJECTS where TYPE = 'V' order by NAME", sqlConn);
-                }
-                SqlDataReader r = sqlComm.ExecuteReader();
-                while (r.Read())
-                {
-                    tableList.Add((string)r[0].ToString().Trim());
-                }
-                r.Close();
-                sqlConn.Close();
-
-                userconfig.OU_table_view = users_ou_Table_View.Text.ToString();
-                users_ou_source.DataSource = tableList;
-            }
-            else
-            {
-                MessageBox.Show("Please set the dataserver and catalog");
-            }
-        }
-        private void users_ou_source_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (userconfig.DBCatalog != "" && userconfig.DataServer != "")
-            {
-                //populates columns dialog with columns depending on the results of a query
-                ArrayList columnList = new ArrayList();
-                SqlConnection sqlConn = new SqlConnection("Data Source=" + userconfig.DataServer.ToString() + ";Initial Catalog=" + userconfig.DBCatalog.ToString() + ";Integrated Security=SSPI;");
-
-                sqlConn.Open();
-                // create the command object
-                SqlCommand sqlComm = new SqlCommand("SELECT column_name FROM information_schema.columns WHERE table_name = '" + users_ou_source.Text.ToString() + "'", sqlConn);
-                SqlDataReader r = sqlComm.ExecuteReader();
-                while (r.Read())
-                {
-                    columnList.Add((string)r[0].ToString().Trim());
-                }
-                r.Close();
-                sqlConn.Close();
-
-                userconfig.OU_dbTable = users_ou_source.Text.ToString();
-                users_ou_CN.DataSource = columnList;
-                users_ou_sAMAccountName.DataSource = columnList.Clone();
-            }
-            else
-            {
-                MessageBox.Show("Please set the dataserver and catalog");
-            }
-
-        }
-        private void users_ou_CN_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            userconfig.OU_CN = users_ou_CN.Text.ToString();
-        }
-        private void users_ou_sAMAccount_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            userconfig.OU_sAMAccount = users_ou_sAMAccountName.Text.ToString();
-        }
-        private void users_ou_where_TextChanged(object sender, EventArgs e)
-        {
-            userconfig.OU_where = users_ou_where.Text.ToString();
-        }
 
         private void users_user_Table_View_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -2574,15 +2652,6 @@ namespace WindowsApplication1
             userconfig.load(properties);
             Catalog.Text = userconfig.DBCatalog;
             userconfig.load(properties);
-            users_ou_Table_View.Text = userconfig.OU_table_view;
-            userconfig.load(properties);
-            users_ou_source.Text = userconfig.OU_dbTable;
-            userconfig.load(properties);
-            users_ou_CN.Text = userconfig.OU_CN;
-            userconfig.load(properties);
-            users_ou_sAMAccountName.Text = userconfig.OU_sAMAccount;
-            userconfig.load(properties);
-            users_ou_where.Text = userconfig.User_table_view;
 
             users_user_Table_View.Text = userconfig.User_table_view;
             userconfig.load(properties);
@@ -2738,7 +2807,7 @@ namespace WindowsApplication1
                 sqlConn.Close();
 
                 groupconfig.User_dbTable = group_user_source.Text.ToString();
-                group_user_CN.DataSource = columnList;
+                group_user_Group_reference.DataSource = columnList;
                 group_user_sAMAccountName.DataSource = columnList.Clone();
             }
             else
@@ -2746,10 +2815,7 @@ namespace WindowsApplication1
                 MessageBox.Show("Please select table or view");
             }
         }
-        private void group_user_CN_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            groupconfig.User_CN = group_user_CN.Text.ToString();
-        }
+
         private void group_user_sAMAccountName_SelectedIndexChanged(object sender, EventArgs e)
         {
             groupconfig.User_sAMAccount = group_user_sAMAccountName.Text.ToString();
@@ -2758,7 +2824,10 @@ namespace WindowsApplication1
         {
             groupconfig.User_where = group_user_where.Text.ToString();
         }
-
+        private void group_user_Group_reference_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            groupconfig.User_Group_Reference = group_user_Group_reference.Text.ToString();
+        }
         private void group_baseGroupOU_TextChanged(object sender, EventArgs e)
         {
             groupconfig.BaseGroupOU = group_baseGroupOU.Text.ToString();
@@ -2844,7 +2913,7 @@ namespace WindowsApplication1
             group_result2.Clear();
             group_result2.AppendText("This is your user query \n");
             group_result2.AppendText("Select ");
-            group_result2.AppendText(groupconfig.User_CN);
+            group_result2.AppendText(groupconfig.User_Group_Reference);
             group_result2.AppendText(", ");
             group_result2.AppendText(groupconfig.User_sAMAccount);
             group_result2.AppendText(" From ");
@@ -2931,7 +3000,7 @@ namespace WindowsApplication1
             groupconfig.load(properties);
             group_user_source.Text = groupconfig.User_dbTable;
             groupconfig.load(properties);
-            group_user_CN.Text = groupconfig.User_CN;
+            group_user_Group_reference.Text = groupconfig.User_Group_Reference;
             groupconfig.load(properties);
             group_user_sAMAccountName.Text = groupconfig.User_sAMAccount;
             groupconfig.load(properties);
@@ -3154,5 +3223,7 @@ namespace WindowsApplication1
                 execution.execution_order.RemoveAt(execution.execution_order.IndexOf(execution_order_list.SelectedIndex.ToString()));
             }
         }
+
+
     }
 }
