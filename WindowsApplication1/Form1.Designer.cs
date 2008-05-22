@@ -28,6 +28,7 @@ namespace WindowsApplication1
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.group_execute_now = new System.Windows.Forms.Button();
             this.label31 = new System.Windows.Forms.Label();
@@ -73,6 +74,7 @@ namespace WindowsApplication1
             this.label7 = new System.Windows.Forms.Label();
             this.user_group_source = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.users_user_CN = new System.Windows.Forms.ComboBox();
             this.users_open = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.users_result1 = new System.Windows.Forms.RichTextBox();
@@ -85,46 +87,28 @@ namespace WindowsApplication1
             this.label19 = new System.Windows.Forms.Label();
             this.users_baseUserOU = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.users_user_CN = new System.Windows.Forms.ComboBox();
             this.users_user_source = new System.Windows.Forms.ComboBox();
             this.users_user_sAMAccountName = new System.Windows.Forms.ComboBox();
             this.users_user_where = new System.Windows.Forms.MaskedTextBox();
             this.label18 = new System.Windows.Forms.Label();
             this.users_user_Table_View = new System.Windows.Forms.ComboBox();
-            this.label21 = new System.Windows.Forms.Label();
             this.label22 = new System.Windows.Forms.Label();
             this.label23 = new System.Windows.Forms.Label();
             this.users_see_query = new System.Windows.Forms.Button();
+            this.label21 = new System.Windows.Forms.Label();
             this.button7 = new System.Windows.Forms.Button();
             this.button8 = new System.Windows.Forms.Button();
             this.button9 = new System.Windows.Forms.Button();
             this.button10 = new System.Windows.Forms.Button();
             this.tabPage4 = new System.Windows.Forms.TabPage();
-            this.label47 = new System.Windows.Forms.Label();
-            this.usermap_active_disabled = new System.Windows.Forms.ComboBox();
-            this.usermap_baseOU = new System.Windows.Forms.RichTextBox();
-            this.label45 = new System.Windows.Forms.Label();
-            this.label41 = new System.Windows.Forms.Label();
-            this.usermap_Database_or_AD = new System.Windows.Forms.ComboBox();
-            this.usermap_move_delete = new System.Windows.Forms.ComboBox();
-            this.label43 = new System.Windows.Forms.Label();
-            this.move_users = new System.Windows.Forms.GroupBox();
-            this.usermap_toOU = new System.Windows.Forms.RichTextBox();
-            this.usermap_fromOU = new System.Windows.Forms.RichTextBox();
-            this.usermap_disableDays = new System.Windows.Forms.TextBox();
-            this.label39 = new System.Windows.Forms.Label();
-            this.label37 = new System.Windows.Forms.Label();
-            this.label38 = new System.Windows.Forms.Label();
-            this.OUdata = new System.Windows.Forms.GroupBox();
-            this.usermap_OU_OU = new System.Windows.Forms.RichTextBox();
-            this.usermap_OU_list_groups = new System.Windows.Forms.MaskedTextBox();
-            this.label44 = new System.Windows.Forms.Label();
-            this.label42 = new System.Windows.Forms.Label();
-            this.label40 = new System.Windows.Forms.Label();
-            this.groupBox6 = new System.Windows.Forms.GroupBox();
-            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
-            this.richTextBox2 = new System.Windows.Forms.RichTextBox();
+            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabPage6 = new System.Windows.Forms.TabPage();
+            this.button14 = new System.Windows.Forms.Button();
+            this.button13 = new System.Windows.Forms.Button();
+            this.button12 = new System.Windows.Forms.Button();
+            this.oUReasons = new System.Windows.Forms.ListBox();
             this.UserData = new System.Windows.Forms.GroupBox();
+            this.factName = new System.Windows.Forms.MaskedTextBox();
             this.label34 = new System.Windows.Forms.Label();
             this.usermap_user_sAMAccountName = new System.Windows.Forms.ComboBox();
             this.usermap_user_source = new System.Windows.Forms.ComboBox();
@@ -133,6 +117,29 @@ namespace WindowsApplication1
             this.usermap_user_table_view = new System.Windows.Forms.ComboBox();
             this.label35 = new System.Windows.Forms.Label();
             this.label36 = new System.Windows.Forms.Label();
+            this.userMappingStep1Instructions = new System.Windows.Forms.Label();
+            this.tabPage7 = new System.Windows.Forms.TabPage();
+            this.usermap_active_disabled = new System.Windows.Forms.ComboBox();
+            this.label47 = new System.Windows.Forms.Label();
+            this.label41 = new System.Windows.Forms.Label();
+            this.move_users = new System.Windows.Forms.GroupBox();
+            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
+            this.richTextBox2 = new System.Windows.Forms.RichTextBox();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.label45 = new System.Windows.Forms.Label();
+            this.label46 = new System.Windows.Forms.Label();
+            this.label48 = new System.Windows.Forms.Label();
+            this.OUdata = new System.Windows.Forms.GroupBox();
+            this.richTextBox3 = new System.Windows.Forms.RichTextBox();
+            this.maskedTextBox1 = new System.Windows.Forms.MaskedTextBox();
+            this.label49 = new System.Windows.Forms.Label();
+            this.label50 = new System.Windows.Forms.Label();
+            this.label51 = new System.Windows.Forms.Label();
+            this.usermap_move_delete = new System.Windows.Forms.ComboBox();
+            this.usermap_Database_or_AD = new System.Windows.Forms.ComboBox();
+            this.label52 = new System.Windows.Forms.Label();
+            this.usermap_baseOU = new System.Windows.Forms.RichTextBox();
+            this.label43 = new System.Windows.Forms.Label();
             this.tabPage5 = new System.Windows.Forms.TabPage();
             this.execution_remove = new System.Windows.Forms.Button();
             this.execution_add = new System.Windows.Forms.Button();
@@ -143,6 +150,17 @@ namespace WindowsApplication1
             this.label25 = new System.Windows.Forms.Label();
             this.label24 = new System.Windows.Forms.Label();
             this.DBserver = new System.Windows.Forms.TextBox();
+            this.usermap_toOU = new System.Windows.Forms.RichTextBox();
+            this.usermap_fromOU = new System.Windows.Forms.RichTextBox();
+            this.usermap_disableDays = new System.Windows.Forms.TextBox();
+            this.label39 = new System.Windows.Forms.Label();
+            this.label37 = new System.Windows.Forms.Label();
+            this.label38 = new System.Windows.Forms.Label();
+            this.usermap_OU_OU = new System.Windows.Forms.RichTextBox();
+            this.usermap_OU_list_groups = new System.Windows.Forms.MaskedTextBox();
+            this.label44 = new System.Windows.Forms.Label();
+            this.label42 = new System.Windows.Forms.Label();
+            this.label40 = new System.Windows.Forms.Label();
             this.tabPage2.SuspendLayout();
             this.user_group_source.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -150,10 +168,12 @@ namespace WindowsApplication1
             this.groupBox3.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.tabPage4.SuspendLayout();
+            this.tabControl1.SuspendLayout();
+            this.tabPage6.SuspendLayout();
+            this.UserData.SuspendLayout();
+            this.tabPage7.SuspendLayout();
             this.move_users.SuspendLayout();
             this.OUdata.SuspendLayout();
-            this.groupBox6.SuspendLayout();
-            this.UserData.SuspendLayout();
             this.tabPage5.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.SuspendLayout();
@@ -205,7 +225,7 @@ namespace WindowsApplication1
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(1118, 624);
+            this.tabPage2.Size = new System.Drawing.Size(1123, 613);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Group Synch";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -619,10 +639,11 @@ namespace WindowsApplication1
             this.user_group_source.Controls.Add(this.tabPage4);
             this.user_group_source.Controls.Add(this.tabPage5);
             this.user_group_source.Controls.Add(this.tabPage3);
-            this.user_group_source.Location = new System.Drawing.Point(12, 12);
+            this.user_group_source.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.user_group_source.Location = new System.Drawing.Point(0, 0);
             this.user_group_source.Name = "user_group_source";
             this.user_group_source.SelectedIndex = 0;
-            this.user_group_source.Size = new System.Drawing.Size(1126, 650);
+            this.user_group_source.Size = new System.Drawing.Size(1131, 639);
             this.user_group_source.TabIndex = 0;
             this.user_group_source.SelectedIndexChanged += new System.EventHandler(this.group_user_Group_reference_SelectedIndexChanged);
             // 
@@ -642,10 +663,19 @@ namespace WindowsApplication1
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(1118, 624);
+            this.tabPage1.Size = new System.Drawing.Size(1123, 613);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Users Synch";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // users_user_CN
+            // 
+            this.users_user_CN.FormattingEnabled = true;
+            this.users_user_CN.Location = new System.Drawing.Point(919, 46);
+            this.users_user_CN.Name = "users_user_CN";
+            this.users_user_CN.Size = new System.Drawing.Size(174, 21);
+            this.users_user_CN.TabIndex = 2;
+            this.users_user_CN.SelectedIndexChanged += new System.EventHandler(this.users_user_CN_SelectedIndexChanged);
             // 
             // users_open
             // 
@@ -769,15 +799,6 @@ namespace WindowsApplication1
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "User Data";
             // 
-            // users_user_CN
-            // 
-            this.users_user_CN.FormattingEnabled = true;
-            this.users_user_CN.Location = new System.Drawing.Point(919, 46);
-            this.users_user_CN.Name = "users_user_CN";
-            this.users_user_CN.Size = new System.Drawing.Size(174, 21);
-            this.users_user_CN.TabIndex = 2;
-            this.users_user_CN.SelectedIndexChanged += new System.EventHandler(this.users_user_CN_SelectedIndexChanged);
-            // 
             // users_user_source
             // 
             this.users_user_source.FormattingEnabled = true;
@@ -826,15 +847,6 @@ namespace WindowsApplication1
             this.users_user_Table_View.TabIndex = 0;
             this.users_user_Table_View.SelectedIndexChanged += new System.EventHandler(this.users_user_Table_View_SelectedIndexChanged);
             // 
-            // label21
-            // 
-            this.label21.AutoSize = true;
-            this.label21.Location = new System.Drawing.Point(798, 49);
-            this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(61, 13);
-            this.label21.TabIndex = 79;
-            this.label21.Text = "Short name";
-            // 
             // label22
             // 
             this.label22.AutoSize = true;
@@ -862,6 +874,15 @@ namespace WindowsApplication1
             this.users_see_query.Text = "See query";
             this.users_see_query.UseVisualStyleBackColor = true;
             this.users_see_query.Click += new System.EventHandler(this.users_see_query_Click);
+            // 
+            // label21
+            // 
+            this.label21.AutoSize = true;
+            this.label21.Location = new System.Drawing.Point(798, 49);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(61, 13);
+            this.label21.TabIndex = 79;
+            this.label21.Text = "Short name";
             // 
             // button7
             // 
@@ -905,268 +926,90 @@ namespace WindowsApplication1
             // 
             // tabPage4
             // 
-            this.tabPage4.Controls.Add(this.label47);
-            this.tabPage4.Controls.Add(this.usermap_active_disabled);
+            this.tabPage4.Controls.Add(this.tabControl1);
             this.tabPage4.Controls.Add(this.usermap_baseOU);
-            this.tabPage4.Controls.Add(this.label45);
-            this.tabPage4.Controls.Add(this.label41);
-            this.tabPage4.Controls.Add(this.usermap_Database_or_AD);
-            this.tabPage4.Controls.Add(this.usermap_move_delete);
             this.tabPage4.Controls.Add(this.label43);
-            this.tabPage4.Controls.Add(this.move_users);
-            this.tabPage4.Controls.Add(this.OUdata);
-            this.tabPage4.Controls.Add(this.groupBox6);
-            this.tabPage4.Controls.Add(this.UserData);
             this.tabPage4.Location = new System.Drawing.Point(4, 22);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage4.Size = new System.Drawing.Size(1118, 624);
+            this.tabPage4.Size = new System.Drawing.Size(1123, 613);
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "User Mapping";
             this.tabPage4.UseVisualStyleBackColor = true;
             // 
-            // label47
+            // tabControl1
             // 
-            this.label47.AutoSize = true;
-            this.label47.Location = new System.Drawing.Point(690, 291);
-            this.label47.Name = "label47";
-            this.label47.Size = new System.Drawing.Size(93, 13);
-            this.label47.TabIndex = 91;
-            this.label47.Text = "Active or Disabled";
+            this.tabControl1.Controls.Add(this.tabPage6);
+            this.tabControl1.Controls.Add(this.tabPage7);
+            this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl1.Location = new System.Drawing.Point(3, 3);
+            this.tabControl1.Name = "tabControl1";
+            this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.Size = new System.Drawing.Size(1117, 607);
+            this.tabControl1.TabIndex = 122;
             // 
-            // usermap_active_disabled
+            // tabPage6
             // 
-            this.usermap_active_disabled.FormattingEnabled = true;
-            this.usermap_active_disabled.Items.AddRange(new object[] {
-            "ALL",
-            "active",
-            "disabled"});
-            this.usermap_active_disabled.Location = new System.Drawing.Point(693, 307);
-            this.usermap_active_disabled.Name = "usermap_active_disabled";
-            this.usermap_active_disabled.Size = new System.Drawing.Size(174, 21);
-            this.usermap_active_disabled.TabIndex = 90;
-            this.usermap_active_disabled.SelectedIndexChanged += new System.EventHandler(this.usermap_active_disabled_SelectedIndexChanged);
+            this.tabPage6.Controls.Add(this.button14);
+            this.tabPage6.Controls.Add(this.button13);
+            this.tabPage6.Controls.Add(this.button12);
+            this.tabPage6.Controls.Add(this.oUReasons);
+            this.tabPage6.Controls.Add(this.UserData);
+            this.tabPage6.Controls.Add(this.userMappingStep1Instructions);
+            this.tabPage6.Location = new System.Drawing.Point(4, 22);
+            this.tabPage6.Name = "tabPage6";
+            this.tabPage6.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage6.Size = new System.Drawing.Size(1109, 581);
+            this.tabPage6.TabIndex = 0;
+            this.tabPage6.Text = "Step 1";
+            this.tabPage6.UseVisualStyleBackColor = true;
             // 
-            // usermap_baseOU
+            // button14
             // 
-            this.usermap_baseOU.Location = new System.Drawing.Point(801, 371);
-            this.usermap_baseOU.Name = "usermap_baseOU";
-            this.usermap_baseOU.Size = new System.Drawing.Size(292, 40);
-            this.usermap_baseOU.TabIndex = 121;
-            this.usermap_baseOU.Text = "";
-            this.usermap_baseOU.TextChanged += new System.EventHandler(this.usermap_baseOU_TextChanged);
+            this.button14.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.button14.AutoSize = true;
+            this.button14.Location = new System.Drawing.Point(278, 306);
+            this.button14.Name = "button14";
+            this.button14.Size = new System.Drawing.Size(66, 24);
+            this.button14.TabIndex = 126;
+            this.button14.Text = "Delete";
+            this.button14.UseVisualStyleBackColor = true;
             // 
-            // label45
+            // button13
             // 
-            this.label45.AutoSize = true;
-            this.label45.Location = new System.Drawing.Point(416, 291);
-            this.label45.Name = "label45";
-            this.label45.Size = new System.Drawing.Size(80, 13);
-            this.label45.TabIndex = 120;
-            this.label45.Text = "Move or Delete";
+            this.button13.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.button13.AutoSize = true;
+            this.button13.Location = new System.Drawing.Point(278, 274);
+            this.button13.Name = "button13";
+            this.button13.Size = new System.Drawing.Size(66, 24);
+            this.button13.TabIndex = 125;
+            this.button13.Text = "Edit";
+            this.button13.UseVisualStyleBackColor = true;
             // 
-            // label41
+            // button12
             // 
-            this.label41.AutoSize = true;
-            this.label41.Location = new System.Drawing.Point(416, 15);
-            this.label41.Name = "label41";
-            this.label41.Size = new System.Drawing.Size(118, 13);
-            this.label41.TabIndex = 119;
-            this.label41.Text = "Database or AD source";
+            this.button12.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.button12.AutoSize = true;
+            this.button12.Location = new System.Drawing.Point(278, 244);
+            this.button12.Name = "button12";
+            this.button12.Size = new System.Drawing.Size(66, 24);
+            this.button12.TabIndex = 124;
+            this.button12.Text = "Add";
+            this.button12.UseVisualStyleBackColor = true;
             // 
-            // usermap_Database_or_AD
+            // oUReasons
             // 
-            this.usermap_Database_or_AD.FormattingEnabled = true;
-            this.usermap_Database_or_AD.ItemHeight = 13;
-            this.usermap_Database_or_AD.Items.AddRange(new object[] {
-            "Database",
-            "Active Directory OU"});
-            this.usermap_Database_or_AD.Location = new System.Drawing.Point(420, 31);
-            this.usermap_Database_or_AD.Name = "usermap_Database_or_AD";
-            this.usermap_Database_or_AD.Size = new System.Drawing.Size(217, 21);
-            this.usermap_Database_or_AD.TabIndex = 118;
-            this.usermap_Database_or_AD.SelectedIndexChanged += new System.EventHandler(this.Database_or_AD_SelectedIndexChanged);
-            // 
-            // usermap_move_delete
-            // 
-            this.usermap_move_delete.FormattingEnabled = true;
-            this.usermap_move_delete.ItemHeight = 13;
-            this.usermap_move_delete.Items.AddRange(new object[] {
-            "Move",
-            "Delete"});
-            this.usermap_move_delete.Location = new System.Drawing.Point(419, 307);
-            this.usermap_move_delete.Name = "usermap_move_delete";
-            this.usermap_move_delete.Size = new System.Drawing.Size(218, 21);
-            this.usermap_move_delete.TabIndex = 117;
-            this.usermap_move_delete.SelectedIndexChanged += new System.EventHandler(this.move_delete_SelectedIndexChanged);
-            // 
-            // label43
-            // 
-            this.label43.AutoSize = true;
-            this.label43.Location = new System.Drawing.Point(798, 355);
-            this.label43.Name = "label43";
-            this.label43.Size = new System.Drawing.Size(50, 13);
-            this.label43.TabIndex = 116;
-            this.label43.Text = "Base OU";
-            // 
-            // move_users
-            // 
-            this.move_users.Controls.Add(this.usermap_toOU);
-            this.move_users.Controls.Add(this.usermap_fromOU);
-            this.move_users.Controls.Add(this.usermap_disableDays);
-            this.move_users.Controls.Add(this.label39);
-            this.move_users.Controls.Add(this.label37);
-            this.move_users.Controls.Add(this.label38);
-            this.move_users.Location = new System.Drawing.Point(419, 334);
-            this.move_users.Name = "move_users";
-            this.move_users.Size = new System.Drawing.Size(341, 228);
-            this.move_users.TabIndex = 114;
-            this.move_users.TabStop = false;
-            this.move_users.Text = "Move Users Matching Criteria";
-            this.move_users.Visible = false;
-            // 
-            // usermap_toOU
-            // 
-            this.usermap_toOU.Location = new System.Drawing.Point(19, 138);
-            this.usermap_toOU.Name = "usermap_toOU";
-            this.usermap_toOU.Size = new System.Drawing.Size(292, 40);
-            this.usermap_toOU.TabIndex = 123;
-            this.usermap_toOU.Text = "";
-            this.usermap_toOU.TextChanged += new System.EventHandler(this.usermap_toOU_TextChanged);
-            // 
-            // usermap_fromOU
-            // 
-            this.usermap_fromOU.Location = new System.Drawing.Point(19, 77);
-            this.usermap_fromOU.Name = "usermap_fromOU";
-            this.usermap_fromOU.Size = new System.Drawing.Size(292, 40);
-            this.usermap_fromOU.TabIndex = 122;
-            this.usermap_fromOU.Text = "";
-            this.usermap_fromOU.TextChanged += new System.EventHandler(this.usermap_fromOU_TextChanged);
-            // 
-            // usermap_disableDays
-            // 
-            this.usermap_disableDays.Location = new System.Drawing.Point(19, 37);
-            this.usermap_disableDays.Name = "usermap_disableDays";
-            this.usermap_disableDays.Size = new System.Drawing.Size(70, 20);
-            this.usermap_disableDays.TabIndex = 113;
-            this.usermap_disableDays.TextChanged += new System.EventHandler(this.usermap_disableDays_TextChanged);
-            // 
-            // label39
-            // 
-            this.label39.AutoSize = true;
-            this.label39.Location = new System.Drawing.Point(16, 122);
-            this.label39.Name = "label39";
-            this.label39.Size = new System.Drawing.Size(39, 13);
-            this.label39.TabIndex = 112;
-            this.label39.Text = "To OU";
-            // 
-            // label37
-            // 
-            this.label37.AutoSize = true;
-            this.label37.Location = new System.Drawing.Point(16, 61);
-            this.label37.Name = "label37";
-            this.label37.Size = new System.Drawing.Size(49, 13);
-            this.label37.TabIndex = 111;
-            this.label37.Text = "From OU";
-            // 
-            // label38
-            // 
-            this.label38.AutoSize = true;
-            this.label38.Location = new System.Drawing.Point(16, 21);
-            this.label38.Name = "label38";
-            this.label38.Size = new System.Drawing.Size(104, 13);
-            this.label38.TabIndex = 110;
-            this.label38.Text = "Disable after xx days";
-            // 
-            // OUdata
-            // 
-            this.OUdata.Controls.Add(this.usermap_OU_OU);
-            this.OUdata.Controls.Add(this.usermap_OU_list_groups);
-            this.OUdata.Controls.Add(this.label44);
-            this.OUdata.Controls.Add(this.label42);
-            this.OUdata.Controls.Add(this.label40);
-            this.OUdata.Location = new System.Drawing.Point(766, 58);
-            this.OUdata.Name = "OUdata";
-            this.OUdata.Size = new System.Drawing.Size(341, 215);
-            this.OUdata.TabIndex = 113;
-            this.OUdata.TabStop = false;
-            this.OUdata.Text = "OU Data";
-            this.OUdata.Visible = false;
-            // 
-            // usermap_OU_OU
-            // 
-            this.usermap_OU_OU.Location = new System.Drawing.Point(29, 78);
-            this.usermap_OU_OU.Name = "usermap_OU_OU";
-            this.usermap_OU_OU.Size = new System.Drawing.Size(293, 40);
-            this.usermap_OU_OU.TabIndex = 87;
-            this.usermap_OU_OU.Text = "";
-            this.usermap_OU_OU.TextChanged += new System.EventHandler(this.usermap_OU_OU_TextChanged);
-            // 
-            // usermap_OU_list_groups
-            // 
-            this.usermap_OU_list_groups.Location = new System.Drawing.Point(29, 137);
-            this.usermap_OU_list_groups.Name = "usermap_OU_list_groups";
-            this.usermap_OU_list_groups.Size = new System.Drawing.Size(295, 20);
-            this.usermap_OU_list_groups.TabIndex = 86;
-            this.usermap_OU_list_groups.MaskInputRejected += new System.Windows.Forms.MaskInputRejectedEventHandler(this.usermap_OU_list_groups_MaskInputRejected);
-            // 
-            // label44
-            // 
-            this.label44.AutoSize = true;
-            this.label44.Location = new System.Drawing.Point(26, 121);
-            this.label44.Name = "label44";
-            this.label44.Size = new System.Drawing.Size(106, 13);
-            this.label44.TabIndex = 3;
-            this.label44.Text = "List of group(s) by \",\"";
-            // 
-            // label42
-            // 
-            this.label42.AutoSize = true;
-            this.label42.Location = new System.Drawing.Point(26, 32);
-            this.label42.Name = "label42";
-            this.label42.Size = new System.Drawing.Size(202, 26);
-            this.label42.TabIndex = 2;
-            this.label42.Text = "Grab all users in this OU where they have\r\nthe groups listed below seperated by \"" +
-                ",\"";
-            // 
-            // label40
-            // 
-            this.label40.AutoSize = true;
-            this.label40.Location = new System.Drawing.Point(25, 62);
-            this.label40.Name = "label40";
-            this.label40.Size = new System.Drawing.Size(23, 13);
-            this.label40.TabIndex = 0;
-            this.label40.Text = "OU";
-            // 
-            // groupBox6
-            // 
-            this.groupBox6.Controls.Add(this.richTextBox1);
-            this.groupBox6.Controls.Add(this.richTextBox2);
-            this.groupBox6.Location = new System.Drawing.Point(6, 31);
-            this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(382, 575);
-            this.groupBox6.TabIndex = 108;
-            this.groupBox6.TabStop = false;
-            this.groupBox6.Text = "Data Results";
-            // 
-            // richTextBox1
-            // 
-            this.richTextBox1.Location = new System.Drawing.Point(10, 41);
-            this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(361, 243);
-            this.richTextBox1.TabIndex = 70;
-            this.richTextBox1.Text = "";
-            // 
-            // richTextBox2
-            // 
-            this.richTextBox2.Location = new System.Drawing.Point(10, 309);
-            this.richTextBox2.Name = "richTextBox2";
-            this.richTextBox2.Size = new System.Drawing.Size(361, 243);
-            this.richTextBox2.TabIndex = 90;
-            this.richTextBox2.Text = "";
+            this.oUReasons.Dock = System.Windows.Forms.DockStyle.Left;
+            this.oUReasons.FormattingEnabled = true;
+            this.oUReasons.Location = new System.Drawing.Point(3, 3);
+            this.oUReasons.Name = "oUReasons";
+            this.oUReasons.Size = new System.Drawing.Size(269, 563);
+            this.oUReasons.Sorted = true;
+            this.oUReasons.TabIndex = 121;
             // 
             // UserData
             // 
+            this.UserData.Controls.Add(this.factName);
             this.UserData.Controls.Add(this.label34);
             this.UserData.Controls.Add(this.usermap_user_sAMAccountName);
             this.UserData.Controls.Add(this.usermap_user_source);
@@ -1175,27 +1018,33 @@ namespace WindowsApplication1
             this.UserData.Controls.Add(this.usermap_user_table_view);
             this.UserData.Controls.Add(this.label35);
             this.UserData.Controls.Add(this.label36);
-            this.UserData.Location = new System.Drawing.Point(419, 58);
+            this.UserData.Location = new System.Drawing.Point(527, 151);
             this.UserData.Name = "UserData";
-            this.UserData.Size = new System.Drawing.Size(341, 215);
+            this.UserData.Size = new System.Drawing.Size(341, 223);
             this.UserData.TabIndex = 105;
             this.UserData.TabStop = false;
-            this.UserData.Text = "User Data";
-            this.UserData.Visible = false;
+            this.UserData.Text = "Fact Query";
+            // 
+            // factName
+            // 
+            this.factName.Location = new System.Drawing.Point(25, 41);
+            this.factName.Name = "factName";
+            this.factName.Size = new System.Drawing.Size(292, 20);
+            this.factName.TabIndex = 86;
             // 
             // label34
             // 
             this.label34.AutoSize = true;
-            this.label34.Location = new System.Drawing.Point(22, 26);
+            this.label34.Location = new System.Drawing.Point(22, 25);
             this.label34.Name = "label34";
-            this.label34.Size = new System.Drawing.Size(226, 13);
+            this.label34.Size = new System.Drawing.Size(59, 13);
             this.label34.TabIndex = 85;
-            this.label34.Text = "Users from this query can be moved or deleted";
+            this.label34.Text = "Fact Name";
             // 
             // usermap_user_sAMAccountName
             // 
             this.usermap_user_sAMAccountName.FormattingEnabled = true;
-            this.usermap_user_sAMAccountName.Location = new System.Drawing.Point(143, 105);
+            this.usermap_user_sAMAccountName.Location = new System.Drawing.Point(143, 138);
             this.usermap_user_sAMAccountName.Name = "usermap_user_sAMAccountName";
             this.usermap_user_sAMAccountName.Size = new System.Drawing.Size(174, 21);
             this.usermap_user_sAMAccountName.TabIndex = 2;
@@ -1204,7 +1053,7 @@ namespace WindowsApplication1
             // usermap_user_source
             // 
             this.usermap_user_source.FormattingEnabled = true;
-            this.usermap_user_source.Location = new System.Drawing.Point(143, 62);
+            this.usermap_user_source.Location = new System.Drawing.Point(143, 95);
             this.usermap_user_source.Name = "usermap_user_source";
             this.usermap_user_source.Size = new System.Drawing.Size(174, 21);
             this.usermap_user_source.TabIndex = 3;
@@ -1212,7 +1061,7 @@ namespace WindowsApplication1
             // 
             // usermap_user_where
             // 
-            this.usermap_user_where.Location = new System.Drawing.Point(143, 145);
+            this.usermap_user_where.Location = new System.Drawing.Point(143, 178);
             this.usermap_user_where.Name = "usermap_user_where";
             this.usermap_user_where.Size = new System.Drawing.Size(174, 20);
             this.usermap_user_where.TabIndex = 4;
@@ -1221,7 +1070,7 @@ namespace WindowsApplication1
             // label33
             // 
             this.label33.AutoSize = true;
-            this.label33.Location = new System.Drawing.Point(22, 46);
+            this.label33.Location = new System.Drawing.Point(22, 79);
             this.label33.Name = "label33";
             this.label33.Size = new System.Drawing.Size(71, 13);
             this.label33.TabIndex = 84;
@@ -1234,7 +1083,7 @@ namespace WindowsApplication1
             this.usermap_user_table_view.Items.AddRange(new object[] {
             "Table",
             "View"});
-            this.usermap_user_table_view.Location = new System.Drawing.Point(25, 62);
+            this.usermap_user_table_view.Location = new System.Drawing.Point(25, 95);
             this.usermap_user_table_view.Name = "usermap_user_table_view";
             this.usermap_user_table_view.Size = new System.Drawing.Size(112, 21);
             this.usermap_user_table_view.TabIndex = 0;
@@ -1243,7 +1092,7 @@ namespace WindowsApplication1
             // label35
             // 
             this.label35.AutoSize = true;
-            this.label35.Location = new System.Drawing.Point(22, 148);
+            this.label35.Location = new System.Drawing.Point(22, 181);
             this.label35.Name = "label35";
             this.label35.Size = new System.Drawing.Size(73, 13);
             this.label35.TabIndex = 77;
@@ -1252,11 +1101,244 @@ namespace WindowsApplication1
             // label36
             // 
             this.label36.AutoSize = true;
-            this.label36.Location = new System.Drawing.Point(22, 108);
+            this.label36.Location = new System.Drawing.Point(22, 141);
             this.label36.Name = "label36";
             this.label36.Size = new System.Drawing.Size(43, 13);
             this.label36.TabIndex = 78;
             this.label36.Text = "User ID";
+            // 
+            // userMappingStep1Instructions
+            // 
+            this.userMappingStep1Instructions.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.userMappingStep1Instructions.Location = new System.Drawing.Point(282, 7);
+            this.userMappingStep1Instructions.Name = "userMappingStep1Instructions";
+            this.userMappingStep1Instructions.Size = new System.Drawing.Size(826, 56);
+            this.userMappingStep1Instructions.TabIndex = 127;
+            this.userMappingStep1Instructions.Text = resources.GetString("userMappingStep1Instructions.Text");
+            // 
+            // tabPage7
+            // 
+            this.tabPage7.Controls.Add(this.usermap_active_disabled);
+            this.tabPage7.Controls.Add(this.label47);
+            this.tabPage7.Controls.Add(this.label41);
+            this.tabPage7.Controls.Add(this.move_users);
+            this.tabPage7.Controls.Add(this.OUdata);
+            this.tabPage7.Controls.Add(this.usermap_move_delete);
+            this.tabPage7.Controls.Add(this.usermap_Database_or_AD);
+            this.tabPage7.Controls.Add(this.label52);
+            this.tabPage7.Location = new System.Drawing.Point(4, 22);
+            this.tabPage7.Name = "tabPage7";
+            this.tabPage7.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage7.Size = new System.Drawing.Size(1109, 581);
+            this.tabPage7.TabIndex = 1;
+            this.tabPage7.Text = "Step 2";
+            this.tabPage7.UseVisualStyleBackColor = true;
+            // 
+            // usermap_active_disabled
+            // 
+            this.usermap_active_disabled.FormattingEnabled = true;
+            this.usermap_active_disabled.Items.AddRange(new object[] {
+            "ALL",
+            "active",
+            "disabled"});
+            this.usermap_active_disabled.Location = new System.Drawing.Point(321, 43);
+            this.usermap_active_disabled.Name = "usermap_active_disabled";
+            this.usermap_active_disabled.Size = new System.Drawing.Size(174, 21);
+            this.usermap_active_disabled.TabIndex = 121;
+            // 
+            // label47
+            // 
+            this.label47.AutoSize = true;
+            this.label47.Location = new System.Drawing.Point(318, 27);
+            this.label47.Name = "label47";
+            this.label47.Size = new System.Drawing.Size(93, 13);
+            this.label47.TabIndex = 122;
+            this.label47.Text = "Active or Disabled";
+            // 
+            // label41
+            // 
+            this.label41.AutoSize = true;
+            this.label41.Location = new System.Drawing.Point(318, 124);
+            this.label41.Name = "label41";
+            this.label41.Size = new System.Drawing.Size(118, 13);
+            this.label41.TabIndex = 127;
+            this.label41.Text = "Database or AD source";
+            // 
+            // move_users
+            // 
+            this.move_users.Controls.Add(this.richTextBox1);
+            this.move_users.Controls.Add(this.richTextBox2);
+            this.move_users.Controls.Add(this.textBox1);
+            this.move_users.Controls.Add(this.label45);
+            this.move_users.Controls.Add(this.label46);
+            this.move_users.Controls.Add(this.label48);
+            this.move_users.Location = new System.Drawing.Point(637, 265);
+            this.move_users.Name = "move_users";
+            this.move_users.Size = new System.Drawing.Size(341, 228);
+            this.move_users.TabIndex = 124;
+            this.move_users.TabStop = false;
+            this.move_users.Text = "Move Users Matching Criteria";
+            this.move_users.Visible = false;
+            // 
+            // richTextBox1
+            // 
+            this.richTextBox1.Location = new System.Drawing.Point(19, 138);
+            this.richTextBox1.Name = "richTextBox1";
+            this.richTextBox1.Size = new System.Drawing.Size(292, 40);
+            this.richTextBox1.TabIndex = 123;
+            this.richTextBox1.Text = "";
+            // 
+            // richTextBox2
+            // 
+            this.richTextBox2.Location = new System.Drawing.Point(19, 77);
+            this.richTextBox2.Name = "richTextBox2";
+            this.richTextBox2.Size = new System.Drawing.Size(292, 40);
+            this.richTextBox2.TabIndex = 122;
+            this.richTextBox2.Text = "";
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(19, 37);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(70, 20);
+            this.textBox1.TabIndex = 113;
+            // 
+            // label45
+            // 
+            this.label45.AutoSize = true;
+            this.label45.Location = new System.Drawing.Point(16, 122);
+            this.label45.Name = "label45";
+            this.label45.Size = new System.Drawing.Size(39, 13);
+            this.label45.TabIndex = 112;
+            this.label45.Text = "To OU";
+            // 
+            // label46
+            // 
+            this.label46.AutoSize = true;
+            this.label46.Location = new System.Drawing.Point(16, 61);
+            this.label46.Name = "label46";
+            this.label46.Size = new System.Drawing.Size(49, 13);
+            this.label46.TabIndex = 111;
+            this.label46.Text = "From OU";
+            // 
+            // label48
+            // 
+            this.label48.AutoSize = true;
+            this.label48.Location = new System.Drawing.Point(16, 21);
+            this.label48.Name = "label48";
+            this.label48.Size = new System.Drawing.Size(104, 13);
+            this.label48.TabIndex = 110;
+            this.label48.Text = "Disable after xx days";
+            // 
+            // OUdata
+            // 
+            this.OUdata.Controls.Add(this.richTextBox3);
+            this.OUdata.Controls.Add(this.maskedTextBox1);
+            this.OUdata.Controls.Add(this.label49);
+            this.OUdata.Controls.Add(this.label50);
+            this.OUdata.Controls.Add(this.label51);
+            this.OUdata.Location = new System.Drawing.Point(637, 6);
+            this.OUdata.Name = "OUdata";
+            this.OUdata.Size = new System.Drawing.Size(341, 215);
+            this.OUdata.TabIndex = 123;
+            this.OUdata.TabStop = false;
+            this.OUdata.Text = "OU Data";
+            this.OUdata.Visible = false;
+            // 
+            // richTextBox3
+            // 
+            this.richTextBox3.Location = new System.Drawing.Point(29, 78);
+            this.richTextBox3.Name = "richTextBox3";
+            this.richTextBox3.Size = new System.Drawing.Size(293, 40);
+            this.richTextBox3.TabIndex = 87;
+            this.richTextBox3.Text = "";
+            // 
+            // maskedTextBox1
+            // 
+            this.maskedTextBox1.Location = new System.Drawing.Point(29, 137);
+            this.maskedTextBox1.Name = "maskedTextBox1";
+            this.maskedTextBox1.Size = new System.Drawing.Size(295, 20);
+            this.maskedTextBox1.TabIndex = 86;
+            // 
+            // label49
+            // 
+            this.label49.AutoSize = true;
+            this.label49.Location = new System.Drawing.Point(26, 121);
+            this.label49.Name = "label49";
+            this.label49.Size = new System.Drawing.Size(106, 13);
+            this.label49.TabIndex = 3;
+            this.label49.Text = "List of group(s) by \",\"";
+            // 
+            // label50
+            // 
+            this.label50.AutoSize = true;
+            this.label50.Location = new System.Drawing.Point(26, 32);
+            this.label50.Name = "label50";
+            this.label50.Size = new System.Drawing.Size(202, 26);
+            this.label50.TabIndex = 2;
+            this.label50.Text = "Grab all users in this OU where they have\r\nthe groups listed below seperated by \"" +
+                ",\"";
+            // 
+            // label51
+            // 
+            this.label51.AutoSize = true;
+            this.label51.Location = new System.Drawing.Point(25, 62);
+            this.label51.Name = "label51";
+            this.label51.Size = new System.Drawing.Size(23, 13);
+            this.label51.TabIndex = 0;
+            this.label51.Text = "OU";
+            // 
+            // usermap_move_delete
+            // 
+            this.usermap_move_delete.FormattingEnabled = true;
+            this.usermap_move_delete.ItemHeight = 13;
+            this.usermap_move_delete.Items.AddRange(new object[] {
+            "Move",
+            "Delete"});
+            this.usermap_move_delete.Location = new System.Drawing.Point(321, 92);
+            this.usermap_move_delete.Name = "usermap_move_delete";
+            this.usermap_move_delete.Size = new System.Drawing.Size(218, 21);
+            this.usermap_move_delete.TabIndex = 125;
+            // 
+            // usermap_Database_or_AD
+            // 
+            this.usermap_Database_or_AD.FormattingEnabled = true;
+            this.usermap_Database_or_AD.ItemHeight = 13;
+            this.usermap_Database_or_AD.Items.AddRange(new object[] {
+            "Database",
+            "Active Directory OU"});
+            this.usermap_Database_or_AD.Location = new System.Drawing.Point(322, 140);
+            this.usermap_Database_or_AD.Name = "usermap_Database_or_AD";
+            this.usermap_Database_or_AD.Size = new System.Drawing.Size(217, 21);
+            this.usermap_Database_or_AD.TabIndex = 126;
+            // 
+            // label52
+            // 
+            this.label52.AutoSize = true;
+            this.label52.Location = new System.Drawing.Point(318, 76);
+            this.label52.Name = "label52";
+            this.label52.Size = new System.Drawing.Size(80, 13);
+            this.label52.TabIndex = 128;
+            this.label52.Text = "Move or Delete";
+            // 
+            // usermap_baseOU
+            // 
+            this.usermap_baseOU.Location = new System.Drawing.Point(815, 578);
+            this.usermap_baseOU.Name = "usermap_baseOU";
+            this.usermap_baseOU.Size = new System.Drawing.Size(292, 40);
+            this.usermap_baseOU.TabIndex = 121;
+            this.usermap_baseOU.Text = "";
+            this.usermap_baseOU.TextChanged += new System.EventHandler(this.usermap_baseOU_TextChanged);
+            // 
+            // label43
+            // 
+            this.label43.AutoSize = true;
+            this.label43.Location = new System.Drawing.Point(812, 562);
+            this.label43.Name = "label43";
+            this.label43.Size = new System.Drawing.Size(50, 13);
+            this.label43.TabIndex = 116;
+            this.label43.Text = "Base OU";
             // 
             // tabPage5
             // 
@@ -1266,7 +1348,7 @@ namespace WindowsApplication1
             this.tabPage5.Location = new System.Drawing.Point(4, 22);
             this.tabPage5.Name = "tabPage5";
             this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage5.Size = new System.Drawing.Size(1118, 624);
+            this.tabPage5.Size = new System.Drawing.Size(1123, 613);
             this.tabPage5.TabIndex = 4;
             this.tabPage5.Text = "Execution order";
             this.tabPage5.UseVisualStyleBackColor = true;
@@ -1309,7 +1391,7 @@ namespace WindowsApplication1
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(1118, 624);
+            this.tabPage3.Size = new System.Drawing.Size(1123, 613);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Configuration";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -1358,12 +1440,106 @@ namespace WindowsApplication1
             this.DBserver.TabIndex = 0;
             this.DBserver.Leave += new System.EventHandler(this.DBserver_TextChanged);
             // 
+            // usermap_toOU
+            // 
+            this.usermap_toOU.Location = new System.Drawing.Point(19, 138);
+            this.usermap_toOU.Name = "usermap_toOU";
+            this.usermap_toOU.Size = new System.Drawing.Size(292, 40);
+            this.usermap_toOU.TabIndex = 123;
+            this.usermap_toOU.Text = "";
+            // 
+            // usermap_fromOU
+            // 
+            this.usermap_fromOU.Location = new System.Drawing.Point(19, 77);
+            this.usermap_fromOU.Name = "usermap_fromOU";
+            this.usermap_fromOU.Size = new System.Drawing.Size(292, 40);
+            this.usermap_fromOU.TabIndex = 122;
+            this.usermap_fromOU.Text = "";
+            // 
+            // usermap_disableDays
+            // 
+            this.usermap_disableDays.Location = new System.Drawing.Point(19, 37);
+            this.usermap_disableDays.Name = "usermap_disableDays";
+            this.usermap_disableDays.Size = new System.Drawing.Size(70, 20);
+            this.usermap_disableDays.TabIndex = 113;
+            // 
+            // label39
+            // 
+            this.label39.AutoSize = true;
+            this.label39.Location = new System.Drawing.Point(16, 122);
+            this.label39.Name = "label39";
+            this.label39.Size = new System.Drawing.Size(39, 13);
+            this.label39.TabIndex = 112;
+            this.label39.Text = "To OU";
+            // 
+            // label37
+            // 
+            this.label37.AutoSize = true;
+            this.label37.Location = new System.Drawing.Point(16, 61);
+            this.label37.Name = "label37";
+            this.label37.Size = new System.Drawing.Size(49, 13);
+            this.label37.TabIndex = 111;
+            this.label37.Text = "From OU";
+            // 
+            // label38
+            // 
+            this.label38.AutoSize = true;
+            this.label38.Location = new System.Drawing.Point(16, 21);
+            this.label38.Name = "label38";
+            this.label38.Size = new System.Drawing.Size(104, 13);
+            this.label38.TabIndex = 110;
+            this.label38.Text = "Disable after xx days";
+            // 
+            // usermap_OU_OU
+            // 
+            this.usermap_OU_OU.Location = new System.Drawing.Point(29, 78);
+            this.usermap_OU_OU.Name = "usermap_OU_OU";
+            this.usermap_OU_OU.Size = new System.Drawing.Size(293, 40);
+            this.usermap_OU_OU.TabIndex = 87;
+            this.usermap_OU_OU.Text = "";
+            // 
+            // usermap_OU_list_groups
+            // 
+            this.usermap_OU_list_groups.Location = new System.Drawing.Point(29, 137);
+            this.usermap_OU_list_groups.Name = "usermap_OU_list_groups";
+            this.usermap_OU_list_groups.Size = new System.Drawing.Size(295, 20);
+            this.usermap_OU_list_groups.TabIndex = 86;
+            // 
+            // label44
+            // 
+            this.label44.AutoSize = true;
+            this.label44.Location = new System.Drawing.Point(26, 121);
+            this.label44.Name = "label44";
+            this.label44.Size = new System.Drawing.Size(106, 13);
+            this.label44.TabIndex = 3;
+            this.label44.Text = "List of group(s) by \",\"";
+            // 
+            // label42
+            // 
+            this.label42.AutoSize = true;
+            this.label42.Location = new System.Drawing.Point(26, 32);
+            this.label42.Name = "label42";
+            this.label42.Size = new System.Drawing.Size(202, 26);
+            this.label42.TabIndex = 2;
+            this.label42.Text = "Grab all users in this OU where they have\r\nthe groups listed below seperated by \"" +
+                ",\"";
+            // 
+            // label40
+            // 
+            this.label40.AutoSize = true;
+            this.label40.Location = new System.Drawing.Point(25, 62);
+            this.label40.Name = "label40";
+            this.label40.Size = new System.Drawing.Size(23, 13);
+            this.label40.TabIndex = 0;
+            this.label40.Text = "OU";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1144, 674);
+            this.ClientSize = new System.Drawing.Size(1131, 639);
             this.Controls.Add(this.user_group_source);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
             this.Text = "Form1";
             this.tabPage2.ResumeLayout(false);
@@ -1378,13 +1554,17 @@ namespace WindowsApplication1
             this.groupBox1.PerformLayout();
             this.tabPage4.ResumeLayout(false);
             this.tabPage4.PerformLayout();
+            this.tabControl1.ResumeLayout(false);
+            this.tabPage6.ResumeLayout(false);
+            this.tabPage6.PerformLayout();
+            this.UserData.ResumeLayout(false);
+            this.UserData.PerformLayout();
+            this.tabPage7.ResumeLayout(false);
+            this.tabPage7.PerformLayout();
             this.move_users.ResumeLayout(false);
             this.move_users.PerformLayout();
             this.OUdata.ResumeLayout(false);
             this.OUdata.PerformLayout();
-            this.groupBox6.ResumeLayout(false);
-            this.UserData.ResumeLayout(false);
-            this.UserData.PerformLayout();
             this.tabPage5.ResumeLayout(false);
             this.tabPage3.ResumeLayout(false);
             this.tabPage3.PerformLayout();
@@ -1480,35 +1660,52 @@ namespace WindowsApplication1
         private System.Windows.Forms.ComboBox usermap_user_table_view;
         private System.Windows.Forms.Label label35;
         private System.Windows.Forms.Label label36;
-        private System.Windows.Forms.Label label38;
-        private System.Windows.Forms.GroupBox groupBox6;
-        private System.Windows.Forms.RichTextBox richTextBox1;
-        private System.Windows.Forms.RichTextBox richTextBox2;
-        private System.Windows.Forms.Label label39;
-        private System.Windows.Forms.Label label37;
-        private System.Windows.Forms.GroupBox OUdata;
-        private System.Windows.Forms.ComboBox usermap_move_delete;
         private System.Windows.Forms.Label label43;
-        private System.Windows.Forms.GroupBox move_users;
-        private System.Windows.Forms.ComboBox usermap_Database_or_AD;
-        private System.Windows.Forms.Label label40;
-        private System.Windows.Forms.Label label42;
-        private System.Windows.Forms.Label label44;
-        private System.Windows.Forms.RichTextBox usermap_OU_OU;
-        private System.Windows.Forms.MaskedTextBox usermap_OU_list_groups;
-        private System.Windows.Forms.Label label41;
-        private System.Windows.Forms.Label label45;
-        private System.Windows.Forms.Label label34;
-        private System.Windows.Forms.TextBox usermap_disableDays;
         private System.Windows.Forms.RichTextBox usermap_baseOU;
-        private System.Windows.Forms.RichTextBox usermap_toOU;
-        private System.Windows.Forms.RichTextBox usermap_fromOU;
-        private System.Windows.Forms.Label label47;
-        private System.Windows.Forms.ComboBox usermap_active_disabled;
         private System.Windows.Forms.TabPage tabPage5;
         private System.Windows.Forms.ListBox execution_order_list;
         private System.Windows.Forms.Button execution_remove;
         private System.Windows.Forms.Button execution_add;
+        private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabPage tabPage6;
+        private System.Windows.Forms.ListBox oUReasons;
+        private System.Windows.Forms.TabPage tabPage7;
+        private System.Windows.Forms.Button button14;
+        private System.Windows.Forms.Button button13;
+        private System.Windows.Forms.Button button12;
+        private System.Windows.Forms.ComboBox usermap_active_disabled;
+        private System.Windows.Forms.Label label47;
+        private System.Windows.Forms.Label label41;
+        private System.Windows.Forms.GroupBox move_users;
+        private System.Windows.Forms.RichTextBox richTextBox1;
+        private System.Windows.Forms.RichTextBox richTextBox2;
+        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.Label label45;
+        private System.Windows.Forms.Label label46;
+        private System.Windows.Forms.Label label48;
+        private System.Windows.Forms.GroupBox OUdata;
+        private System.Windows.Forms.RichTextBox richTextBox3;
+        private System.Windows.Forms.MaskedTextBox maskedTextBox1;
+        private System.Windows.Forms.Label label49;
+        private System.Windows.Forms.Label label50;
+        private System.Windows.Forms.Label label51;
+        private System.Windows.Forms.ComboBox usermap_move_delete;
+        private System.Windows.Forms.ComboBox usermap_Database_or_AD;
+        private System.Windows.Forms.Label label52;
+        private System.Windows.Forms.RichTextBox usermap_toOU;
+        private System.Windows.Forms.RichTextBox usermap_fromOU;
+        private System.Windows.Forms.TextBox usermap_disableDays;
+        private System.Windows.Forms.Label label39;
+        private System.Windows.Forms.Label label37;
+        private System.Windows.Forms.Label label38;
+        private System.Windows.Forms.RichTextBox usermap_OU_OU;
+        private System.Windows.Forms.MaskedTextBox usermap_OU_list_groups;
+        private System.Windows.Forms.Label label44;
+        private System.Windows.Forms.Label label42;
+        private System.Windows.Forms.Label label40;
+        private System.Windows.Forms.Label userMappingStep1Instructions;
+        private System.Windows.Forms.MaskedTextBox factName;
+        private System.Windows.Forms.Label label34;
     }
 }
 
