@@ -229,7 +229,6 @@ namespace WindowsApplication1
             this.group_execute_now.TabIndex = 23;
             this.group_execute_now.Text = "Execute Now";
             this.group_execute_now.UseVisualStyleBackColor = true;
-            this.group_execute_now.Click += new System.EventHandler(this.group_git_er_done_Click);
             // 
             // label31
             // 
