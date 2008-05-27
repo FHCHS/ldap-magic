@@ -3466,12 +3466,12 @@ namespace WindowsApplication1
         {
             if (usermap_Database_or_AD.Text == "Database")
             {
-                UserData.Visible = true;
+                userMapping_UserData.Visible = true;
                 OUdata.Visible = false;
             }
             if (usermap_Database_or_AD.Text == "Active Directory OU")
             {
-                UserData.Visible = false;
+                userMapping_UserData.Visible = false;
                 OUdata.Visible = true;
             }
         }
@@ -3492,19 +3492,77 @@ namespace WindowsApplication1
         }
         private void usermap_user_source_SelectedIndexChanged(object sender, EventArgs e)
         {
-            usermapping.User_dbTable = usermap_user_source.Text;
+            usermapping.User_dbTable = usermapping_user_source.Text;
+
+            if (userMapping_DBServerName.Text == "")
+                userMapping_DBServerName.Focus();
+            else if (userMapping_DatabaseName.Text == "")
+                userMapping_DatabaseName.Focus();
+            else if (usermapping_user_source.Text == "")
+                usermapping_user_source.Focus();
+            else
+            {
+                //populates columns dialog with columns depending on the results of a query
+                ArrayList columnList = new ArrayList();
+                SqlConnection sqlConn = new SqlConnection("Data Source=" + userMapping_DBServerName.Text + ";Initial Catalog=" + userMapping_DatabaseName.Text + ";Integrated Security=SSPI;");
+
+                sqlConn.Open();
+                // create the command object
+                SqlCommand sqlComm = new SqlCommand("SELECT column_name FROM information_schema.columns WHERE table_name = '" + usermapping_user_source.Text.ToString() + "'", sqlConn);
+                SqlDataReader r = sqlComm.ExecuteReader();
+                while (r.Read())
+                {
+                    columnList.Add((string)r[0].ToString().Trim());
+                }
+                r.Close();
+                sqlConn.Close();
+
+                usermapping_user_sAMAccountName.DataSource = columnList;
+            }
+
         }
         private void usermap_user_sAMAccountName_SelectedIndexChanged(object sender, EventArgs e)
         {
-            usermapping.User_sAMAccount = usermap_user_sAMAccountName.Text;
+            usermapping.User_sAMAccount = usermapping_user_sAMAccountName.Text;
         }
         private void usermap_user_table_view_SelectedIndexChanged(object sender, EventArgs e)
         {
-            usermapping.User_table_view = usermap_user_table_view.Text;
+            // only valid for SQL server 2000
+            if (userMapping_DBServerName.Text == "")
+                userMapping_DBServerName.Focus();
+            else if (userMapping_DatabaseName.Text == "")
+                userMapping_DatabaseName.Focus();
+            else
+            {
+                //populates table dialog with tables or views depending on the results of a query
+                ArrayList tableList = new ArrayList();
+                SqlConnection sqlConn = new SqlConnection("Data Source=" + userMapping_DBServerName.Text + ";Initial Catalog=" + userMapping_DatabaseName.Text + ";Integrated Security=SSPI;");
+                SqlCommand sqlComm;
+                sqlConn.Open();
+                // create the command object
+                if (usermapping_user_table_view.Text.ToLower() == "table")
+                {
+                    sqlComm = new SqlCommand("SELECT name FROM sysobjects where TYPE = 'U' order by NAME", sqlConn);
+                }
+                else
+                {
+                    sqlComm = new SqlCommand("SELECT name from SYSOBJECTS where TYPE = 'V' order by NAME", sqlConn);
+                }
+                SqlDataReader r = sqlComm.ExecuteReader();
+                while (r.Read())
+                {
+                    tableList.Add((string)r[0].ToString().Trim());
+                }
+                r.Close();
+                sqlConn.Close();
+
+                usermapping.User_table_view = usermapping_user_table_view.Text;
+                usermapping_user_source.DataSource = tableList;
+            }
         }
         private void usermap_user_where_MaskInputRejected(object sender, MaskInputRejectedEventArgs e)
         {
-            usermapping.User_where = usermap_user_where.Text;
+            usermapping.User_where = usermapping_user_where.Text;
         }
         private void usermap_OU_OU_TextChanged(object sender, EventArgs e)
         {
@@ -3554,8 +3612,185 @@ namespace WindowsApplication1
             }
         }
 
+        private void userMap_factAdd_Click(object sender, EventArgs e)
+        {
+            if (userMapping_factList.SelectedItems.Count == 1)
+            {
+                //Edit
+                ListViewItem bob = userMapping_factList.SelectedItems[0];
+
+//                if (usermapping_user_table_view.
+                bob.Text = userMapping_factName.Text;
+                bob.Name = userMapping_factName.Text;
+                bob.SubItems[1].Text = userMapping_DBServerName.Text;
+                bob.SubItems[2].Text = userMapping_DatabaseName.SelectedIndex.ToString();
+                bob.SubItems[3].Text = usermapping_user_table_view.SelectedIndex.ToString();
+                bob.SubItems[4].Text = usermapping_user_source.SelectedIndex.ToString();
+                bob.SubItems[5].Text = usermapping_user_sAMAccountName.SelectedIndex.ToString();
+                bob.SubItems[6].Text = usermapping_user_where.Text;
+            }
+            else
+            {
+                //Add
+                if (usermapping_user_table_view.Text == "")
+                    usermapping_user_table_view.Focus();
+                else if (usermapping_user_source.Text == "")
+                    usermapping_user_source.Focus();
+                else if (usermapping_user_sAMAccountName.Text == "")
+                    usermapping_user_sAMAccountName.Focus();
+                else
+                {
+                    ListViewItem bob = new ListViewItem();
+                    bob.Text = userMapping_factName.Text;
+                    bob.Name = userMapping_factName.Text;
+                    bob.SubItems.Add(userMapping_DBServerName.Text);
+                    bob.SubItems.Add(userMapping_DatabaseName.SelectedIndex.ToString());
+                    bob.SubItems.Add(usermapping_user_table_view.SelectedIndex.ToString());
+                    bob.SubItems.Add(usermapping_user_source.SelectedIndex.ToString());
+                    bob.SubItems.Add(usermapping_user_sAMAccountName.SelectedIndex.ToString());
+                    bob.SubItems.Add(usermapping_user_where.Text);
+
+                    if (bob.Text.Trim().Length == 0 || userMapping_factList.Items.ContainsKey(bob.Text))
+                    {
+                        MessageBox.Show("I'm Sorry but every fact is required to have a name that is unique.");
+                    }
+                    else
+                    {
+                        userMapping_factList.Items.Add(bob);
+                        userMapping_fact_Add_Edit.Text = "Add";
+                        userMapping_factName.Text = "";
+                        userMapping_DBServerName.Text = "";
+                        userMapping_DatabaseName.DataSource = null;
+                        usermapping_user_table_view.SelectedIndex = -1;
+                        usermapping_user_source.DataSource = null;
+                        usermapping_user_sAMAccountName.DataSource = null;
+                        usermapping_user_where.Text = "";
+                    }
+                }
+            }
+        }
+
+        private void userMapping_factList_ClientSizeChanged(object sender, EventArgs e)
+        {
+            userMapping_factHeading.Width = userMapping_factList.ClientSize.Width;
+        }
+
+        private void userMapping_factList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            userMapping_UserData.Enabled = true;
+            userMapping_fact_Add_Edit.Enabled = true;
+            userMapping_fact_Add_Edit.Text = "Add";
+            userMapping_factName.Text = "";
+            userMapping_DBServerName.Text = "";
+            userMapping_DatabaseName.DataSource = null;
+            usermapping_user_table_view.SelectedIndex = -1;
+            usermapping_user_source.DataSource = null;
+            usermapping_user_sAMAccountName.DataSource = null;
+            usermapping_user_where.Text = "";
+
+            if (userMapping_factList.SelectedItems.Count == 1)
+            {
+                userMapping_factDelete.Enabled = true;
+
+                userMapping_fact_Add_Edit.Text = "Edit/Save";
+                ListViewItem bob = userMapping_factList.SelectedItems[0];
+                userMapping_factName.Text                     = bob.Text;
+                userMapping_DBServerName.Text                 = bob.SubItems[1].Text;
+                userMapping_DatabaseName.SelectedIndex        = Convert.ToInt32(bob.SubItems[2].Text);
+                usermapping_user_table_view.SelectedIndex     = Convert.ToInt32(bob.SubItems[3].Text);
+                usermapping_user_source.SelectedIndex         = Convert.ToInt32(bob.SubItems[4].Text);
+                usermapping_user_sAMAccountName.SelectedIndex = Convert.ToInt32(bob.SubItems[5].Text);
+                usermapping_user_where.Text                   = bob.SubItems[6].Text;
+            }
+            else if (userMapping_factList.SelectedItems.Count > 1)
+            {
+                userMapping_UserData.Enabled = false;
+                userMapping_fact_Add_Edit.Enabled = false;
+            }
+
+            else
+            {
+                userMapping_factDelete.Enabled = false;
+            }
+        }
+
+        private void userMapping_DBServerName_Leave(object sender, EventArgs e)
+        {
+            if (userMapping_DBServerName.Text != "")
+            {
+                try
+                {
+                    ArrayList tableList = new ArrayList();
+                    System.Data.SqlClient.SqlConnection SqlCon = new System.Data.SqlClient.SqlConnection("server=" + userMapping_DBServerName.Text + ";Integrated Security=SSPI;");
+                    SqlCon.Open();
+                    System.Data.SqlClient.SqlCommand SqlCom = new System.Data.SqlClient.SqlCommand();
+                    SqlCom.Connection = SqlCon;
+                    SqlCom.CommandType = CommandType.StoredProcedure;
+                    SqlCom.CommandText = "sp_databases";
+
+                    System.Data.SqlClient.SqlDataReader r;
+                    r = SqlCom.ExecuteReader();
+
+                    while (r.Read())
+                    {
+                        tableList.Add((string)r[0].ToString().Trim());
+                    }
+                    r.Close();
+                    SqlCon.Close();
+
+                    userMapping_DatabaseName.DataSource = tableList;
+                }
+                catch
+                {
+                    MessageBox.Show("Error Connecting to Database Server.  Perhaps the server name was mis entered?");
+                    userMapping_DBServerName.Text = "";
+                }
+        }
 
 
+        }
+
+        private void userMapping_DatabaseName_Enter(object sender, EventArgs e)
+        {
+            if (userMapping_DBServerName.Text == "")
+                userMapping_DBServerName.Focus();
+        }
+
+        private void userMapping_DBServerName_Enter(object sender, EventArgs e)
+        {
+            if (userMapping_factName.Text == "")
+                userMapping_factName.Focus();
+        }
+
+        private void usermapping_user_table_view_Enter(object sender, EventArgs e)
+        {
+            if (userMapping_DatabaseName.Text == "")
+                userMapping_DatabaseName.Focus();
+        }
+
+        private void usermapping_user_source_Enter(object sender, EventArgs e)
+        {
+            if (usermapping_user_table_view.Text == "")
+                usermapping_user_table_view.Focus();
+        }
+
+        private void usermapping_user_sAMAccountName_Enter(object sender, EventArgs e)
+        {
+            if (usermapping_user_source.Text == "")
+                usermapping_user_source.Focus();
+        }
+
+        private void usermapping_user_where_Enter(object sender, EventArgs e)
+        {
+            if (usermapping_user_sAMAccountName.Text == "")
+                usermapping_user_sAMAccountName.Focus();
+        }
+
+        private void userMapping_DBServerName_TextChanged(object sender, EventArgs e)
+        {
+            if (userMapping_DBServerName.Focused == false)
+                userMapping_DBServerName_Leave(null, null);
+        }
 
 
     }

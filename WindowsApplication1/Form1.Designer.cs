@@ -114,19 +114,23 @@ namespace WindowsApplication1
             this.button10 = new System.Windows.Forms.Button();
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.tabPage6 = new System.Windows.Forms.TabPage();
-            this.button14 = new System.Windows.Forms.Button();
-            this.button13 = new System.Windows.Forms.Button();
-            this.button12 = new System.Windows.Forms.Button();
-            this.oUReasons = new System.Windows.Forms.ListBox();
-            this.UserData = new System.Windows.Forms.GroupBox();
-            this.factName = new System.Windows.Forms.MaskedTextBox();
+            this.userMapping_factAdd = new System.Windows.Forms.TabPage();
+            this.userMapping_DatabaseName = new System.Windows.Forms.ComboBox();
+            this.userMapping_DBName_label = new System.Windows.Forms.Label();
+            this.userMapping_DBServer_label = new System.Windows.Forms.Label();
+            this.userMapping_DBServerName = new System.Windows.Forms.TextBox();
+            this.userMapping_factList = new System.Windows.Forms.ListView();
+            this.userMapping_factHeading = new System.Windows.Forms.ColumnHeader();
+            this.userMapping_factDelete = new System.Windows.Forms.Button();
+            this.userMapping_fact_Add_Edit = new System.Windows.Forms.Button();
+            this.userMapping_UserData = new System.Windows.Forms.GroupBox();
+            this.userMapping_factName = new System.Windows.Forms.MaskedTextBox();
             this.label34 = new System.Windows.Forms.Label();
-            this.usermap_user_sAMAccountName = new System.Windows.Forms.ComboBox();
-            this.usermap_user_source = new System.Windows.Forms.ComboBox();
-            this.usermap_user_where = new System.Windows.Forms.MaskedTextBox();
+            this.usermapping_user_sAMAccountName = new System.Windows.Forms.ComboBox();
+            this.usermapping_user_source = new System.Windows.Forms.ComboBox();
+            this.usermapping_user_where = new System.Windows.Forms.MaskedTextBox();
             this.label33 = new System.Windows.Forms.Label();
-            this.usermap_user_table_view = new System.Windows.Forms.ComboBox();
+            this.usermapping_user_table_view = new System.Windows.Forms.ComboBox();
             this.label35 = new System.Windows.Forms.Label();
             this.label36 = new System.Windows.Forms.Label();
             this.userMappingStep1Instructions = new System.Windows.Forms.Label();
@@ -182,8 +186,8 @@ namespace WindowsApplication1
             this.groupBox1.SuspendLayout();
             this.tabPage4.SuspendLayout();
             this.tabControl1.SuspendLayout();
-            this.tabPage6.SuspendLayout();
-            this.UserData.SuspendLayout();
+            this.userMapping_factAdd.SuspendLayout();
+            this.userMapping_UserData.SuspendLayout();
             this.tabPage7.SuspendLayout();
             this.move_users.SuspendLayout();
             this.OUdata.SuspendLayout();
@@ -1073,7 +1077,7 @@ namespace WindowsApplication1
             // 
             // tabControl1
             // 
-            this.tabControl1.Controls.Add(this.tabPage6);
+            this.tabControl1.Controls.Add(this.userMapping_factAdd);
             this.tabControl1.Controls.Add(this.tabPage7);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl1.Location = new System.Drawing.Point(3, 3);
@@ -1082,89 +1086,134 @@ namespace WindowsApplication1
             this.tabControl1.Size = new System.Drawing.Size(1117, 607);
             this.tabControl1.TabIndex = 122;
             // 
-            // tabPage6
+            // userMapping_factAdd
             // 
-            this.tabPage6.Controls.Add(this.button14);
-            this.tabPage6.Controls.Add(this.button13);
-            this.tabPage6.Controls.Add(this.button12);
-            this.tabPage6.Controls.Add(this.oUReasons);
-            this.tabPage6.Controls.Add(this.UserData);
-            this.tabPage6.Controls.Add(this.userMappingStep1Instructions);
-            this.tabPage6.Location = new System.Drawing.Point(4, 22);
-            this.tabPage6.Name = "tabPage6";
-            this.tabPage6.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage6.Size = new System.Drawing.Size(1109, 581);
-            this.tabPage6.TabIndex = 0;
-            this.tabPage6.Text = "Step 1";
-            this.tabPage6.UseVisualStyleBackColor = true;
+            this.userMapping_factAdd.Controls.Add(this.userMapping_factList);
+            this.userMapping_factAdd.Controls.Add(this.userMapping_factDelete);
+            this.userMapping_factAdd.Controls.Add(this.userMapping_fact_Add_Edit);
+            this.userMapping_factAdd.Controls.Add(this.userMapping_UserData);
+            this.userMapping_factAdd.Controls.Add(this.userMappingStep1Instructions);
+            this.userMapping_factAdd.Location = new System.Drawing.Point(4, 22);
+            this.userMapping_factAdd.Name = "userMapping_factAdd";
+            this.userMapping_factAdd.Padding = new System.Windows.Forms.Padding(3);
+            this.userMapping_factAdd.Size = new System.Drawing.Size(1109, 581);
+            this.userMapping_factAdd.TabIndex = 0;
+            this.userMapping_factAdd.Text = "Step 1";
+            this.userMapping_factAdd.UseVisualStyleBackColor = true;
             // 
-            // button14
+            // userMapping_DatabaseName
             // 
-            this.button14.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.button14.AutoSize = true;
-            this.button14.Location = new System.Drawing.Point(278, 306);
-            this.button14.Name = "button14";
-            this.button14.Size = new System.Drawing.Size(66, 24);
-            this.button14.TabIndex = 126;
-            this.button14.Text = "Delete";
-            this.button14.UseVisualStyleBackColor = true;
+            this.userMapping_DatabaseName.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.userMapping_DatabaseName.FormattingEnabled = true;
+            this.userMapping_DatabaseName.Location = new System.Drawing.Point(112, 113);
+            this.userMapping_DatabaseName.Name = "userMapping_DatabaseName";
+            this.userMapping_DatabaseName.Size = new System.Drawing.Size(205, 21);
+            this.userMapping_DatabaseName.TabIndex = 2;
+            this.userMapping_DatabaseName.Enter += new System.EventHandler(this.userMapping_DatabaseName_Enter);
             // 
-            // button13
+            // userMapping_DBName_label
             // 
-            this.button13.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.button13.AutoSize = true;
-            this.button13.Location = new System.Drawing.Point(278, 274);
-            this.button13.Name = "button13";
-            this.button13.Size = new System.Drawing.Size(66, 24);
-            this.button13.TabIndex = 125;
-            this.button13.Text = "Edit";
-            this.button13.UseVisualStyleBackColor = true;
+            this.userMapping_DBName_label.AutoSize = true;
+            this.userMapping_DBName_label.Location = new System.Drawing.Point(22, 117);
+            this.userMapping_DBName_label.Name = "userMapping_DBName_label";
+            this.userMapping_DBName_label.Size = new System.Drawing.Size(84, 13);
+            this.userMapping_DBName_label.TabIndex = 133;
+            this.userMapping_DBName_label.Text = "Database Name";
             // 
-            // button12
+            // userMapping_DBServer_label
             // 
-            this.button12.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.button12.AutoSize = true;
-            this.button12.Location = new System.Drawing.Point(278, 244);
-            this.button12.Name = "button12";
-            this.button12.Size = new System.Drawing.Size(66, 24);
-            this.button12.TabIndex = 124;
-            this.button12.Text = "Add";
-            this.button12.UseVisualStyleBackColor = true;
+            this.userMapping_DBServer_label.AutoSize = true;
+            this.userMapping_DBServer_label.Location = new System.Drawing.Point(22, 83);
+            this.userMapping_DBServer_label.Name = "userMapping_DBServer_label";
+            this.userMapping_DBServer_label.Size = new System.Drawing.Size(87, 13);
+            this.userMapping_DBServer_label.TabIndex = 132;
+            this.userMapping_DBServer_label.Text = "Database Server";
             // 
-            // oUReasons
+            // userMapping_DBServerName
             // 
-            this.oUReasons.Dock = System.Windows.Forms.DockStyle.Left;
-            this.oUReasons.FormattingEnabled = true;
-            this.oUReasons.Location = new System.Drawing.Point(3, 3);
-            this.oUReasons.Name = "oUReasons";
-            this.oUReasons.Size = new System.Drawing.Size(269, 563);
-            this.oUReasons.Sorted = true;
-            this.oUReasons.TabIndex = 121;
+            this.userMapping_DBServerName.Location = new System.Drawing.Point(112, 75);
+            this.userMapping_DBServerName.Name = "userMapping_DBServerName";
+            this.userMapping_DBServerName.Size = new System.Drawing.Size(205, 20);
+            this.userMapping_DBServerName.TabIndex = 1;
+            this.userMapping_DBServerName.TextChanged += new System.EventHandler(this.userMapping_DBServerName_TextChanged);
+            this.userMapping_DBServerName.Leave += new System.EventHandler(this.userMapping_DBServerName_Leave);
+            this.userMapping_DBServerName.Enter += new System.EventHandler(this.userMapping_DBServerName_Enter);
             // 
-            // UserData
+            // userMapping_factList
             // 
-            this.UserData.Controls.Add(this.factName);
-            this.UserData.Controls.Add(this.label34);
-            this.UserData.Controls.Add(this.usermap_user_sAMAccountName);
-            this.UserData.Controls.Add(this.usermap_user_source);
-            this.UserData.Controls.Add(this.usermap_user_where);
-            this.UserData.Controls.Add(this.label33);
-            this.UserData.Controls.Add(this.usermap_user_table_view);
-            this.UserData.Controls.Add(this.label35);
-            this.UserData.Controls.Add(this.label36);
-            this.UserData.Location = new System.Drawing.Point(527, 151);
-            this.UserData.Name = "UserData";
-            this.UserData.Size = new System.Drawing.Size(341, 223);
-            this.UserData.TabIndex = 105;
-            this.UserData.TabStop = false;
-            this.UserData.Text = "Fact Query";
+            this.userMapping_factList.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.userMapping_factHeading});
+            this.userMapping_factList.Dock = System.Windows.Forms.DockStyle.Left;
+            this.userMapping_factList.FullRowSelect = true;
+            this.userMapping_factList.GridLines = true;
+            this.userMapping_factList.Location = new System.Drawing.Point(3, 3);
+            this.userMapping_factList.Name = "userMapping_factList";
+            this.userMapping_factList.Size = new System.Drawing.Size(269, 575);
+            this.userMapping_factList.Sorting = System.Windows.Forms.SortOrder.Ascending;
+            this.userMapping_factList.TabIndex = 9;
+            this.userMapping_factList.UseCompatibleStateImageBehavior = false;
+            this.userMapping_factList.View = System.Windows.Forms.View.Details;
+            this.userMapping_factList.ClientSizeChanged += new System.EventHandler(this.userMapping_factList_ClientSizeChanged);
+            this.userMapping_factList.SelectedIndexChanged += new System.EventHandler(this.userMapping_factList_SelectedIndexChanged);
             // 
-            // factName
+            // userMapping_factHeading
             // 
-            this.factName.Location = new System.Drawing.Point(25, 41);
-            this.factName.Name = "factName";
-            this.factName.Size = new System.Drawing.Size(292, 20);
-            this.factName.TabIndex = 86;
+            this.userMapping_factHeading.Text = "Fact Name";
+            this.userMapping_factHeading.Width = 265;
+            // 
+            // userMapping_factDelete
+            // 
+            this.userMapping_factDelete.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.userMapping_factDelete.AutoSize = true;
+            this.userMapping_factDelete.Enabled = false;
+            this.userMapping_factDelete.Location = new System.Drawing.Point(278, 292);
+            this.userMapping_factDelete.Name = "userMapping_factDelete";
+            this.userMapping_factDelete.Size = new System.Drawing.Size(66, 24);
+            this.userMapping_factDelete.TabIndex = 8;
+            this.userMapping_factDelete.Text = "Delete";
+            this.userMapping_factDelete.UseVisualStyleBackColor = true;
+            // 
+            // userMapping_fact_Add_Edit
+            // 
+            this.userMapping_fact_Add_Edit.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.userMapping_fact_Add_Edit.AutoSize = true;
+            this.userMapping_fact_Add_Edit.Location = new System.Drawing.Point(278, 261);
+            this.userMapping_fact_Add_Edit.Name = "userMapping_fact_Add_Edit";
+            this.userMapping_fact_Add_Edit.Size = new System.Drawing.Size(66, 24);
+            this.userMapping_fact_Add_Edit.TabIndex = 7;
+            this.userMapping_fact_Add_Edit.Text = "Add";
+            this.userMapping_fact_Add_Edit.UseVisualStyleBackColor = true;
+            this.userMapping_fact_Add_Edit.Click += new System.EventHandler(this.userMap_factAdd_Click);
+            // 
+            // userMapping_UserData
+            // 
+            this.userMapping_UserData.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.userMapping_UserData.Controls.Add(this.userMapping_DatabaseName);
+            this.userMapping_UserData.Controls.Add(this.userMapping_factName);
+            this.userMapping_UserData.Controls.Add(this.userMapping_DBName_label);
+            this.userMapping_UserData.Controls.Add(this.label34);
+            this.userMapping_UserData.Controls.Add(this.userMapping_DBServer_label);
+            this.userMapping_UserData.Controls.Add(this.userMapping_DBServerName);
+            this.userMapping_UserData.Controls.Add(this.usermapping_user_sAMAccountName);
+            this.userMapping_UserData.Controls.Add(this.usermapping_user_source);
+            this.userMapping_UserData.Controls.Add(this.usermapping_user_where);
+            this.userMapping_UserData.Controls.Add(this.label33);
+            this.userMapping_UserData.Controls.Add(this.usermapping_user_table_view);
+            this.userMapping_UserData.Controls.Add(this.label35);
+            this.userMapping_UserData.Controls.Add(this.label36);
+            this.userMapping_UserData.Location = new System.Drawing.Point(514, 153);
+            this.userMapping_UserData.Name = "userMapping_UserData";
+            this.userMapping_UserData.Size = new System.Drawing.Size(341, 303);
+            this.userMapping_UserData.TabIndex = 105;
+            this.userMapping_UserData.TabStop = false;
+            this.userMapping_UserData.Text = "Fact Query";
+            // 
+            // userMapping_factName
+            // 
+            this.userMapping_factName.Location = new System.Drawing.Point(25, 41);
+            this.userMapping_factName.Name = "userMapping_factName";
+            this.userMapping_factName.Size = new System.Drawing.Size(292, 20);
+            this.userMapping_factName.TabIndex = 0;
             // 
             // label34
             // 
@@ -1175,58 +1224,68 @@ namespace WindowsApplication1
             this.label34.TabIndex = 85;
             this.label34.Text = "Fact Name";
             // 
-            // usermap_user_sAMAccountName
+            // usermapping_user_sAMAccountName
             // 
-            this.usermap_user_sAMAccountName.FormattingEnabled = true;
-            this.usermap_user_sAMAccountName.Location = new System.Drawing.Point(143, 138);
-            this.usermap_user_sAMAccountName.Name = "usermap_user_sAMAccountName";
-            this.usermap_user_sAMAccountName.Size = new System.Drawing.Size(174, 21);
-            this.usermap_user_sAMAccountName.TabIndex = 2;
-            this.usermap_user_sAMAccountName.SelectedIndexChanged += new System.EventHandler(this.usermap_user_sAMAccountName_SelectedIndexChanged);
+            this.usermapping_user_sAMAccountName.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.usermapping_user_sAMAccountName.FormattingEnabled = true;
+            this.usermapping_user_sAMAccountName.Location = new System.Drawing.Point(143, 216);
+            this.usermapping_user_sAMAccountName.Name = "usermapping_user_sAMAccountName";
+            this.usermapping_user_sAMAccountName.Size = new System.Drawing.Size(174, 21);
+            this.usermapping_user_sAMAccountName.TabIndex = 5;
+            this.usermapping_user_sAMAccountName.SelectedIndexChanged += new System.EventHandler(this.usermap_user_sAMAccountName_SelectedIndexChanged);
+            this.usermapping_user_sAMAccountName.Leave += new System.EventHandler(this.usermap_user_sAMAccountName_SelectedIndexChanged);
+            this.usermapping_user_sAMAccountName.Enter += new System.EventHandler(this.usermapping_user_sAMAccountName_Enter);
             // 
-            // usermap_user_source
+            // usermapping_user_source
             // 
-            this.usermap_user_source.FormattingEnabled = true;
-            this.usermap_user_source.Location = new System.Drawing.Point(143, 95);
-            this.usermap_user_source.Name = "usermap_user_source";
-            this.usermap_user_source.Size = new System.Drawing.Size(174, 21);
-            this.usermap_user_source.TabIndex = 3;
-            this.usermap_user_source.SelectedIndexChanged += new System.EventHandler(this.usermap_user_source_SelectedIndexChanged);
+            this.usermapping_user_source.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.usermapping_user_source.FormattingEnabled = true;
+            this.usermapping_user_source.Location = new System.Drawing.Point(143, 173);
+            this.usermapping_user_source.Name = "usermapping_user_source";
+            this.usermapping_user_source.Size = new System.Drawing.Size(174, 21);
+            this.usermapping_user_source.TabIndex = 4;
+            this.usermapping_user_source.SelectedIndexChanged += new System.EventHandler(this.usermap_user_source_SelectedIndexChanged);
+            this.usermapping_user_source.Leave += new System.EventHandler(this.usermap_user_source_SelectedIndexChanged);
+            this.usermapping_user_source.Enter += new System.EventHandler(this.usermapping_user_source_Enter);
             // 
-            // usermap_user_where
+            // usermapping_user_where
             // 
-            this.usermap_user_where.Location = new System.Drawing.Point(143, 178);
-            this.usermap_user_where.Name = "usermap_user_where";
-            this.usermap_user_where.Size = new System.Drawing.Size(174, 20);
-            this.usermap_user_where.TabIndex = 4;
-            this.usermap_user_where.MaskInputRejected += new System.Windows.Forms.MaskInputRejectedEventHandler(this.usermap_user_where_MaskInputRejected);
+            this.usermapping_user_where.Location = new System.Drawing.Point(143, 256);
+            this.usermapping_user_where.Name = "usermapping_user_where";
+            this.usermapping_user_where.Size = new System.Drawing.Size(174, 20);
+            this.usermapping_user_where.TabIndex = 6;
+            this.usermapping_user_where.MaskInputRejected += new System.Windows.Forms.MaskInputRejectedEventHandler(this.usermap_user_where_MaskInputRejected);
+            this.usermapping_user_where.Enter += new System.EventHandler(this.usermapping_user_where_Enter);
             // 
             // label33
             // 
             this.label33.AutoSize = true;
-            this.label33.Location = new System.Drawing.Point(22, 79);
+            this.label33.Location = new System.Drawing.Point(22, 157);
             this.label33.Name = "label33";
             this.label33.Size = new System.Drawing.Size(71, 13);
             this.label33.TabIndex = 84;
             this.label33.Text = "Table or view";
             // 
-            // usermap_user_table_view
+            // usermapping_user_table_view
             // 
-            this.usermap_user_table_view.FormattingEnabled = true;
-            this.usermap_user_table_view.ItemHeight = 13;
-            this.usermap_user_table_view.Items.AddRange(new object[] {
+            this.usermapping_user_table_view.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.usermapping_user_table_view.FormattingEnabled = true;
+            this.usermapping_user_table_view.ItemHeight = 13;
+            this.usermapping_user_table_view.Items.AddRange(new object[] {
             "Table",
             "View"});
-            this.usermap_user_table_view.Location = new System.Drawing.Point(25, 95);
-            this.usermap_user_table_view.Name = "usermap_user_table_view";
-            this.usermap_user_table_view.Size = new System.Drawing.Size(112, 21);
-            this.usermap_user_table_view.TabIndex = 0;
-            this.usermap_user_table_view.SelectedIndexChanged += new System.EventHandler(this.usermap_user_table_view_SelectedIndexChanged);
+            this.usermapping_user_table_view.Location = new System.Drawing.Point(25, 173);
+            this.usermapping_user_table_view.Name = "usermapping_user_table_view";
+            this.usermapping_user_table_view.Size = new System.Drawing.Size(112, 21);
+            this.usermapping_user_table_view.TabIndex = 3;
+            this.usermapping_user_table_view.SelectedIndexChanged += new System.EventHandler(this.usermap_user_table_view_SelectedIndexChanged);
+            this.usermapping_user_table_view.Leave += new System.EventHandler(this.usermap_user_table_view_SelectedIndexChanged);
+            this.usermapping_user_table_view.Enter += new System.EventHandler(this.usermapping_user_table_view_Enter);
             // 
             // label35
             // 
             this.label35.AutoSize = true;
-            this.label35.Location = new System.Drawing.Point(22, 181);
+            this.label35.Location = new System.Drawing.Point(22, 259);
             this.label35.Name = "label35";
             this.label35.Size = new System.Drawing.Size(73, 13);
             this.label35.TabIndex = 77;
@@ -1235,7 +1294,7 @@ namespace WindowsApplication1
             // label36
             // 
             this.label36.AutoSize = true;
-            this.label36.Location = new System.Drawing.Point(22, 141);
+            this.label36.Location = new System.Drawing.Point(22, 219);
             this.label36.Name = "label36";
             this.label36.Size = new System.Drawing.Size(43, 13);
             this.label36.TabIndex = 78;
@@ -1705,10 +1764,10 @@ namespace WindowsApplication1
             this.tabPage4.ResumeLayout(false);
             this.tabPage4.PerformLayout();
             this.tabControl1.ResumeLayout(false);
-            this.tabPage6.ResumeLayout(false);
-            this.tabPage6.PerformLayout();
-            this.UserData.ResumeLayout(false);
-            this.UserData.PerformLayout();
+            this.userMapping_factAdd.ResumeLayout(false);
+            this.userMapping_factAdd.PerformLayout();
+            this.userMapping_UserData.ResumeLayout(false);
+            this.userMapping_UserData.PerformLayout();
             this.tabPage7.ResumeLayout(false);
             this.tabPage7.PerformLayout();
             this.move_users.ResumeLayout(false);
@@ -1800,12 +1859,10 @@ namespace WindowsApplication1
         private System.Windows.Forms.Label label31;
         private System.Windows.Forms.Button group_execute_now;
         private System.Windows.Forms.TabPage tabPage4;
-        private System.Windows.Forms.GroupBox UserData;
-        private System.Windows.Forms.ComboBox usermap_user_sAMAccountName;
-        private System.Windows.Forms.ComboBox usermap_user_source;
-        private System.Windows.Forms.MaskedTextBox usermap_user_where;
+        private System.Windows.Forms.GroupBox userMapping_UserData;
+        private System.Windows.Forms.ComboBox usermapping_user_sAMAccountName;
+        private System.Windows.Forms.MaskedTextBox usermapping_user_where;
         private System.Windows.Forms.Label label33;
-        private System.Windows.Forms.ComboBox usermap_user_table_view;
         private System.Windows.Forms.Label label35;
         private System.Windows.Forms.Label label36;
         private System.Windows.Forms.Label label43;
@@ -1815,12 +1872,10 @@ namespace WindowsApplication1
         private System.Windows.Forms.Button execution_remove;
         private System.Windows.Forms.Button execution_add;
         private System.Windows.Forms.TabControl tabControl1;
-        private System.Windows.Forms.TabPage tabPage6;
-        private System.Windows.Forms.ListBox oUReasons;
+        private System.Windows.Forms.TabPage userMapping_factAdd;
         private System.Windows.Forms.TabPage tabPage7;
-        private System.Windows.Forms.Button button14;
-        private System.Windows.Forms.Button button13;
-        private System.Windows.Forms.Button button12;
+        private System.Windows.Forms.Button userMapping_factDelete;
+        private System.Windows.Forms.Button userMapping_fact_Add_Edit;
         private System.Windows.Forms.ComboBox usermap_active_disabled;
         private System.Windows.Forms.Label label47;
         private System.Windows.Forms.Label label41;
@@ -1852,8 +1907,16 @@ namespace WindowsApplication1
         private System.Windows.Forms.Label label42;
         private System.Windows.Forms.Label label40;
         private System.Windows.Forms.Label userMappingStep1Instructions;
-        private System.Windows.Forms.MaskedTextBox factName;
         private System.Windows.Forms.Label label34;
+        private System.Windows.Forms.ListView userMapping_factList;
+        private System.Windows.Forms.ColumnHeader userMapping_factHeading;
+        private System.Windows.Forms.MaskedTextBox userMapping_factName;
+        private System.Windows.Forms.ComboBox usermapping_user_source;
+        private System.Windows.Forms.ComboBox usermapping_user_table_view;
+        private System.Windows.Forms.ComboBox userMapping_DatabaseName;
+        private System.Windows.Forms.Label userMapping_DBName_label;
+        private System.Windows.Forms.Label userMapping_DBServer_label;
+        private System.Windows.Forms.TextBox userMapping_DBServerName;
         private System.Windows.Forms.Label label26;
         private System.Windows.Forms.Label label29;
         private System.Windows.Forms.Label label54;
