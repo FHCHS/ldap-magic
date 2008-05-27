@@ -434,57 +434,132 @@ namespace WindowsApplication1
 
             private String configBaseUserOU;
             private String configNotes;
-            private String configOU_CN;
-            private String configOU_table_view;
-            private String configOU_sAMAccount;
-            private String configOU_dbTable;
-            private String configOU_where;
-            private String configUser_CN;
-            private String configUser_table_view;
+            private String configUser_Lname;
+            private String configUser_Fname;
+            private String configUser_city;
+            private String configUser_State;
+            private String configUser_Zip;
+            private String configUser_Address;
+            private String configUser_Mobile;
             private String configUser_sAMAccount;
+            private String configUser_table_view;
             private String configUser_dbTable;
             private String configUser_where;
             private String configDataServer;
             private String configDBCatalog;
+            private String configUserHoldingTank;
+            private String configUser_password;
+
 
             // constructor creates a blank instance
             public userSynch()
             {
                 configBaseUserOU = "";
                 configNotes = "";
-                configOU_CN = "";
-                configOU_table_view = "";
-                configOU_sAMAccount = "";
-                configOU_dbTable = "";
-                configOU_where = "";
-                configUser_CN = "";
+                configUser_Lname = "";
+                configUser_Fname = "";
+                configUser_city = "";
+                configUser_State = "";
+                configUser_Zip = "";
+                configUser_Address = "";
+                configUser_Mobile = "";
                 configUser_table_view = "";
                 configUser_sAMAccount = "";
                 configUser_dbTable = "";
                 configUser_where = "";
                 configDataServer = "";
                 configDBCatalog = "";
+                configUserHoldingTank = "";
+                configUser_password = "";   
             }
             public void load(Dictionary<string, string> dictionary)
             {
                 dictionary.TryGetValue("configBaseUserOU", out configBaseUserOU);
                 dictionary.TryGetValue("configNotes", out configNotes);
-                dictionary.TryGetValue("configOU_CN", out configOU_CN);
-                dictionary.TryGetValue("configOU_table_view", out configOU_table_view);
-                dictionary.TryGetValue("configOU_sAMAccount", out configOU_sAMAccount);
-                dictionary.TryGetValue("configOU_dbTable", out configOU_dbTable);
-                dictionary.TryGetValue("configOU_where", out configOU_where);
-                dictionary.TryGetValue("configUser_CN", out configUser_CN);
+                dictionary.TryGetValue("configUser_Lname", out configUser_Lname);
+                dictionary.TryGetValue("configUser_Fname", out configUser_Fname);
+                dictionary.TryGetValue("configUser_city", out configUser_city);
+                dictionary.TryGetValue("configUser_Zip", out configUser_Zip);
+                dictionary.TryGetValue("configUser_State", out configUser_State);
+                dictionary.TryGetValue("configUser_Address", out configUser_Address);
+                dictionary.TryGetValue("configUser_Mobile", out configUser_Mobile);
                 dictionary.TryGetValue("configUser_table_view", out configUser_table_view);
                 dictionary.TryGetValue("configUser_sAMAccount", out configUser_sAMAccount);
                 dictionary.TryGetValue("configUser_dbTable", out configUser_dbTable);
                 dictionary.TryGetValue("configUser_where", out configUser_where);
                 dictionary.TryGetValue("configDataServer", out configDataServer);
                 dictionary.TryGetValue("configDBCatalog", out configDBCatalog);
+                dictionary.TryGetValue("configUserHoldingTank", out configUserHoldingTank);
+                dictionary.TryGetValue("configUser_password", out configUser_password);
             }
 
             // accessors for properties
-
+            public String User_Fname
+            {
+                get
+                {
+                    return configUser_Fname;
+                }
+                set
+                {
+                    configUser_Fname = value;
+                }
+            }
+            public String User_city
+            {
+                get
+                {
+                    return configUser_city;
+                }
+                set
+                {
+                    configUser_city = value;
+                }
+            }
+            public String User_State
+            {
+                get
+                {
+                    return configUser_State;
+                }
+                set
+                {
+                    configUser_State = value;
+                }
+            }
+            public String User_Zip
+            {
+                get
+                {
+                    return configUser_Zip;
+                }
+                set
+                {
+                    configUser_Zip = value;
+                }
+            }
+            public String User_Address
+            {
+                get
+                {
+                    return configUser_Address;
+                }
+                set
+                {
+                    configUser_Address = value;
+                }
+            }
+            public String User_Mobile
+            {
+                get
+                {
+                    return configUser_Mobile;
+                }
+                set
+                {
+                    configUser_Mobile = value;
+                }
+            }
             public String BaseUserOU
             {
                 get
@@ -507,70 +582,15 @@ namespace WindowsApplication1
                     configNotes = value;
                 }
             }
-            public String OU_CN
+            public String User_Lname
             {
                 get
                 {
-                    return configOU_CN;
+                    return configUser_Lname;
                 }
                 set
                 {
-                    configOU_CN = value;
-                }
-            }
-            public String OU_table_view
-            {
-                get
-                {
-                    return configOU_table_view;
-                }
-                set
-                {
-                    configOU_table_view = value;
-                }
-            }
-            public String OU_sAMAccount
-            {
-                get
-                {
-                    return configOU_sAMAccount;
-                }
-                set
-                {
-                    configOU_sAMAccount = value;
-                }
-            }
-            public String OU_dbTable
-            {
-                get
-                {
-                    return configOU_dbTable;
-                }
-                set
-                {
-                    configOU_dbTable = value;
-                }
-            }
-            public String OU_where
-            {
-                get
-                {
-                    return configOU_where;
-                }
-                set
-                {
-                    configOU_where = value;
-                }
-            }
-            public String User_CN
-            {
-                get
-                {
-                    return configUser_CN;
-                }
-                set
-                {
-                    configUser_CN = value;
+                    configUser_Lname = value;
                 }
             }
             public String User_table_view
@@ -639,6 +659,28 @@ namespace WindowsApplication1
                     configDBCatalog = value;
                 }
             }
+            public String UserHoldingTank
+            {
+                get
+                {
+                    return configUserHoldingTank;
+                }
+                set
+                {
+                    configUserHoldingTank = value;
+                }
+            }
+            public String User_password
+            {
+                get
+                {
+                    return configUser_password;
+                }
+                set
+                {
+                    configUser_password = value;
+                }
+            }
 
             // output to a dictionary list
             public Dictionary<string, string> ToDictionary()
@@ -646,18 +688,21 @@ namespace WindowsApplication1
                 Dictionary<string, string> returnvalue = new Dictionary<string, string>();
                 returnvalue.Add("configBaseUserOU", configBaseUserOU);
                 returnvalue.Add("configNotes", configNotes);
-                returnvalue.Add("configOU_CN", configOU_CN);
-                returnvalue.Add("configOU_table_view", configOU_table_view);
-                returnvalue.Add("configOU_sAMAccount", configOU_sAMAccount);
-                returnvalue.Add("configOU_dbTable", configOU_dbTable);
-                returnvalue.Add("configOU_where", configOU_where);
-                returnvalue.Add("configUser_CN", configUser_CN);
+                returnvalue.Add("configUser_Lname", configUser_Lname);
+                returnvalue.Add("configUser_Fname", configUser_Fname);
+                returnvalue.Add("configUser_city", configUser_city);
+                returnvalue.Add("configUser_State", configUser_State);
+                returnvalue.Add("configUser_Zip", configUser_Zip);
+                returnvalue.Add("configUser_Address", configUser_Address);
+                returnvalue.Add("configUser_Mobile", configUser_Mobile);
                 returnvalue.Add("configUser_table_view", configUser_table_view);
                 returnvalue.Add("configUser_sAMAccount", configUser_sAMAccount);
                 returnvalue.Add("configUser_dbTable", configUser_dbTable);
                 returnvalue.Add("configUser_where", configUser_where);
                 returnvalue.Add("configDataServer", configDataServer);
                 returnvalue.Add("configDBCatalog", configDBCatalog);
+                returnvalue.Add("configUserHoldingTank", configUserHoldingTank);
+                returnvalue.Add("configUser_password", configUser_password);
                 return returnvalue;
             }
         }
@@ -1006,12 +1051,15 @@ namespace WindowsApplication1
                     return entry.Path;
                 }
             }
-            public DataTable EnumerateUsersInOUDataTable(string OuDN)
+            public DataTable EnumerateUsersInOUDataTable(string OuDN, ArrayList returnProperties, string table)
             {
                 // note does not handle special/illegal characters for AD
                 // RETURNS ALL USERS IN AN OU NO MATTER HOW DEEP
+                int count = returnProperties.Count;
+                int i;
                 DataTable returnvalue = new DataTable();
                 DataRow row;
+                
 
                 // bind to the OU you want to enumerate
                 DirectoryEntry deOU = new DirectoryEntry("LDAP://" + OuDN);
@@ -1019,20 +1067,38 @@ namespace WindowsApplication1
                 // create a directory searcher for that OU
                 DirectorySearcher dsUsers = new DirectorySearcher(deOU);
 
+                // set depth to recursive
+                dsUsers.SearchScope = SearchScope.Subtree;
+
                 // set the filter to get just the users
                 dsUsers.Filter = "(&(objectClass=user)(objectCategory=Person))";
 
                 // add the attributes you want to grab from the search
-                // COULD OVERLOAD METHOD AND CHANGE OUT FOR A FOREACH AND GRAB PROPS FROM AN ARRAY
-                dsUsers.PropertiesToLoad.Add("sAMAccountName");
+                // add the attributes you want to grab from the search
+                for (i = 0; i < count; i++)
+                {
+                    dsUsers.PropertiesToLoad.Add(returnProperties[i].ToString());
+                    returnvalue.Columns.Add(returnProperties[i].ToString());
+                } 
+                //dsUsers.PropertiesToLoad.Add("sAMAccountName");
 
                 // grab the users and do whatever you need to do with them 
+                dsUsers.PageSize = 500;
                 row = returnvalue.NewRow();
                 foreach (SearchResult oResult in dsUsers.FindAll())
                 {
                     //generate the array list with the user sam accounts
-                    // COULD CHANGE OUT FOR A FOR EACH AND GRAB PROPS FROM AN ARRAY
-                    row[0] = oResult.Properties["sAMAccountName"][0].ToString();
+                    for (i = 0; i < count; i++)
+                    {
+                        try
+                        {
+                            row[i] = System.Web.HttpUtility.UrlDecode(oResult.Properties[returnProperties[i].ToString()][0].ToString());
+                        }
+                        catch
+                        {
+                            row[i] = string.Empty;
+                        }
+                    }
                     returnvalue.Rows.Add(row);
                     row = returnvalue.NewRow();
                 }
@@ -1372,6 +1438,13 @@ namespace WindowsApplication1
                     newUser.Properties["name"].Value = firstName + " " + lastName;
                     newUser.Properties["givenName"].Add(firstName);
 
+                    //foreach (string props in propertyArray)
+                    //{
+                    //    userListNode.Value.TryGetValue(props, out userProperty);
+                    //    user.Properties[props].Value = userProperty;
+                    //}
+                    //user.CommitChanges();
+
 
                     newUser.CommitChanges();
                     newUser.Invoke("SetPassword", new object[] { userPassword });
@@ -1391,6 +1464,165 @@ namespace WindowsApplication1
 
                     return false;
                 }
+                /*
+                    //Add this to the create account method
+                    int val = (int)newUser.Properties["userAccountControl"].Value; 
+                         //newUser is DirectoryEntry object
+                    newUser.Properties["userAccountControl"].Value = val | 0x80000; 
+                        //ADS_UF_TRUSTED_FOR_DELEGATION
+                 
+                 * 
+                 * UserAccountControlFlags
+                 * CONST   HEX
+                    -------------------------------
+                    SCRIPT 0x0001
+                    ACCOUNTDISABLE 0x0002
+                    HOMEDIR_REQUIRED 0x0008
+                    LOCKOUT 0x0010
+                    PASSWD_NOTREQD 0x0020
+                    PASSWD_CANT_CHANGE 0x0040
+                    ENCRYPTED_TEXT_PWD_ALLOWED 0x0080
+                    TEMP_DUPLICATE_ACCOUNT 0x0100
+                    NORMAL_ACCOUNT 0x0200
+                    INTERDOMAIN_TRUST_ACCOUNT 0x0800
+                    WORKSTATION_TRUST_ACCOUNT 0x1000
+                    SERVER_TRUST_ACCOUNT 0x2000
+                    DONT_EXPIRE_PASSWORD 0x10000
+                    MNS_LOGON_ACCOUNT 0x20000
+                    SMARTCARD_REQUIRED 0x40000
+                    TRUSTED_FOR_DELEGATION 0x80000
+                    NOT_DELEGATED 0x100000
+                    USE_DES_KEY_ONLY 0x200000
+                    DONT_REQ_PREAUTH 0x400000
+                    PASSWORD_EXPIRED 0x800000
+                    TRUSTED_TO_AUTH_FOR_DELEGATION 0x1000000
+                 * */
+            }
+            public bool createUserAccount(string ouPath, Dictionary<string, string> properties)
+            {
+                // properties contians key pairs with the key matching a field within Active driectory and the value, the value to be inserted
+
+
+                try
+                {
+                    if (!DirectoryEntry.Exists("LDAP://CN=" + System.Web.HttpUtility.UrlEncode(properties["CN"].ToString()).Replace("+", " ").Replace("*", "%2A") + "," + ouPath))
+                    {
+
+                        DirectoryEntry entry = new DirectoryEntry("LDAP://" + ouPath);
+                        DirectoryEntry newUser = entry.Children.Add("CN=" + System.Web.HttpUtility.UrlEncode(properties["CN"].ToString()).Replace("+", " ").Replace("*", "%2A"), "user");
+                        foreach (KeyValuePair<string, string> kvp in properties)
+                        {
+                            newUser.Properties[kvp.Key.ToString()].Value = System.Web.HttpUtility.UrlEncode(kvp.Value.ToString()).Replace("+", " ").Replace("*", "%2A");
+                        }
+                        newUser.CommitChanges();
+                        newUser.Invoke("SetPassword", new object[] { System.Web.HttpUtility.UrlEncode(properties["password"].ToString()).Replace("+", " ").Replace("*", "%2A") });
+                        newUser.CommitChanges();
+                        int val = (int)newUser.Properties["userAccountControl"].Value;
+                        newUser.Properties["userAccountControl"].Value = val | 0x0200;
+                        newUser.CommitChanges();
+                        entry.Close();
+                        newUser.Close();
+                        return true;
+                    }
+                    else
+                    {
+                        MessageBox.Show("CN=" + System.Web.HttpUtility.UrlEncode(properties["CN"].ToString()).Replace("+", " ").Replace("*", "%2A") + "," + ouPath + " group already exists from adding");
+                        return false;
+                    }
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.Message.ToString() + "issue create user LDAP://CN=" + System.Web.HttpUtility.UrlEncode(properties["CN"].ToString()).Replace("+", " ").Replace("*", "%2A") + "," + ouPath);
+                    return false;
+                }
+
+                /*
+                    //Add this to the create account method
+                    int val = (int)newUser.Properties["userAccountControl"].Value; 
+                         //newUser is DirectoryEntry object
+                    newUser.Properties["userAccountControl"].Value = val | 0x80000; 
+                        //ADS_UF_TRUSTED_FOR_DELEGATION
+                 
+                 * 
+                 * UserAccountControlFlags
+                 * CONST   HEX
+                    -------------------------------
+                    SCRIPT 0x0001
+                    ACCOUNTDISABLE 0x0002
+                    HOMEDIR_REQUIRED 0x0008
+                    LOCKOUT 0x0010
+                    PASSWD_NOTREQD 0x0020
+                    PASSWD_CANT_CHANGE 0x0040
+                    ENCRYPTED_TEXT_PWD_ALLOWED 0x0080
+                    TEMP_DUPLICATE_ACCOUNT 0x0100
+                    NORMAL_ACCOUNT 0x0200
+                    INTERDOMAIN_TRUST_ACCOUNT 0x0800
+                    WORKSTATION_TRUST_ACCOUNT 0x1000
+                    SERVER_TRUST_ACCOUNT 0x2000
+                    DONT_EXPIRE_PASSWORD 0x10000
+                    MNS_LOGON_ACCOUNT 0x20000
+                    SMARTCARD_REQUIRED 0x40000
+                    TRUSTED_FOR_DELEGATION 0x80000
+                    NOT_DELEGATED 0x100000
+                    USE_DES_KEY_ONLY 0x200000
+                    DONT_REQ_PREAUTH 0x400000
+                    PASSWORD_EXPIRED 0x800000
+                    TRUSTED_TO_AUTH_FOR_DELEGATION 0x1000000
+                 * */
+            }
+            public void createUserAccount(string ouPath, SqlDataReader users, logFile log)
+            {
+                // properties contians key pairs with the key matching a field within Active driectory and the value, the value to be inserted
+                int i;
+                int fieldcount;
+                fieldcount = users.FieldCount;
+                while (users.Read())
+                {
+                    try
+                    {
+                        if (!DirectoryEntry.Exists("LDAP://CN=" + System.Web.HttpUtility.UrlEncode(users["CN"].ToString()).Replace("+", " ").Replace("*", "%2A") + "," + ouPath))
+                        {
+
+                            DirectoryEntry entry = new DirectoryEntry("LDAP://" + ouPath);
+                            DirectoryEntry newUser = entry.Children.Add("CN=" + System.Web.HttpUtility.UrlEncode(users["CN"].ToString()).Replace("+", " ").Replace("*", "%2A"), "user");
+
+                            //for (i = 0; i < debugfieldcount; i++)
+                            //{
+                            //    debug += debugreader.GetName(i);
+                            //}
+
+                            for (i = 0; i < fieldcount; i++)
+                            {
+                                if (users.GetName(i) != "password")
+                                {
+                                    newUser.Properties[users.GetName(i)].Value = System.Web.HttpUtility.UrlEncode((string)users[i]).Replace("+", " ").Replace("*", "%2A");
+                                }
+                            }
+                            newUser.Properties["samAccountName"].Value = System.Web.HttpUtility.UrlEncode(users["CN"].ToString()).Replace("+", " ").Replace("*", "%2A");
+                            newUser.Properties["displayName"].Value = System.Web.HttpUtility.UrlEncode((string)users["sn"]).Replace("+", " ").Replace("*", "%2A") + "," + System.Web.HttpUtility.UrlEncode((string)users["givenname"]).Replace("+", " ").Replace("*", "%2A");
+                            newUser.Properties["description"].Value = System.Web.HttpUtility.UrlEncode((string)users["sn"]).Replace("+", " ").Replace("*", "%2A") + "," + System.Web.HttpUtility.UrlEncode((string)users["givenname"]).Replace("+", " ").Replace("*", "%2A");
+                            newUser.CommitChanges();
+                            newUser.Invoke("SetPassword", new object[] { System.Web.HttpUtility.UrlEncode((string)users["password"]).Replace("+", " ").Replace("*", "%2A") });
+                            newUser.CommitChanges();
+                            int val = (int)newUser.Properties["userAccountControl"].Value;
+                            newUser.Properties["userAccountControl"].Value = val | 0x0200;
+                            newUser.CommitChanges();
+                            entry.Close();
+                            newUser.Close();
+                            log.transactions.Add("User added ;" + (string)users[0]);
+                        }
+                        else
+                        {
+                            MessageBox.Show("CN=" + System.Web.HttpUtility.UrlEncode((string)users["CN"]).Replace("+", " ").Replace("*", "%2A") + "," + ouPath + " group already exists from adding");
+                        }
+
+                    }
+                    catch (Exception e)
+                    {
+                        MessageBox.Show(e.Message.ToString() + "issue create user LDAP://CN=" + System.Web.HttpUtility.UrlEncode((string)users["CN"]).Replace("+", " ").Replace("*", "%2A") + "," + ouPath);
+                    }
+                }
+
                 /*
                     //Add this to the create account method
                     int val = (int)newUser.Properties["userAccountControl"].Value; 
@@ -2048,33 +2280,68 @@ namespace WindowsApplication1
                 ArrayList ADupdateKeys = new ArrayList();
                 ArrayList SQLupdateKeys = new ArrayList();
                 ArrayList fields = new ArrayList();
-                Dictionary<string, string> groupObject = new Dictionary<string, string>();
+                Dictionary<string, string> userObject = new Dictionary<string, string>();
                 SqlConnection sqlConn = new SqlConnection("Data Source=" + usersyn.DataServer + ";Initial Catalog=" + usersyn.DBCatalog + ";Integrated Security=SSPI;");
-
-
+                
 
                 string sqluserstable = "#sqlusersTable";
                 string ADuserstable = "#ADusersTable";
-                SqlDataReader sqlusers;
+                //SqlDataReader sqlusers;
                 SqlCommand sqlComm;
                 DataTable ADusers = new DataTable();
+                ArrayList userProperties = new ArrayList();
+
+                sqlConn.Open();
+                tools.createOURecursive(usersyn.BaseUserOU);
+                tools.createOURecursive(usersyn.UserHoldingTank);
 
                 // grab users data from sql
                 if (usersyn.User_where == "")
                 {
-                    sqlComm = new SqlCommand("SELECT DISTINCT RTRIM(" + usersyn.User_sAMAccount + ") AS " + usersyn.User_sAMAccount + ", RTRIM(" + usersyn.User_CN + ") AS " + usersyn.User_CN + " INTO " + sqluserstable + " FROM " + usersyn.User_dbTable, sqlConn);
+                    sqlComm = new SqlCommand("SELECT DISTINCT RTRIM(" + usersyn.User_sAMAccount + ") AS sAMAccountName" +
+                        ", RTRIM(" + usersyn.User_sAMAccount + ") AS CN" +
+                        ", RTRIM(" + usersyn.User_Lname + ") AS sn" +
+                        ", RTRIM(" + usersyn.User_Fname + ") AS givenname" +
+                        ", RTRIM(" + usersyn.User_Mobile + ") AS homephone" +
+                        ", RTRIM(" + usersyn.User_State + ") AS st"+
+                        ", RTRIM(" + usersyn.User_Address + ") AS streetaddress"+
+                        ", RTRIM(" + usersyn.User_city + ") AS l" +
+                        ", RTRIM(" + usersyn.User_Zip + ") AS postalcode" +
+                        ", RTRIM(" + usersyn.User_password + ") AS password" +                        
+                        " INTO " + sqluserstable + " FROM " + usersyn.User_dbTable, sqlConn);
                 }
                 else
                 {
-                    sqlComm = new SqlCommand("SELECT DISTINCT RTRIM(" + usersyn.User_sAMAccount + ") AS " + usersyn.User_sAMAccount + ", RTRIM(" + usersyn.User_CN + ") AS " + usersyn.User_CN + " INTO " + sqluserstable + " FROM " + usersyn.User_dbTable + " WHERE " + usersyn.User_where, sqlConn);
+                    sqlComm = new SqlCommand("SELECT DISTINCT RTRIM(" + usersyn.User_sAMAccount + ") AS sAMAccountName" +
+                        ", RTRIM(" + usersyn.User_sAMAccount + ") AS CN" +
+                        ", RTRIM(" + usersyn.User_Lname + ") AS sn" +
+                        ", RTRIM(" + usersyn.User_Fname + ") AS givenname" +
+                        ", RTRIM(" + usersyn.User_Mobile + ") AS homephone" +
+                        ", RTRIM(" + usersyn.User_State + ") AS st"+
+                        ", RTRIM(" + usersyn.User_Address + ") AS streetaddress"+
+                        ", RTRIM(" + usersyn.User_city + ") AS l" +
+                        ", RTRIM(" + usersyn.User_Zip + ") AS postalcode" +
+                        ", RTRIM(" + usersyn.User_password + ") AS password" +                        
+                        " INTO " + sqluserstable + " FROM " + usersyn.User_dbTable +
+                        " WHERE " + usersyn.User_where, sqlConn);
                 }
                 sqlComm.ExecuteNonQuery();
 
-                ADusers = tools.EnumerateUsersInOUDataTable(usersyn.BaseUserOU);
+                // set up fields to pull back from AD
+                userProperties.Add("sAMAccountName");
+                userProperties.Add("CN");
+                userProperties.Add("sn");
+                userProperties.Add("givenname");
+                userProperties.Add("l");
+                userProperties.Add("postalcode");
+                userProperties.Add("state");
+                userProperties.Add("homephone");
+                userProperties.Add("password");
+                userProperties.Add("distinguishedName");
+
+                ADusers = tools.EnumerateUsersInOUDataTable(usersyn.BaseUserOU, userProperties, ADuserstable);
                 // make the temp table for ou comparisons
                 tools.create_Table(ADusers, ADuserstable, sqlConn);
-
-
 
                 debug = " total users from sql \n";
                 sqldebugComm = new SqlCommand("select top 20 * FROM " + sqluserstable, sqlConn);
@@ -2082,18 +2349,18 @@ namespace WindowsApplication1
                 debugfieldcount = debugreader.FieldCount;
                 for (i = 0; i < debugfieldcount; i++)
                 {
-                    debug += debugreader.GetName(i);
+                    debug += debugreader.GetName(i) + ", ";
                 }
                 debug += "\n";
                 while (debugreader.Read())
                 {
                     for (i = 0; i < debugfieldcount; i++)
                     {
-                        debug += (string)debugreader[i] + ",";
+                        debug += (string)debugreader[i].ToString() + ", ";
                     }
                     debug += "\n";
                 }
-                sqldebugComm = new SqlCommand("select count(" + ADusers.Columns[0].ColumnName + ") FROM " + sqluserstable, sqlConn);
+                sqldebugComm = new SqlCommand("select count(sAMAccountName) FROM " + sqluserstable, sqlConn);
                 debugreader.Close();
                 debugrecourdcount = sqldebugComm.ExecuteScalar().ToString();
                 MessageBox.Show("table " + sqluserstable + " has " + debugrecourdcount + " records \n " + debugfieldcount + " fields \n sample data" + debug);
@@ -2104,14 +2371,14 @@ namespace WindowsApplication1
                 debugfieldcount = debugreader.FieldCount;
                 for (i = 0; i < debugfieldcount; i++)
                 {
-                    debug += debugreader.GetName(i);
+                    debug += debugreader.GetName(i) + ", ";
                 }
                 debug += "\n";
                 while (debugreader.Read())
                 {
                     for (i = 0; i < debugfieldcount; i++)
                     {
-                        debug += (string)debugreader[i] + ",";
+                        debug += (string)debugreader[i] + ", ";
                     }
                     debug += "\n";
                 }
@@ -2122,22 +2389,42 @@ namespace WindowsApplication1
 
 
 
+
+
+
                 // compare and add/remove
-                add = tools.queryNotExists(sqluserstable, ADuserstable, sqlConn, usersyn.User_CN, ADusers.Columns[0].ColumnName);
-                while (add.Read())
+                add = tools.queryNotExists(sqluserstable, ADuserstable, sqlConn, usersyn.User_Lname, ADusers.Columns[0].ColumnName);
+
+
+                debugfieldcount = add.FieldCount;
+                for (i = 0; i < debugfieldcount; i++)
                 {
-                    tools.AddUserToGroup((string)add[0], (string)add[1]);
-                    log.transactions.Add("User added ;" + (string)add[0]);
-                    groupObject.Clear();
+                    debug += add.GetName(i) + ", ";
                 }
+                debug += "\n";
+                int j = 0;
+                while (add.Read() && j < 20)
+                {
+                    for (i = 0; i < debugfieldcount; i++)
+                    {
+                        debug += (string)add[i] + ", ";
+                    }
+                    debug += "\n";
+                    j++;
+                }
+
+                debugreader.Close();
+                MessageBox.Show("table " + ADuserstable + "\n " + debugfieldcount + " fields \n sample data" + debug);
+
+                tools.createUserAccount(usersyn.UserHoldingTank, add, log);
                 add.Close();
 
-                delete = tools.queryNotExists(sqluserstable, ADuserstable, sqlConn, usersyn.User_CN, ADupdateKeys[1].ToString());
+                delete = tools.queryNotExists(sqluserstable, ADuserstable, sqlConn, usersyn.User_Lname, ADupdateKeys[1].ToString());
                 // delete groups in AD
                 while (delete.Read())
                 {
 
-                    tools.RemoveUserFromGroup((string)delete[0], (string)delete[1]);
+                    tools.deleteUserAccount((string)delete[0], (string)delete[1]);
                     log.transactions.Add("User removed ;" + (string)delete[ADupdateKeys[1].ToString()].ToString().Trim());
 
                 }
@@ -2318,11 +2605,11 @@ namespace WindowsApplication1
         //    sqlComm = new SqlCommand();
         //    if (groupconfig.User_where == "")
         //    {
-        //        sqlComm = new SqlCommand("SELECT " + groupconfig.User_sAMAccount + ", " + groupconfig.User_CN + " FROM " + groupconfig.User_dbTable, sqlConn);
+        //        sqlComm = new SqlCommand("SELECT " + groupconfig.User_sAMAccount + ", " + groupconfig.User_Lname + " FROM " + groupconfig.User_dbTable, sqlConn);
         //    }
         //    else
         //    {
-        //        sqlComm = new SqlCommand("SELECT " + groupconfig.User_sAMAccount + ", " + groupconfig.User_CN + " FROM " + groupconfig.User_dbTable + " WHERE " + groupconfig.User_where, sqlConn);
+        //        sqlComm = new SqlCommand("SELECT " + groupconfig.User_sAMAccount + ", " + groupconfig.User_Lname + " FROM " + groupconfig.User_dbTable + " WHERE " + groupconfig.User_where, sqlConn);
         //    }
         //    r = sqlComm.ExecuteReader();
 
@@ -2330,9 +2617,9 @@ namespace WindowsApplication1
         //    while (r.Read())
         //    {
         //        UsergroupDictionary = new Dictionary<string, string>();
-        //        //  groupconfig.User_CN holds the value for the cross refernce aginst the group CN 
+        //        //  groupconfig.User_Lname holds the value for the cross refernce aginst the group CN 
         //        UsergroupDictionary.Add("sAMAccountName", (string)r[groupconfig.User_sAMAccount].ToString().Trim());
-        //        UsergroupDictionary.Add("CN", (string)r[groupconfig.User_CN].ToString().Trim() + groupconfig.Group_Append);
+        //        UsergroupDictionary.Add("CN", (string)r[groupconfig.User_Lname].ToString().Trim() + groupconfig.Group_Append);
         //        DBUsers.AddLast(UsergroupDictionary);
 
         //    }
@@ -2433,7 +2720,7 @@ namespace WindowsApplication1
                 sqlConn.Close();
 
                 userconfig.User_dbTable = users_user_source.Text.ToString();
-                users_user_CN.DataSource = columnList;
+                users_user_Lname.DataSource = columnList;
                 users_user_sAMAccountName.DataSource = columnList.Clone();
             }
             else
@@ -2443,7 +2730,7 @@ namespace WindowsApplication1
         }
         private void usersMap_user_CN_SelectedIndexChanged(object sender, EventArgs e)
         {
-            userconfig.User_CN = users_user_CN.Text.ToString();
+            userconfig.User_Lname = users_user_Lname.Text.ToString();
         }
         private void usersMap_user_sAMAccountName_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -2517,22 +2804,60 @@ namespace WindowsApplication1
                 sqlConn.Close();
 
                 userconfig.User_dbTable = users_user_source.Text.ToString();
-                users_user_CN.DataSource = columnList;
+                users_user_Lname.DataSource = columnList;
+                users_user_Fname.DataSource = columnList.Clone();
+                users_user_city.DataSource = columnList.Clone();
+                users_user_State.DataSource = columnList.Clone();
+                users_user_PostalCode.DataSource = columnList.Clone();
+                users_user_Address.DataSource = columnList.Clone();
+                users_user_Mobile.DataSource = columnList.Clone();
                 users_user_sAMAccountName.DataSource = columnList.Clone();
+                users_user_password.DataSource = columnList.Clone();
+
             }
             else
             {
                 MessageBox.Show("Please select table or view");
             }
         }
-        private void users_user_CN_SelectedIndexChanged(object sender, EventArgs e)
+
+        private void users_user_Lname_SelectedIndexChanged(object sender, EventArgs e)
         {
-            userconfig.User_CN = users_user_CN.Text.ToString();
+            userconfig.User_Lname = users_user_Lname.Text.ToString();
+        }
+        private void users_user_Fname_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            userconfig.User_Fname = users_user_Fname.Text.ToString();
+        }
+        private void users_user_city_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            userconfig.User_city = users_user_city.Text.ToString();
+        }
+        private void users_user_State_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            userconfig.User_State = users_user_State.Text.ToString();
+        }
+        private void users_user_PostalCode_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            userconfig.User_Zip = users_user_PostalCode.Text.ToString();
+        }
+        private void users_user_Address_SelectedIndexChanged_1(object sender, EventArgs e)
+        {
+            userconfig.User_Address = users_user_Address.Text.ToString();
+        }
+        private void users_user_Mobile_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            userconfig.User_Mobile = users_user_Mobile.Text.ToString();
         }
         private void users_user_sAMAccountName_SelectedIndexChanged(object sender, EventArgs e)
         {
             userconfig.User_sAMAccount = users_user_sAMAccountName.Text.ToString();
         }
+        private void users_user_password_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            userconfig.User_password = users_user_password.Text.ToString();
+        }
+
         private void users_user_where_TextChanged(object sender, EventArgs e)
         {
             userconfig.User_where = users_user_where.Text.ToString();
@@ -2541,6 +2866,10 @@ namespace WindowsApplication1
         {
             userconfig.BaseUserOU = users_baseUserOU.Text.ToString();
         }
+        private void users_holdingTank_TextChanged(object sender, EventArgs e)
+        {
+            userconfig.UserHoldingTank = users_holdingTank.Text.ToString();
+        }
         private void users_mapping_description_TextChanged(object sender, EventArgs e)
         {
             userconfig.Notes = users_mapping_description.Text.ToString();
@@ -2548,29 +2877,14 @@ namespace WindowsApplication1
         // BUTTONS FOR THE TAB
         private void users_see_query_Click(object sender, EventArgs e)
         {
-            users_result1.Clear();
-            users_result1.AppendText("This is your OU query \n");
-            users_result1.AppendText("Select ");
-            users_result1.AppendText(userconfig.OU_CN);
-            users_result1.AppendText(", ");
-            users_result1.AppendText(userconfig.OU_sAMAccount);
-            users_result1.AppendText(" From ");
-            users_result1.AppendText(userconfig.OU_dbTable);
-            if (userconfig.OU_where != string.Empty)
-            {
-                users_result1.AppendText(" Where ");
-                users_result1.AppendText(userconfig.OU_where);
-            }
-            users_result1.AppendText("\n");
-
             users_result2.Clear();
             users_result2.AppendText("This is your users query \n");
             users_result2.AppendText("Select ");
-            users_result2.AppendText(userconfig.User_CN);
+            users_result2.AppendText(userconfig.User_Lname);
             users_result2.AppendText(", ");
             users_result2.AppendText(userconfig.User_sAMAccount);
             users_result2.AppendText(" From ");
-            users_result2.AppendText(userconfig.OU_dbTable);
+            users_result2.AppendText(userconfig.User_dbTable);
             if (userconfig.User_where != string.Empty)
             {
                 users_result2.AppendText(" Where ");
@@ -2580,7 +2894,7 @@ namespace WindowsApplication1
         }
         private void users_see_test_results_Click(object sender, EventArgs e)
         {
-
+            groupSyncr.executeUserSync(userconfig, tools, log, this);
         }
         private void users_Save_button(object sender, EventArgs e)
         {
@@ -2657,12 +2971,28 @@ namespace WindowsApplication1
             userconfig.load(properties);
             users_user_source.Text = userconfig.User_dbTable;
             userconfig.load(properties);
-            users_user_CN.Text = userconfig.User_CN;
-            userconfig.load(properties);
             users_user_sAMAccountName.Text = userconfig.User_sAMAccount;
             userconfig.load(properties);
+            users_user_Lname.Text = userconfig.User_Lname;
+            userconfig.load(properties);
+            users_user_Fname.Text = userconfig.User_Fname;
+            userconfig.load(properties);
+            users_user_city.Text = userconfig.User_city;
+            userconfig.load(properties);
+            users_user_Mobile.Text = userconfig.User_Mobile;
+            userconfig.load(properties);
+            users_user_State.Text = userconfig.User_State;
+            userconfig.load(properties);
+            users_user_Address.Text = userconfig.User_Address;
+            userconfig.load(properties);
+            users_user_password.Text = userconfig.User_password;
+            userconfig.load(properties);
+            users_user_PostalCode.Text = userconfig.User_Zip;
+            userconfig.load(properties);
             users_user_where.Text = userconfig.User_where;
-
+            userconfig.load(properties);
+            users_holdingTank.Text = userconfig.UserHoldingTank;
+            userconfig.load(properties);
             users_mapping_description.Text = userconfig.Notes;
             users_baseUserOU.Text = userconfig.BaseUserOU;
 
@@ -3223,6 +3553,9 @@ namespace WindowsApplication1
                 execution.execution_order.RemoveAt(execution.execution_order.IndexOf(execution_order_list.SelectedIndex.ToString()));
             }
         }
+
+
+
 
 
     }
