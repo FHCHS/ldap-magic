@@ -1595,7 +1595,10 @@ namespace WindowsApplication1
                             {
                                 if (users.GetName(i) != "password")
                                 {
-                                    newUser.Properties[users.GetName(i)].Value = System.Web.HttpUtility.UrlEncode((string)users[i]).Replace("+", " ").Replace("*", "%2A");
+                                    if ((string)users[i] != "")
+                                    {
+                                        newUser.Properties[users.GetName(i)].Value = System.Web.HttpUtility.UrlEncode((string)users[i]).Replace("+", " ").Replace("*", "%2A");
+                                    }
                                 }
                             }
                             newUser.Properties["samAccountName"].Value = System.Web.HttpUtility.UrlEncode(users["CN"].ToString()).Replace("+", " ").Replace("*", "%2A");
@@ -1619,7 +1622,15 @@ namespace WindowsApplication1
                     }
                     catch (Exception e)
                     {
-                        MessageBox.Show(e.Message.ToString() + "issue create user LDAP://CN=" + System.Web.HttpUtility.UrlEncode((string)users["CN"]).Replace("+", " ").Replace("*", "%2A") + "," + ouPath);
+                        string debug = "";
+                        for (i = 0; i < fieldcount; i++)
+                        {
+                            if (users.GetName(i) != "password")
+                            {
+                                debug += System.Web.HttpUtility.UrlEncode((string)users[i]).Replace("+", " ").Replace("*", "%2A") + ", ";
+                            }
+                        }
+                        MessageBox.Show(e.Message.ToString() + "issue create user LDAP://CN=" + System.Web.HttpUtility.UrlEncode((string)users["CN"]).Replace("+", " ").Replace("*", "%2A") + "," + ouPath + "\n " + debug);
                     }
                 }
 
@@ -2332,11 +2343,10 @@ namespace WindowsApplication1
                 userProperties.Add("CN");
                 userProperties.Add("sn");
                 userProperties.Add("givenname");
+                userProperties.Add("homephone");
+                userProperties.Add("state");
                 userProperties.Add("l");
                 userProperties.Add("postalcode");
-                userProperties.Add("state");
-                userProperties.Add("homephone");
-                userProperties.Add("password");
                 userProperties.Add("distinguishedName");
 
                 ADusers = tools.EnumerateUsersInOUDataTable(usersyn.BaseUserOU, userProperties, ADuserstable);
@@ -2365,6 +2375,8 @@ namespace WindowsApplication1
                 debugrecourdcount = sqldebugComm.ExecuteScalar().ToString();
                 MessageBox.Show("table " + sqluserstable + " has " + debugrecourdcount + " records \n " + debugfieldcount + " fields \n sample data" + debug);
 
+
+                debug = "";
                 debug = " total users from AD \n";
                 sqldebugComm = new SqlCommand("select top 20 * FROM " + ADuserstable, sqlConn);
                 debugreader = sqldebugComm.ExecuteReader();
@@ -2393,9 +2405,10 @@ namespace WindowsApplication1
 
 
                 // compare and add/remove
-                add = tools.queryNotExists(sqluserstable, ADuserstable, sqlConn, usersyn.User_Lname, ADusers.Columns[0].ColumnName);
+                add = tools.queryNotExists(sqluserstable, ADuserstable, sqlConn, "sAMAccountName", ADusers.Columns[0].ColumnName);
 
 
+                debug = "Gunna Add stuff \n";
                 debugfieldcount = add.FieldCount;
                 for (i = 0; i < debugfieldcount; i++)
                 {
@@ -2813,6 +2826,8 @@ namespace WindowsApplication1
                 users_user_Mobile.DataSource = columnList.Clone();
                 users_user_sAMAccountName.DataSource = columnList.Clone();
                 users_user_password.DataSource = columnList.Clone();
+                ADColumn.DataSource = columnList.Clone();
+                SQLColumn.DataSource = columnList.Clone();
 
             }
             else
@@ -2875,29 +2890,22 @@ namespace WindowsApplication1
             userconfig.Notes = users_mapping_description.Text.ToString();
         }
         // BUTTONS FOR THE TAB
-        private void users_see_query_Click(object sender, EventArgs e)
-        {
-            users_result2.Clear();
-            users_result2.AppendText("This is your users query \n");
-            users_result2.AppendText("Select ");
-            users_result2.AppendText(userconfig.User_Lname);
-            users_result2.AppendText(", ");
-            users_result2.AppendText(userconfig.User_sAMAccount);
-            users_result2.AppendText(" From ");
-            users_result2.AppendText(userconfig.User_dbTable);
-            if (userconfig.User_where != string.Empty)
-            {
-                users_result2.AppendText(" Where ");
-                users_result2.AppendText(userconfig.User_where);
-            }
-            users_result2.AppendText("\n");
-        }
+        
         private void users_see_test_results_Click(object sender, EventArgs e)
         {
             groupSyncr.executeUserSync(userconfig, tools, log, this);
         }
         private void users_Save_button(object sender, EventArgs e)
         {
+            DataSet bob = new DataSet();
+            DataTable mike = new DataTable();
+            BindingSource bs = new BindingSource();
+            bs.DataSource = mike;
+            mappinggrid.DataSource = bs;
+
+            MessageBox.Show(mike.Columns[0] + " is the name of a column");
+
+
             Dictionary<string, string> properties = new Dictionary<string, string>();
             int i = 0;
             SaveFileDialog saveFileDialog1 = new SaveFileDialog();
@@ -2931,7 +2939,11 @@ namespace WindowsApplication1
         }
         private void users_cancel_Click(object sender, EventArgs e)
         {
-
+            DataSet bob = new DataSet();
+            DataTable mike = new DataTable();
+            BindingSource bs = new BindingSource();
+            bs.DataSource = mike;
+            mappinggrid.DataSource = bs;
         }
         private void users_ok_Click(object sender, EventArgs e)
         {
@@ -2996,6 +3008,13 @@ namespace WindowsApplication1
             users_mapping_description.Text = userconfig.Notes;
             users_baseUserOU.Text = userconfig.BaseUserOU;
 
+        }
+        private void users_remove_Click(object sender, EventArgs e)
+        {
+            foreach (DataGridViewRow row in mappinggrid.SelectedRows)
+            {
+                mappinggrid.Rows.Remove(row);
+            }
         }
 
 
@@ -3792,6 +3811,7 @@ namespace WindowsApplication1
                 userMapping_DBServerName_Leave(null, null);
         }
 
-
+ 
+        // custom AD fields 
     }
 }
