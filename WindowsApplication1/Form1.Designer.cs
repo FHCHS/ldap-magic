@@ -397,10 +397,13 @@ namespace WindowsApplication1
             this.users_baseUserOU = new System.Windows.Forms.TextBox();
             this.tabPage16 = new System.Windows.Forms.TabPage();
             this.mappinggrid = new System.Windows.Forms.DataGridView();
-            this.users_remove = new System.Windows.Forms.Button();
-            this.user_group_source = new System.Windows.Forms.TabControl();
             this.ADColumn = new System.Windows.Forms.DataGridViewComboBoxColumn();
             this.SQLColumn = new System.Windows.Forms.DataGridViewComboBoxColumn();
+            this.StaticValue = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.users_remove = new System.Windows.Forms.Button();
+            this.user_group_source = new System.Windows.Forms.TabControl();
+            this.users_group = new System.Windows.Forms.TextBox();
+            this.label138 = new System.Windows.Forms.Label();
             this.tabPage8.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -2917,9 +2920,9 @@ namespace WindowsApplication1
             this.userMapping_DBServerName.Name = "userMapping_DBServerName";
             this.userMapping_DBServerName.Size = new System.Drawing.Size(205, 20);
             this.userMapping_DBServerName.TabIndex = 1;
-            this.userMapping_DBServerName.Enter += new System.EventHandler(this.userMapping_DBServerName_Enter);
-            this.userMapping_DBServerName.Leave += new System.EventHandler(this.userMapping_DBServerName_Leave);
             this.userMapping_DBServerName.TextChanged += new System.EventHandler(this.userMapping_DBServerName_TextChanged);
+            this.userMapping_DBServerName.Leave += new System.EventHandler(this.userMapping_DBServerName_Leave);
+            this.userMapping_DBServerName.Enter += new System.EventHandler(this.userMapping_DBServerName_Enter);
             // 
             // usermapping_user_sAMAccountName
             // 
@@ -2929,9 +2932,9 @@ namespace WindowsApplication1
             this.usermapping_user_sAMAccountName.Name = "usermapping_user_sAMAccountName";
             this.usermapping_user_sAMAccountName.Size = new System.Drawing.Size(174, 21);
             this.usermapping_user_sAMAccountName.TabIndex = 5;
+            this.usermapping_user_sAMAccountName.SelectedIndexChanged += new System.EventHandler(this.usermap_user_sAMAccountName_SelectedIndexChanged);
             this.usermapping_user_sAMAccountName.Leave += new System.EventHandler(this.usermap_user_sAMAccountName_SelectedIndexChanged);
             this.usermapping_user_sAMAccountName.Enter += new System.EventHandler(this.usermapping_user_sAMAccountName_Enter);
-            this.usermapping_user_sAMAccountName.SelectedIndexChanged += new System.EventHandler(this.usermap_user_sAMAccountName_SelectedIndexChanged);
             // 
             // usermapping_user_source
             // 
@@ -2941,9 +2944,9 @@ namespace WindowsApplication1
             this.usermapping_user_source.Name = "usermapping_user_source";
             this.usermapping_user_source.Size = new System.Drawing.Size(174, 21);
             this.usermapping_user_source.TabIndex = 4;
+            this.usermapping_user_source.SelectedIndexChanged += new System.EventHandler(this.usermap_user_source_SelectedIndexChanged);
             this.usermapping_user_source.Leave += new System.EventHandler(this.usermap_user_source_SelectedIndexChanged);
             this.usermapping_user_source.Enter += new System.EventHandler(this.usermapping_user_source_Enter);
-            this.usermapping_user_source.SelectedIndexChanged += new System.EventHandler(this.usermap_user_source_SelectedIndexChanged);
             // 
             // usermapping_user_where
             // 
@@ -2975,9 +2978,9 @@ namespace WindowsApplication1
             this.usermapping_user_table_view.Name = "usermapping_user_table_view";
             this.usermapping_user_table_view.Size = new System.Drawing.Size(112, 21);
             this.usermapping_user_table_view.TabIndex = 3;
+            this.usermapping_user_table_view.SelectedIndexChanged += new System.EventHandler(this.usermap_user_table_view_SelectedIndexChanged);
             this.usermapping_user_table_view.Leave += new System.EventHandler(this.usermap_user_table_view_SelectedIndexChanged);
             this.usermapping_user_table_view.Enter += new System.EventHandler(this.usermapping_user_table_view_Enter);
-            this.usermapping_user_table_view.SelectedIndexChanged += new System.EventHandler(this.usermap_user_table_view_SelectedIndexChanged);
             // 
             // label35
             // 
@@ -3707,6 +3710,8 @@ namespace WindowsApplication1
             // 
             // tabPage6
             // 
+            this.tabPage6.Controls.Add(this.users_group);
+            this.tabPage6.Controls.Add(this.label138);
             this.tabPage6.Controls.Add(this.label19);
             this.tabPage6.Controls.Add(this.users_holdingTank);
             this.tabPage6.Controls.Add(this.button10);
@@ -3729,7 +3734,7 @@ namespace WindowsApplication1
             // label19
             // 
             this.label19.AutoSize = true;
-            this.label19.Location = new System.Drawing.Point(177, 29);
+            this.label19.Location = new System.Drawing.Point(147, 30);
             this.label19.Name = "label19";
             this.label19.Size = new System.Drawing.Size(95, 13);
             this.label19.TabIndex = 81;
@@ -3756,7 +3761,7 @@ namespace WindowsApplication1
             // label16
             // 
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(177, 66);
+            this.label16.Location = new System.Drawing.Point(147, 66);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(152, 13);
             this.label16.TabIndex = 108;
@@ -3777,9 +3782,9 @@ namespace WindowsApplication1
             this.label15.AutoSize = true;
             this.label15.Location = new System.Drawing.Point(332, 11);
             this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(604, 13);
+            this.label15.Size = new System.Drawing.Size(600, 13);
             this.label15.TabIndex = 92;
-            this.label15.Text = "This is the highest user OU... eg OU=students,OU=fhchs,DC=fhchs,DC=edu ( a recurs" +
+            this.label15.Text = "This is the highest user OU... ie OU=students,OU=fhchs,DC=fhchs,DC=edu ( a recurs" +
                 "ive depth search will find all users below)";
             // 
             // button8
@@ -4080,7 +4085,7 @@ namespace WindowsApplication1
             this.users_baseUserOU.Name = "users_baseUserOU";
             this.users_baseUserOU.Size = new System.Drawing.Size(506, 20);
             this.users_baseUserOU.TabIndex = 0;
-            this.users_baseUserOU.TextChanged += new System.EventHandler(this.users_baseUserOU_TextChanged);
+            this.users_baseUserOU.Leave += new System.EventHandler(this.users_baseUserOU_Leave);
             // 
             // tabPage16
             // 
@@ -4096,14 +4101,34 @@ namespace WindowsApplication1
             // 
             // mappinggrid
             // 
+            this.mappinggrid.AllowUserToOrderColumns = true;
             this.mappinggrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.mappinggrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.ADColumn,
-            this.SQLColumn});
-            this.mappinggrid.Location = new System.Drawing.Point(4, 4);
+            this.SQLColumn,
+            this.StaticValue});
+            this.mappinggrid.Location = new System.Drawing.Point(2, 1);
             this.mappinggrid.Name = "mappinggrid";
-            this.mappinggrid.Size = new System.Drawing.Size(582, 488);
+            this.mappinggrid.Size = new System.Drawing.Size(674, 488);
             this.mappinggrid.TabIndex = 127;
+            // 
+            // ADColumn
+            // 
+            this.ADColumn.HeaderText = "AD Column";
+            this.ADColumn.Name = "ADColumn";
+            this.ADColumn.Width = 230;
+            // 
+            // SQLColumn
+            // 
+            this.SQLColumn.HeaderText = "SQL Coluimn";
+            this.SQLColumn.Name = "SQLColumn";
+            this.SQLColumn.Width = 200;
+            // 
+            // StaticValue
+            // 
+            this.StaticValue.HeaderText = "StaticValue";
+            this.StaticValue.Name = "StaticValue";
+            this.StaticValue.Width = 200;
             // 
             // users_remove
             // 
@@ -4131,17 +4156,22 @@ namespace WindowsApplication1
             this.user_group_source.TabIndex = 0;
             this.user_group_source.SelectedIndexChanged += new System.EventHandler(this.group_user_Group_reference_SelectedIndexChanged);
             // 
-            // ADColumn
+            // users_group
             // 
-            this.ADColumn.HeaderText = "AD Column";
-            this.ADColumn.Name = "ADColumn";
-            this.ADColumn.Width = 200;
+            this.users_group.Location = new System.Drawing.Point(335, 98);
+            this.users_group.Name = "users_group";
+            this.users_group.Size = new System.Drawing.Size(506, 20);
+            this.users_group.TabIndex = 111;
+            this.users_group.TextChanged += new System.EventHandler(this.users_group_TextChanged);
             // 
-            // SQLColumn
+            // label138
             // 
-            this.SQLColumn.HeaderText = "SQL Coluimn";
-            this.SQLColumn.Name = "SQLColumn";
-            this.SQLColumn.Width = 200;
+            this.label138.AutoSize = true;
+            this.label138.Location = new System.Drawing.Point(147, 101);
+            this.label138.Name = "label138";
+            this.label138.Size = new System.Drawing.Size(172, 13);
+            this.label138.TabIndex = 110;
+            this.label138.Text = "Universal group for this set of users";
             // 
             // Form1
             // 
@@ -4586,6 +4616,9 @@ namespace WindowsApplication1
         private System.Windows.Forms.DataGridView mappinggrid;
         private System.Windows.Forms.DataGridViewComboBoxColumn ADColumn;
         private System.Windows.Forms.DataGridViewComboBoxColumn SQLColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn StaticValue;
+        private System.Windows.Forms.TextBox users_group;
+        private System.Windows.Forms.Label label138;
     }
 }
 
