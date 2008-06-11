@@ -359,6 +359,8 @@ namespace WindowsApplication1
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabControl2 = new System.Windows.Forms.TabControl();
             this.tabPage6 = new System.Windows.Forms.TabPage();
+            this.users_group = new System.Windows.Forms.TextBox();
+            this.label138 = new System.Windows.Forms.Label();
             this.label19 = new System.Windows.Forms.Label();
             this.users_holdingTank = new System.Windows.Forms.TextBox();
             this.button10 = new System.Windows.Forms.Button();
@@ -402,8 +404,6 @@ namespace WindowsApplication1
             this.StaticValue = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.users_remove = new System.Windows.Forms.Button();
             this.user_group_source = new System.Windows.Forms.TabControl();
-            this.users_group = new System.Windows.Forms.TextBox();
-            this.label138 = new System.Windows.Forms.Label();
             this.tabPage8.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -3731,6 +3731,23 @@ namespace WindowsApplication1
             this.tabPage6.Text = "Basic";
             this.tabPage6.UseVisualStyleBackColor = true;
             // 
+            // users_group
+            // 
+            this.users_group.Location = new System.Drawing.Point(335, 98);
+            this.users_group.Name = "users_group";
+            this.users_group.Size = new System.Drawing.Size(506, 20);
+            this.users_group.TabIndex = 111;
+            this.users_group.TextChanged += new System.EventHandler(this.users_group_TextChanged);
+            // 
+            // label138
+            // 
+            this.label138.AutoSize = true;
+            this.label138.Location = new System.Drawing.Point(147, 101);
+            this.label138.Name = "label138";
+            this.label138.Size = new System.Drawing.Size(172, 13);
+            this.label138.TabIndex = 110;
+            this.label138.Text = "Universal group for this set of users";
+            // 
             // label19
             // 
             this.label19.AutoSize = true;
@@ -4101,7 +4118,6 @@ namespace WindowsApplication1
             // 
             // mappinggrid
             // 
-            this.mappinggrid.AllowUserToOrderColumns = true;
             this.mappinggrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.mappinggrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.ADColumn,
@@ -4111,23 +4127,30 @@ namespace WindowsApplication1
             this.mappinggrid.Name = "mappinggrid";
             this.mappinggrid.Size = new System.Drawing.Size(674, 488);
             this.mappinggrid.TabIndex = 127;
+            this.mappinggrid.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.mappinggrid_DataError);
             // 
             // ADColumn
             // 
+            this.ADColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
             this.ADColumn.HeaderText = "AD Column";
             this.ADColumn.Name = "ADColumn";
+            this.ADColumn.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.ADColumn.Width = 230;
             // 
             // SQLColumn
             // 
+            this.SQLColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
             this.SQLColumn.HeaderText = "SQL Coluimn";
             this.SQLColumn.Name = "SQLColumn";
+            this.SQLColumn.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.SQLColumn.Width = 200;
             // 
             // StaticValue
             // 
+            this.StaticValue.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
             this.StaticValue.HeaderText = "StaticValue";
             this.StaticValue.Name = "StaticValue";
+            this.StaticValue.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.StaticValue.Width = 200;
             // 
             // users_remove
@@ -4155,23 +4178,6 @@ namespace WindowsApplication1
             this.user_group_source.Size = new System.Drawing.Size(1131, 639);
             this.user_group_source.TabIndex = 0;
             this.user_group_source.SelectedIndexChanged += new System.EventHandler(this.group_user_Group_reference_SelectedIndexChanged);
-            // 
-            // users_group
-            // 
-            this.users_group.Location = new System.Drawing.Point(335, 98);
-            this.users_group.Name = "users_group";
-            this.users_group.Size = new System.Drawing.Size(506, 20);
-            this.users_group.TabIndex = 111;
-            this.users_group.TextChanged += new System.EventHandler(this.users_group_TextChanged);
-            // 
-            // label138
-            // 
-            this.label138.AutoSize = true;
-            this.label138.Location = new System.Drawing.Point(147, 101);
-            this.label138.Name = "label138";
-            this.label138.Size = new System.Drawing.Size(172, 13);
-            this.label138.TabIndex = 110;
-            this.label138.Text = "Universal group for this set of users";
             // 
             // Form1
             // 
@@ -4614,11 +4620,11 @@ namespace WindowsApplication1
         private System.Windows.Forms.TabPage tabPage16;
         private System.Windows.Forms.Button users_remove;
         private System.Windows.Forms.DataGridView mappinggrid;
+        private System.Windows.Forms.TextBox users_group;
+        private System.Windows.Forms.Label label138;
         private System.Windows.Forms.DataGridViewComboBoxColumn ADColumn;
         private System.Windows.Forms.DataGridViewComboBoxColumn SQLColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn StaticValue;
-        private System.Windows.Forms.TextBox users_group;
-        private System.Windows.Forms.Label label138;
     }
 }
 

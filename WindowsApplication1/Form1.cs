@@ -100,6 +100,7 @@ namespace WindowsApplication1
         {
             private List<string> logtransactions;
             private List<string> logterrors;
+            private List<string> logwarnings;
             public LogFile()
             {
                 logtransactions = new List<string>();
@@ -128,6 +129,18 @@ namespace WindowsApplication1
                     logterrors = value;
                 }
             }
+            public List<string> warnings
+            {
+                get
+                {
+                    return logwarnings;
+                }
+                set
+                {
+                    logwarnings = value;
+                }
+            }
+
 
         }
         public class GroupSynch
@@ -503,6 +516,7 @@ namespace WindowsApplication1
                 dictionary.TryGetValue("configUser_password", out configUser_password);
                 dictionary.TryGetValue("configCustoms", out custom);
 
+                configCustoms.Clear();
                 row = configCustoms.NewRow();
                 if (custom != "" && custom != null)
                 {
@@ -763,15 +777,15 @@ namespace WindowsApplication1
                 returnvalue.Add("configUniversalGroup", configUniversalGroup);
                 returnvalue.Add("configUserHoldingTank", configUserHoldingTank);
                 returnvalue.Add("configUser_password", configUser_password);
-                for (i = 0; i < configCustoms.Rows.Count; i++)
-                {
-                    for (j = 0; j < configCustoms.Columns.Count; j++)
-                    {
-                        custom += configCustoms.Rows[i][j].ToString();
-                        custom += "^";
-                    }
-                    custom += "&";
-                }
+                //for (i = 0; i < configCustoms.Rows.Count; i++)
+                //{
+                //    for (j = 0; j < configCustoms.Columns.Count; j++)
+                //    {
+                //        custom += configCustoms.Rows[i][j].ToString();
+                //        custom += "^";
+                //    }
+                //    custom += "&";
+                //}
 
                 returnvalue.Add("configCustoms", custom);
                 return returnvalue;
@@ -1099,21 +1113,6 @@ namespace WindowsApplication1
         {
 
             //Functions
-
-            // all functions pulling from AD are limited to 1500 results or immediate failure to fix this things need to be paged max page size 1000
-            
-            public void MoveADObject(string objectLocation, string newLocation)
-            {
-                //For brevity, removed existence checks
-                // EXPECTS FULL Distinguished Name for both variables "LDAP://CN=xxx,DC=xxx,DC=xxx"
-
-                DirectoryEntry eLocation = new DirectoryEntry(objectLocation);
-                DirectoryEntry nLocation = new DirectoryEntry(newLocation);
-                string newName = eLocation.Name;
-                eLocation.MoveTo(nLocation, newName);
-                nLocation.Close();
-                eLocation.Close();
-            }
             public string GetDomain()
             {
                 using (Domain d = Domain.GetCurrentDomain())
@@ -1322,20 +1321,28 @@ namespace WindowsApplication1
                 mySearcher.Dispose();
                 return distinguishedName;
             }
-            public bool CreateOURecursive(string ou)
+            public bool CreateOURecursive(string ou, LogFile log)
             {
-                if (Exists(ou) == true)
+                try
                 {
-                    return true;
+                    if (Exists(ou) == true)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        CreateOURecursive(ou.Substring(ou.IndexOf(",") + 1), log);
+                        CreateOU(ou.Substring(ou.IndexOf(",") + 1), ou.Remove(ou.IndexOf(",")).Substring(ou.IndexOf("=") + 1), log);
+                        return true;
+                    }
                 }
-                else
+                catch (System.DirectoryServices.DirectoryServicesCOMException E)
                 {
-                    CreateOURecursive(ou.Substring(ou.IndexOf(",") + 1));
-                    CreateOU(ou.Substring(ou.IndexOf(",") + 1), ou.Remove(ou.IndexOf(",")).Substring(ou.IndexOf("=") + 1));
-                    return true;
+                    log.errors.Add(E.Message.ToString() + " error creating OU" + ou);
+                    return false;
                 }
             }
-            public void CreateGroup(string ouPath, Dictionary<string, string> properties)
+            public void CreateGroup(string ouPath, Dictionary<string, string> properties, LogFile log)
             {
                 // otherProperties is a mapping  <the key is the active driectory field, and the value is the the value>
                 // the keys must contain valid AD fields
@@ -1353,18 +1360,23 @@ namespace WindowsApplication1
                              group.Properties[kvp.Key.ToString()].Value = System.Web.HttpUtility.UrlEncode(kvp.Value.ToString()).Replace("+", " ").Replace("*", "%2A");                            
                         }
                         group.CommitChanges();
+                        group.Close();
+                        group.Dispose();
+                        entry.Close();
+                        entry.Dispose();
+                        log.transactions.Add("group added | LDAP://CN=" + System.Web.HttpUtility.UrlEncode(properties["CN"].ToString()).Replace("+", " ").Replace("*", "%2A") + "," + ouPath);
                     }
                     else
                     { 
-                        MessageBox.Show("CN=" + System.Web.HttpUtility.UrlEncode(properties["CN"].ToString()).Replace("+", " ").Replace("*", "%2A") + "," + ouPath + " group already exists from adding");
+                        log.warnings.Add("CN=" + System.Web.HttpUtility.UrlEncode(properties["CN"].ToString()).Replace("+", " ").Replace("*", "%2A") + "," + ouPath + " group already exists from adding");
                     }
                 }
                 catch (Exception e)
                 {
-                    MessageBox.Show(e.Message.ToString() + "issue create group LDAP://CN=" + System.Web.HttpUtility.UrlEncode(properties["CN"].ToString()).Replace("+", " ").Replace("*", "%2A") + "," + ouPath);
+                    log.errors.Add(e.Message.ToString() + "issue create group LDAP://CN=" + System.Web.HttpUtility.UrlEncode(properties["CN"].ToString()).Replace("+", " ").Replace("*", "%2A") + "," + ouPath);
                 }
             }
-            public void UpdateGroup(string ouPath, Dictionary<string, string> properties)
+            public void UpdateGroup(string ouPath, Dictionary<string, string> properties, LogFile log)
             {
                 // otherProperties is a mapping  <the key is the active driectory field, and the value is the the value>
                 // the keys must contain valid AD fields
@@ -1386,17 +1398,23 @@ namespace WindowsApplication1
                             }
                         }
                         group.CommitChanges();
+                        group.Close();
+                        group.Dispose();
+                        entry.Close();
+                        entry.Dispose();
+                        log.transactions.Add("updated group | LDAP://CN=" + System.Web.HttpUtility.UrlEncode(properties["CN"].ToString()).Replace("+", " ").Replace("*", "%2A") + "," + ouPath);
                     }
                     catch (Exception e)
                     {
-                        MessageBox.Show(e.Message.ToString() + "issue updating group LDAP://CN=" + System.Web.HttpUtility.UrlEncode(properties["CN"].ToString()).Replace("+", " ").Replace("*", "%2A") + "," + ouPath);
+                        log.errors.Add(e.Message.ToString() + "issue updating group LDAP://CN=" + System.Web.HttpUtility.UrlEncode(properties["CN"].ToString()).Replace("+", " ").Replace("*", "%2A") + "," + ouPath);
                     }
                 }
                 else
-                { MessageBox.Show(ouPath + " group already exists from updating");
+                { 
+                    log.warnings.Add(ouPath + " group does not exist");
                 }
             }
-            public void DeleteGroup(string ouPath, string name)
+            public void DeleteGroup(string ouPath, string name, LogFile log)
             {
                 if (DirectoryEntry.Exists("LDAP://CN=" + System.Web.HttpUtility.UrlEncode(name).Replace("+", " ").Replace("*", "%2A") + "," + ouPath))
                 {
@@ -1406,18 +1424,23 @@ namespace WindowsApplication1
                         DirectoryEntry group = new DirectoryEntry("LDAP://CN=" + System.Web.HttpUtility.UrlEncode(name).Replace("+", " ").Replace("*", "%2A") + "," + ouPath);
                         entry.Children.Remove(group);
                         group.CommitChanges();
+                        group.Close();
+                        group.Dispose();
+                        entry.Close();
+                        entry.Dispose();
+                        log.transactions.Add("deleted group | LDAP://CN=" + name + "," + ouPath);
                     }
                     catch (Exception e)
                     {
-                        // MessageBox.Show(e.Message.ToString() + " error deleting LDAP://CN=" + name + "," + ouPath );
+                        log.errors.Add(e.Message.ToString() + " error deleting LDAP://CN=" + name + "," + ouPath );
                     }
                 }
                 else
                 {
-                    // MessageBox.Show("LDAP://CN=" + name + "," + ouPath);
+                    log.warnings.Add("group LDAP://CN=" + name + "," + ouPath + " does not exists cannot delete" );
                 }
             }
-            public void CreateOU(string ouPath, string name)
+            public void CreateOU(string ouPath, string name, LogFile log)
             {
                 //needs parent OU present to work
                 if (!DirectoryEntry.Exists("LDAP://OU=" + name + "," + ouPath))
@@ -1426,19 +1449,24 @@ namespace WindowsApplication1
                     {
                         DirectoryEntry entry = new DirectoryEntry("LDAP://" + ouPath);
                         DirectoryEntry OU = entry.Children.Add("OU=" + name, "organizationalUnit");
-                        //                   OU.Properties["sAmAccountName"].Value = name;
                         OU.CommitChanges();
+                        OU.Close();
+                        OU.Dispose();
+                        entry.Close();
+                        entry.Dispose();
+                        log.transactions.Add("created ou | LDAP://OU=" + name + "," + ouPath);
                     }
                     catch (Exception e)
                     {
-                        MessageBox.Show(e.Message.ToString() + "create ou LDAP://OU=" + name + "," + ouPath);
+                        log.errors.Add(e.Message.ToString() + "error creating ou LDAP://OU=" + name + "," + ouPath);
                     }
                 }
                 else
-                { // MessageBox.Show("LDAP://OU=" + name + "," + ouPath + " already exists"); 
+                { 
+                    log.warnings.Add("creating ou LDAP://OU=" + name + "," + ouPath + " already exists"); 
                 }
             }
-            public void DeleteOU(string ouPath, string name)
+            public void DeleteOU(string ouPath, string name, LogFile log)
             {
                 //needs parent OU present to work
                 if (!DirectoryEntry.Exists("LDAP://OU=" + name + "," + ouPath))
@@ -1447,56 +1475,576 @@ namespace WindowsApplication1
                     {
                         DirectoryEntry entry = new DirectoryEntry("LDAP://" + ouPath);
                         entry.DeleteTree();
+                        entry.Close();
+                        entry.Dispose();
+                        log.transactions.Add("deleting ou | LDAP://OU=" + name + "," + ouPath + " does not exists");
                     }
                     catch (Exception e)
                     {
-                        // MessageBox.Show(e.Message.ToString() + "create ou LDAP://OU=" + name + "," + ouPath);
+                        log.errors.Add(e.Message.ToString() + " error deleting ou LDAP://OU=" + name + "," + ouPath);
                     }
                 }
                 else
-                { // MessageBox.Show("LDAP://OU=" + name + "," + ouPath + " already exists"); 
+                { 
+                    log.warnings.Add("error deleting ou LDAP://OU=" + name + "," + ouPath + " does not exists"); 
                 }
             }
-            public void AddUserToGroup(string userDn, string groupDn)
+            public void AddUserToGroup(string userDn, string groupDn, LogFile log)
             {
                 try
                 {
                     if (Exists(userDn) && Exists(groupDn))
                     {
-                        DirectoryEntry dirEntry = new DirectoryEntry("LDAP://" + groupDn);
-                        dirEntry.Properties["member"].Add(userDn);
+                        DirectoryEntry entry = new DirectoryEntry("LDAP://" + groupDn);
+                        entry.Properties["member"].Add(userDn);
                         // dirEntry.Invoke("Add", new object[] { "LDAP://" + userDn });
-                        dirEntry.CommitChanges();
-                        dirEntry.Close();
+                        entry.CommitChanges();
+                        entry.Close();
+                        entry.Dispose();
+                        log.transactions.Add("added user to group | " + userDn + " | LDAP://" + groupDn);
                     }
+                    else
+                    {                
+                    log.warnings.Add(" Warning could not add user " + userDn + " to group LDAP://" + groupDn + " group did not exist");
+
+                    }
+
                 }
                 catch (System.DirectoryServices.DirectoryServicesCOMException E)
                 {
-                    MessageBox.Show(E.Message.ToString() + " error adding " + userDn + " to LDAP://" + groupDn);
+                    log.errors.Add(E.Message.ToString() + " error adding user to group" + userDn + " to LDAP://" + groupDn);
 
                 }
             }
-            public void RemoveUserFromGroup(string userDn, string groupDn)
+            public void RemoveUserFromGroup(string userDn, string groupDn, LogFile log)
             {
                 try
                 {
-                    DirectoryEntry dirEntry = new DirectoryEntry("LDAP://" + groupDn);
+                    DirectoryEntry entry = new DirectoryEntry("LDAP://" + groupDn);
                     try
                     {
-                        dirEntry.Properties["member"].Remove(userDn);
+                        entry.Properties["member"].Remove(userDn);
+                        log.transactions.Add("removed user from group | " + userDn + " | LDAP://" + groupDn);
                     }
                     catch (System.DirectoryServices.DirectoryServicesCOMException E)
-                    { }
-                    dirEntry.CommitChanges();
-                    dirEntry.Close();
+                    {
+                        log.errors.Add(E.Message.ToString() + " error removing user from group " + userDn + " from LDAP://" + groupDn + " user may not be in group");
+                    }
+                    entry.CommitChanges();
+                    entry.Close();
+                    entry.Dispose();
                 }
                 catch (System.DirectoryServices.DirectoryServicesCOMException E)
                 {
-                    // MessageBox.Show(E.Message.ToString() + " error removing " + userDn + " from LDAP://" + groupDn);
-
+                    log.warnings.Add(E.Message.ToString() + " error removing user from group " + userDn + " from LDAP://" + groupDn + " group object does not exist");
                 }
             }
-            // move user OU
+
+
+            public void CreateUserAccount(string ouPath, SqlDataReader users, string groupDn, UserSynch usersyn, LogFile log)
+            {
+                // properties contians key pairs with the key matching a field within Active driectory and the value, the value to be inserted
+                int i;                
+                int fieldcount;
+                int val; 
+                fieldcount = users.FieldCount;
+                while (users.Read())
+                {
+                    try
+                    {
+                        if (users[usersyn.User_password].ToString() != "")
+                        {
+                            if (!DirectoryEntry.Exists("LDAP://CN=" + System.Web.HttpUtility.UrlEncode(users[usersyn.User_sAMAccount].ToString()).Replace("+", " ").Replace("*", "%2A") + "," + ouPath))
+                            {
+
+                                DirectoryEntry entry = new DirectoryEntry("LDAP://" + ouPath);
+                                DirectoryEntry newUser = entry.Children.Add("CN=" + System.Web.HttpUtility.UrlEncode(users[usersyn.User_sAMAccount].ToString()).Replace("+", " ").Replace("*", "%2A"), "user");
+
+                                // SQL query generated ensures matching field names between the SQL form fields and AD
+                                for (i = 0; i < fieldcount; i++)
+                                {
+                                    if (users.GetName(i) != "password")
+                                    {
+                                        if ((string)users[i] != "")
+                                        {
+                                            newUser.Properties[users.GetName(i)].Value = System.Web.HttpUtility.UrlEncode((string)users[i]).Replace("+", " ").Replace("*", "%2A");
+                                        }
+                                    }
+                                }
+
+
+                                
+                                // generated
+                                newUser.Properties["samAccountName"].Value = System.Web.HttpUtility.UrlEncode(users[usersyn.User_sAMAccount].ToString()).Replace("+", " ").Replace("*", "%2A");
+                                newUser.Properties["UserPrincipalName"].Value = System.Web.HttpUtility.UrlEncode(users[usersyn.User_sAMAccount].ToString()).Replace("+", " ").Replace("*", "%2A");
+                                newUser.Properties["displayName"].Value = System.Web.HttpUtility.UrlEncode((string)users[usersyn.User_Lname]).Replace("+", " ").Replace("*", "%2A") + ", " + System.Web.HttpUtility.UrlEncode((string)users[usersyn.User_Fname]).Replace("+", " ").Replace("*", "%2A");
+                                newUser.Properties["description"].Value = System.Web.HttpUtility.UrlEncode((string)users[usersyn.User_Lname]).Replace("+", " ").Replace("*", "%2A") + ", " + System.Web.HttpUtility.UrlEncode((string)users[usersyn.User_Fname]).Replace("+", " ").Replace("*", "%2A");
+
+
+                                for (i = 0 ; i < usersyn.UserCustoms.Rows.Count ; i++)
+                                {
+                                    //create props from rows in usercustoms datatable our column names match the appropriate fields in AD and SQL
+                                    if ( usersyn.UserCustoms.Rows[i][0].ToString() != "Static Value")
+                                    {
+                                        newUser.Properties[usersyn.UserCustoms.Rows[i][0].ToString()].Value = System.Web.HttpUtility.UrlEncode((string)users[usersyn.UserCustoms.Rows[i][1].ToString()]).Replace("+", " ").Replace("*", "%2A");
+                                    }
+                                    else
+                                    {
+                                        newUser.Properties[usersyn.UserCustoms.Rows[i][0].ToString()].Value = System.Web.HttpUtility.UrlEncode(usersyn.UserCustoms.Rows[i][2].ToString()).Replace("+", " ").Replace("*", "%2A");
+                                    }
+                                }
+
+                                newUser.CommitChanges();
+                                AddUserToGroup("CN=" + System.Web.HttpUtility.UrlEncode(users[usersyn.User_sAMAccount].ToString()).Replace("+", " ").Replace("*", "%2A") +  "," + usersyn.UserHoldingTank, groupDn, log);
+                                newUser.Invoke("SetPassword", new object[] { System.Web.HttpUtility.UrlEncode((string)users[usersyn.User_password]).Replace("+", " ").Replace("*", "%2A") });
+                                newUser.CommitChanges();
+
+                                val = (int)newUser.Properties["userAccountControl"].Value;
+                                // set to normal user
+                                newUser.Properties["userAccountControl"].Value = val | (int)accountFlags.ADS_UF_NORMAL_ACCOUNT;
+                                // set to enabled account val & ~0c0002 creates a bitmask which reverses the disabled bit
+                                newUser.Properties["userAccountControl"].Value = val & ~(int)accountFlags.ADS_UF_ACCOUNTDISABLE;
+                                newUser.CommitChanges();
+                                newUser.Close();
+                                newUser.Dispose();
+                                entry.Close();
+                                entry.Dispose();
+                                log.transactions.Add("User added |" + (string)users[usersyn.User_sAMAccount] + " " + usersyn.UserHoldingTank);
+                            }
+                            else
+                            {
+                                log.errors.Add("CN=" + System.Web.HttpUtility.UrlEncode((string)users[usersyn.User_sAMAccount]).Replace("+", " ").Replace("*", "%2A") + "," + ouPath + " user already exists from adding");
+                                //MessageBox.Show("CN=" + System.Web.HttpUtility.UrlEncode((string)users["CN"]).Replace("+", " ").Replace("*", "%2A") + "," + ouPath + " user already exists from adding");
+                            }
+                        }
+
+                    }
+                    catch (Exception e)
+                    {
+                        string debugdata = "";
+                        for (i = 0; i < fieldcount; i++)
+                        {
+
+                          debugdata += users.GetName(i) + "=" + System.Web.HttpUtility.UrlEncode((string)users[i]).Replace("+", " ").Replace("*", "%2A") + ", ";
+
+                        }
+                        log.errors.Add("issue create user LDAP://CN=" + System.Web.HttpUtility.UrlEncode((string)users["CN"]).Replace("+", " ").Replace("*", "%2A") + "," + ouPath + "\n" + debugdata);
+                        // MessageBox.Show(e.Message.ToString() + "issue create user LDAP://CN=" + System.Web.HttpUtility.UrlEncode((string)users["CN"]).Replace("+", " ").Replace("*", "%2A") + "," + ouPath + "\n" + debugdata);
+                    }
+                }
+
+                /*
+                    //Add this to the create account method
+                    int val = (int)newUser.Properties["userAccountControl"].Value; 
+                         //newUser is DirectoryEntry object
+                    newUser.Properties["userAccountControl"].Value = val | 0x80000; 
+                        //ADS_UF_TRUSTED_FOR_DELEGATION
+                 
+                 * 
+                 * UserAccountControlFlags
+                 * CONST   HEX
+                    -------------------------------
+                    SCRIPT 0x0001
+                    ACCOUNTDISABLE 0x0002
+                    HOMEDIR_REQUIRED 0x0008
+                    LOCKOUT 0x0010
+                    PASSWD_NOTREQD 0x0020
+                    PASSWD_CANT_CHANGE 0x0040
+                    ENCRYPTED_TEXT_PWD_ALLOWED 0x0080
+                    TEMP_DUPLICATE_ACCOUNT 0x0100
+                    NORMAL_ACCOUNT 0x0200
+                    INTERDOMAIN_TRUST_ACCOUNT 0x0800
+                    WORKSTATION_TRUST_ACCOUNT 0x1000
+                    SERVER_TRUST_ACCOUNT 0x2000
+                    DONT_EXPIRE_PASSWORD 0x10000
+                    MNS_LOGON_ACCOUNT 0x20000
+                    SMARTCARD_REQUIRED 0x40000
+                    TRUSTED_FOR_DELEGATION 0x80000
+                    NOT_DELEGATED 0x100000
+                    USE_DES_KEY_ONLY 0x200000
+                    DONT_REQ_PREAUTH 0x400000
+                    PASSWORD_EXPIRED 0x800000
+                    TRUSTED_TO_AUTH_FOR_DELEGATION 0x1000000
+                 * */
+            }
+            public bool DisableUser(string sAMAccountName, string ldapDomain, LogFile log)
+            {
+                string userDN;
+                userDN = GetObjectDistinguishedName(objectClass.user, returnType.distinguishedName, sAMAccountName, ldapDomain);
+                try
+                {  
+                    DirectoryEntry usr = new DirectoryEntry(userDN);
+                    int val = (int)usr.Properties["userAccountControl"].Value;
+                    usr.Properties["userAccountControl"].Value = val | (int)accountFlags.ADS_UF_ACCOUNTDISABLE;
+                    usr.CommitChanges();
+                    usr.Close();
+                    usr.Dispose();
+                    log.transactions.Add("diabled user account |" + userDN);
+                    return true;
+                }
+                catch (System.DirectoryServices.DirectoryServicesCOMException E)
+                {
+                    log.warnings.Add(E.Message.ToString() + " error disabling user " + userDN);
+                    return false;
+                }
+                
+            }
+            public bool EnableUser(string sAMAccountName, string ldapDomain, LogFile log)
+            {
+                string userDN;
+                userDN = GetObjectDistinguishedName(objectClass.user, returnType.distinguishedName, sAMAccountName, ldapDomain);
+                try
+                { 
+                    DirectoryEntry usr = new DirectoryEntry(userDN);
+                    int val = (int)usr.Properties["userAccountControl"].Value;
+                    usr.Properties["userAccountControl"].Value = val | ~(int)accountFlags.ADS_UF_ACCOUNTDISABLE;
+                    usr.CommitChanges();
+                    usr.Close();
+                    usr.Dispose();
+                    log.transactions.Add("enabled user account |" + userDN);
+                    return true;
+                }
+                catch (System.DirectoryServices.DirectoryServicesCOMException E)
+                {
+                    log.errors.Add(E.Message.ToString() + " error enabling user " + userDN);
+                    return false;
+                }
+            }
+            // additional stuff
+            public bool SetUserExpiration(int days, string ldapDomain, string sAMAccountName, LogFile log)
+            {
+                string userDN;
+                userDN = GetObjectDistinguishedName(objectClass.user, returnType.distinguishedName, sAMAccountName, ldapDomain);
+                try
+                {
+                    DirectoryEntry usr = new DirectoryEntry(userDN);
+                    Type type = usr.NativeObject.GetType();
+                    Object adsNative = usr.NativeObject;
+                    string formattedDate;
+
+                    
+
+                    // Calculating the new date
+                    DateTime yesterday = DateTime.Today.AddDays(days);
+                    formattedDate = yesterday.ToString("dd/MM/yyyy");
+
+                    type.InvokeMember("AccountExpirationDate", BindingFlags.SetProperty, null, adsNative, new object[] { formattedDate });
+                    usr.CommitChanges();
+                    usr.Close();
+                    usr.Dispose();
+                    log.transactions.Add("User expiration set |" + userDN + "|" + days);
+
+                    return true;
+                }
+                catch (System.DirectoryServices.DirectoryServicesCOMException E)
+                {
+                    log.errors.Add(E.Message.ToString() + " error setting user expiration " + userDN + " days " + days);
+                    return false;
+                }
+            }
+            public bool SetUserExpiration(int days, string userDN, LogFile log)
+            {
+                try
+                {
+                    DirectoryEntry usr = new DirectoryEntry(userDN);
+                    Type type = usr.NativeObject.GetType();
+                    Object adsNative = usr.NativeObject;
+                    string formattedDate;
+
+                    // Calculating the new date
+                    DateTime yesterday = DateTime.Today.AddDays(days);
+                    formattedDate = yesterday.ToString("dd/MM/yyyy");
+
+                    type.InvokeMember("AccountExpirationDate", BindingFlags.SetProperty, null, adsNative, new object[] { formattedDate });
+                    usr.CommitChanges();
+                    usr.Close();
+                    usr.Dispose();
+                    log.transactions.Add("User expiration set |" + userDN + "|" + days);
+                    return true;
+                }
+                catch (System.DirectoryServices.DirectoryServicesCOMException E)
+                {
+                    log.errors.Add(E.Message.ToString() + " error setting user expiration " + userDN + " days " + days);
+                    return false;
+                }
+            }
+            public bool DeleteUserAccount(string sAMAccountName, string ldapDomain, LogFile log)
+            {
+                string userDN;
+                userDN = GetObjectDistinguishedName(objectClass.user, returnType.distinguishedName, sAMAccountName, ldapDomain);
+                try
+                { 
+                    DirectoryEntry ent = new DirectoryEntry(userDN);
+                    ent.DeleteTree();
+                    ent.Close();
+                    ent.Dispose();
+                    log.transactions.Add("deleted user account |" + userDN);
+                    return true;
+                }
+                catch (System.DirectoryServices.DirectoryServicesCOMException E)
+                {
+                    log.errors.Add(E.Message.ToString() + " error deleting user " + userDN);
+                    return false;
+                }
+            }
+
+
+            public string Create_Table(DataTable data, string table, SqlConnection sqlConn)
+            {
+                int i;
+                int Count;
+                StringBuilder sqlstring = new StringBuilder();
+                SqlCommand sqlComm;
+                Count = data.Columns.Count;
+
+                // make the temp table
+                sqlstring.Append("Create table " + table + "(");
+                for (i = 0; i < Count; i++)
+                {
+                    sqlstring.Append(data.Columns[i] + " VarChar(350), ");
+                }
+                sqlstring.Remove((sqlstring.Length - 2), 2);
+                sqlstring.Append(")");
+                sqlComm = new SqlCommand(sqlstring.ToString(), sqlConn);
+                try
+                {
+                    sqlComm.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "An Big poblem arose with the table create", MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+                }
+
+                // copy data into table
+                SqlBulkCopy sbc = new SqlBulkCopy(sqlConn);
+                sbc.DestinationTableName = table;
+                sbc.WriteToServer(data);
+                sbc.Close();
+                return table;
+            }
+            public string Append_to_Table(DataTable data, string table, SqlConnection sqlConn)
+            {
+                // copy data into table
+                SqlBulkCopy sbc = new SqlBulkCopy(sqlConn);
+                sbc.DestinationTableName = table;
+                sbc.WriteToServer(data);
+                sbc.Close();
+                return table;
+            }
+            public SqlDataReader QueryNotExists(string table1, string table2, SqlConnection sqlConn, string pkey1, string pkey2)
+            {
+                // finds items in table1 who do not exist in table2 and returns them
+                // SqlCommand sqlComm = new SqlCommand("Select Table1.* Into #Table3ADTransfer From " + Table1 + " AS Table1, " + Table2 + " AS Table2 Where Table1." + pkey1 + " = Table2." + pkey2 + " And Table2." + pkey2 + " is null", sqlConn);
+                SqlCommand sqlComm = new SqlCommand("SELECT uptoDate.* FROM " + table1 + " uptoDate LEFT OUTER JOIN " + table2 + " outofDate ON outofDate." + pkey2 + " = uptoDate." + pkey1 + " WHERE outofDate." + pkey2 + " IS NULL;", sqlConn);
+                // create the command object
+                SqlDataReader r = sqlComm.ExecuteReader();
+                return r;
+            }
+            public SqlDataReader CheckUpdate(string table1, string table2, string pkey1, string pkey2, ArrayList compareFields1, ArrayList compareFields2, SqlConnection sqlConn)
+            {
+                // Assumes table1 holds the correct data and returns a data reader with the update fields columns from table1
+                // returns the rows which table2 differs from table1
+                string compare1 = "";
+                string compare2 = "";
+                string fields = "";
+                // need a comand builder and research on the best way to compare all fields in a row
+                // this basically will just issue a concatenation sql query to the DB for each field to compare
+                foreach (string key in compareFields1)
+                {
+                    compare1 = compare1 + table1 + "." + key + " + ";
+                    fields += table1 + "." + key + ", ";
+                }
+                foreach (string key in compareFields2)
+                {
+                    compare2 = compare2 + table2 + "." + key + " + ";
+                }
+                // remove trailing comma and + 
+                compare2 = compare2.Remove(compare2.Length - 2);
+                compare1 = compare1.Remove(compare1.Length - 2);
+                fields = fields.Remove(fields.Length - 2);
+                SqlCommand sqlComm = new SqlCommand("SELECT " + fields + " FROM " + table1 + " INNER JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2 + " WHERE (" + compare2 + ") <> (" + compare1 + ")", sqlConn);
+                //AND " + table2 + "." + pkey2 + " != NULL
+                SqlDataReader r = sqlComm.ExecuteReader();
+                return r;
+            }
+  
+            public string SetAttributesForUser()
+            {
+                string returnvalue = "";
+                //DirectoryEntry entry = null;
+
+                //entry = new DirectoryEntry("LDAP://" + objectClass);
+
+                //foreach (string propertyName in entry.Properties.PropertyNames)
+                //{
+                //    returnvalue += propertyName + "   :   " +
+                //       entry.Properties[propertyName][0].ToString() 
+                //       + " \n";
+                    
+                //}
+                //return returnvalue;
+
+
+
+                // bind to the OU you want to enumerate
+
+                DirectoryEntry deOU = new DirectoryEntry(GetDomain());
+                // create a directory searcher for that OU
+                DirectorySearcher dsUsers = new DirectorySearcher(deOU);
+
+                // set depth to recursive
+                dsUsers.SearchScope = SearchScope.Subtree;
+
+                // set the filter to get just the users
+                dsUsers.Filter = "(&(objectClass=user)(objectCategory=Person))";
+
+                SearchResult result = dsUsers.FindOne();                  
+
+                if (result == null)
+                {
+                    //throw new NullReferenceException
+                    //("unable to locate the distinguishedName for the object " +
+                    //objectName + " in the " + LdapDomain + " domain");
+                    return string.Empty;
+                }
+                DirectoryEntry user = result.GetDirectoryEntry();
+                foreach (string propertyName in user.Properties.PropertyNames)
+                {
+                    returnvalue += propertyName + "   :   " +
+                       user.Properties[propertyName][0].ToString()
+                       + " \n";
+
+                }
+                return returnvalue;
+
+
+                //DirectoryEntry mike = new DirectoryEntry("LDAP://schema/" + strGivenClass);
+               // mike.Properties.PropertyNames
+                             //Set objClass = GetObject("LDAP://schema/" & strGivenClass)
+
+            //i = 0
+            //For Each strPropName In objClass.MandatoryProperties
+            //    i = i + 1
+            //    WScript.Echo "Man " & i & ": " & strPropName
+            //Next
+
+            //i = 0
+            //For Each strPropName In objClass.OptionalProperties
+            //    i = i + 1
+            //    WScript.Echo "Opt " & i & ": " & strPropName
+            //Next
+            }
+            public ArrayList ADobjectAttribute()
+            {
+                // NOTE: One place where managed ADSI (System.DirectoryServices) falls short is finding schema 
+                //information from LDAP/AD objects. Finding information like mandatory and optional
+                //properties simply cannot be done with any managed classes
+
+                DirectoryEntry schemaEntry = null;
+                ArrayList returnvalue = new ArrayList();
+
+                schemaEntry = new DirectoryEntry("LDAP://schema/user");
+                ActiveDs.IADsClass iadsClass = (ActiveDs.IADsClass)schemaEntry.NativeObject;
+                if (iadsClass == null)
+                    return new ArrayList();
+
+
+                ArrayList list = new ArrayList();
+                foreach (string s in (Array)iadsClass.OptionalProperties)
+                {
+                    returnvalue.Add(s);
+                }
+                foreach (string s in (Array)iadsClass.MandatoryProperties)
+                {
+                    returnvalue.Add(s);
+                }
+                return returnvalue;
+
+            }
+
+            public ArrayList SqlColumns(UserSynch userconfig)
+            {
+                ArrayList columnList = new ArrayList();
+                if (userconfig.DBCatalog != "" && userconfig.DataServer != "")
+                {
+                    //populates columns dialog with columns depending on the results of a query
+                    
+                    SqlConnection sqlConn = new SqlConnection("Data Source=" + userconfig.DataServer.ToString() + ";Initial Catalog=" + userconfig.DBCatalog.ToString() + ";Integrated Security=SSPI;");
+
+                    sqlConn.Open();
+                    // create the command object
+                    SqlCommand sqlComm = new SqlCommand("SELECT column_name FROM information_schema.columns WHERE table_name = '" + userconfig.User_dbTable + "'", sqlConn);
+                    SqlDataReader r = sqlComm.ExecuteReader();
+                    while (r.Read())
+                    {
+                        columnList.Add((string)r[0].ToString().Trim());
+                    }
+                    r.Close();
+                    sqlConn.Close();
+                }
+                return columnList;
+            }
+            // possible not in use
+
+            public void MoveADObject(string objectLocation, string newLocation)
+            {
+                //For brevity, removed existence checks
+                // EXPECTS FULL Distinguished Name for both variables "LDAP://CN=xxx,DC=xxx,DC=xxx"
+
+                DirectoryEntry eLocation = new DirectoryEntry(objectLocation);
+                DirectoryEntry nLocation = new DirectoryEntry(newLocation);
+                string newName = eLocation.Name;
+                eLocation.MoveTo(nLocation, newName);
+                nLocation.Close();
+                eLocation.Close();
+            }
+            public ArrayList SetMultiPropertyUser(LinkedList<Dictionary<string, string>> userList, ArrayList propertyArray, string ldapDomain, LogFile log)
+            {
+                /*
+                 * takes a dictionary like such
+                 * sAMAccountName, userName
+                 * property1, value
+                 * property2, value
+                 * ....
+                 * 
+                 * and an arraylist of strings with the names of the keys for the properties
+                 * ["property1", "property2", ...etc]
+                 * 
+                 * RETURNS
+                 * users not found
+                 */
+
+                LinkedListNode<Dictionary<string, string>> userListNode = userList.First;
+                string sAMAccountName;
+                string userProperty;
+                string usrDN;
+                ArrayList returnvalue = new ArrayList();
+
+                while (userListNode != null)
+                {
+
+                    userListNode.Value.TryGetValue("sAMAccountName", out sAMAccountName);
+                    usrDN = GetObjectDistinguishedName(objectClass.user, returnType.distinguishedName, sAMAccountName, ldapDomain);
+                    if (usrDN == "")
+                    {
+                        returnvalue.Add(sAMAccountName);
+                    }
+
+                    //// get usr object for manipulation
+                    DirectoryEntry user = new DirectoryEntry(usrDN);
+
+
+                    foreach (string props in propertyArray)
+                    {
+                        userListNode.Value.TryGetValue(props, out userProperty);
+                        user.Properties[props].Value = userProperty;
+                    }
+                    user.CommitChanges();
+                    userListNode = userListNode.Next;
+                }
+                return returnvalue;
+            }           
             public bool CreateUserAccount(string parentOUDN, string samName, string userPassword, string firstName, string lastName)
             {
                 try
@@ -1642,321 +2190,6 @@ namespace WindowsApplication1
                     TRUSTED_TO_AUTH_FOR_DELEGATION 0x1000000
                  * */
             }
-            // needs to add ability to read the datagridview of properties
-            // need to add saving for the data gridview found some code for simple xml'ish save
-            // http://www.c-sharpcorner.com/UploadFile/mahesh/DataTable2011172005235038PM/DataTable20.aspx?ArticleID=c1a6bcf4-3f38-4e44-8110-73850ba9738e
-            public void CreateUserAccount(string ouPath, SqlDataReader users, LogFile log, string groupDn)
-            {
-                // properties contians key pairs with the key matching a field within Active driectory and the value, the value to be inserted
-                int i;                
-                int fieldcount;
-                int val; 
-                fieldcount = users.FieldCount;
-                while (users.Read())
-                {
-                    try
-                    {
-                        if (users["password"].ToString() != "")
-                        {
-                            if (!DirectoryEntry.Exists("LDAP://CN=" + System.Web.HttpUtility.UrlEncode(users["CN"].ToString()).Replace("+", " ").Replace("*", "%2A") + "," + ouPath))
-                            {
-
-                                DirectoryEntry entry = new DirectoryEntry("LDAP://" + ouPath);
-                                DirectoryEntry newUser = entry.Children.Add("CN=" + System.Web.HttpUtility.UrlEncode(users["CN"].ToString()).Replace("+", " ").Replace("*", "%2A"), "user");
-
-                                for (i = 0; i < fieldcount; i++)
-                                {
-                                    if (users.GetName(i) != "password")
-                                    {
-                                        if ((string)users[i] != "")
-                                        {
-                                            newUser.Properties[users.GetName(i)].Value = System.Web.HttpUtility.UrlEncode((string)users[i]).Replace("+", " ").Replace("*", "%2A");
-                                        }
-                                    }
-                                }
-                                newUser.Properties["samAccountName"].Value = System.Web.HttpUtility.UrlEncode(users["CN"].ToString()).Replace("+", " ").Replace("*", "%2A");
-                                newUser.Properties["UserPrincipalName"].Value = System.Web.HttpUtility.UrlEncode(users["CN"].ToString()).Replace("+", " ").Replace("*", "%2A");
-                                newUser.Properties["displayName"].Value = System.Web.HttpUtility.UrlEncode((string)users["sn"]).Replace("+", " ").Replace("*", "%2A") + "," + System.Web.HttpUtility.UrlEncode((string)users["givenname"]).Replace("+", " ").Replace("*", "%2A");
-                                newUser.Properties["description"].Value = System.Web.HttpUtility.UrlEncode((string)users["sn"]).Replace("+", " ").Replace("*", "%2A") + "," + System.Web.HttpUtility.UrlEncode((string)users["givenname"]).Replace("+", " ").Replace("*", "%2A");
-                                newUser.CommitChanges();
-                                AddUserToGroup("CN=" + System.Web.HttpUtility.UrlEncode(users["CN"].ToString()).Replace("+", " ").Replace("*", "%2A"), groupDn);
-                                newUser.Invoke("SetPassword", new object[] { System.Web.HttpUtility.UrlEncode((string)users["password"]).Replace("+", " ").Replace("*", "%2A") });
-                                newUser.CommitChanges();
-
-                                val = (int)newUser.Properties["userAccountControl"].Value;
-                                // set to normal user
-                                newUser.Properties["userAccountControl"].Value = val | (int)accountFlags.ADS_UF_NORMAL_ACCOUNT;
-                                // set to enabled account val & ~0c0002 creates a bitmask which reverses the disabled bit
-                                newUser.Properties["userAccountControl"].Value = val & ~(int)accountFlags.ADS_UF_ACCOUNTDISABLE;
-                                newUser.CommitChanges();
-                                entry.Close();
-                                newUser.Close();
-                                log.transactions.Add("User added ;" + (string)users[0]);
-                            }
-                            else
-                            {
-                                log.errors.Add("CN=" + System.Web.HttpUtility.UrlEncode((string)users["CN"]).Replace("+", " ").Replace("*", "%2A") + "," + ouPath + " user already exists from adding");
-                                //MessageBox.Show("CN=" + System.Web.HttpUtility.UrlEncode((string)users["CN"]).Replace("+", " ").Replace("*", "%2A") + "," + ouPath + " user already exists from adding");
-                            }
-                        }
-
-                    }
-                    catch (Exception e)
-                    {
-                        string debugdata = "";
-                        for (i = 0; i < fieldcount; i++)
-                        {
-
-                          debugdata += users.GetName(i) + "=" + System.Web.HttpUtility.UrlEncode((string)users[i]).Replace("+", " ").Replace("*", "%2A") + ", ";
-
-                        }
-                        log.errors.Add("issue create user LDAP://CN=" + System.Web.HttpUtility.UrlEncode((string)users["CN"]).Replace("+", " ").Replace("*", "%2A") + "," + ouPath + "\n" + debugdata);
-                        // MessageBox.Show(e.Message.ToString() + "issue create user LDAP://CN=" + System.Web.HttpUtility.UrlEncode((string)users["CN"]).Replace("+", " ").Replace("*", "%2A") + "," + ouPath + "\n" + debugdata);
-                    }
-                }
-
-                /*
-                    //Add this to the create account method
-                    int val = (int)newUser.Properties["userAccountControl"].Value; 
-                         //newUser is DirectoryEntry object
-                    newUser.Properties["userAccountControl"].Value = val | 0x80000; 
-                        //ADS_UF_TRUSTED_FOR_DELEGATION
-                 
-                 * 
-                 * UserAccountControlFlags
-                 * CONST   HEX
-                    -------------------------------
-                    SCRIPT 0x0001
-                    ACCOUNTDISABLE 0x0002
-                    HOMEDIR_REQUIRED 0x0008
-                    LOCKOUT 0x0010
-                    PASSWD_NOTREQD 0x0020
-                    PASSWD_CANT_CHANGE 0x0040
-                    ENCRYPTED_TEXT_PWD_ALLOWED 0x0080
-                    TEMP_DUPLICATE_ACCOUNT 0x0100
-                    NORMAL_ACCOUNT 0x0200
-                    INTERDOMAIN_TRUST_ACCOUNT 0x0800
-                    WORKSTATION_TRUST_ACCOUNT 0x1000
-                    SERVER_TRUST_ACCOUNT 0x2000
-                    DONT_EXPIRE_PASSWORD 0x10000
-                    MNS_LOGON_ACCOUNT 0x20000
-                    SMARTCARD_REQUIRED 0x40000
-                    TRUSTED_FOR_DELEGATION 0x80000
-                    NOT_DELEGATED 0x100000
-                    USE_DES_KEY_ONLY 0x200000
-                    DONT_REQ_PREAUTH 0x400000
-                    PASSWORD_EXPIRED 0x800000
-                    TRUSTED_TO_AUTH_FOR_DELEGATION 0x1000000
-                 * */
-            }
-            public bool DisableUser(string sAMAccountName, string ldapDomain)
-            {
-                string userDN;
-                userDN = GetObjectDistinguishedName(objectClass.user, returnType.distinguishedName, sAMAccountName, ldapDomain);
-                DirectoryEntry usr = new DirectoryEntry(userDN);
-                int val = (int)usr.Properties["userAccountControl"].Value;
-                usr.Properties["userAccountControl"].Value = val | (int)accountFlags.ADS_UF_ACCOUNTDISABLE;
-                usr.CommitChanges();
-                return false;
-            }
-            public bool EnableUser(string sAMAccountName, string ldapDomain)
-            {
-                string userDN;
-                userDN = GetObjectDistinguishedName(objectClass.user, returnType.distinguishedName, sAMAccountName, ldapDomain);
-                DirectoryEntry usr = new DirectoryEntry(userDN);
-                int val = (int)usr.Properties["userAccountControl"].Value;
-                usr.Properties["userAccountControl"].Value = val | ~(int)accountFlags.ADS_UF_ACCOUNTDISABLE;
-                usr.CommitChanges();
-                return false;
-            }
-
-            public bool DeleteUserAccount(string sAMAccountName, string ldapDomain)
-            {
-                string user;
-
-                user = GetObjectDistinguishedName(objectClass.user, returnType.distinguishedName, sAMAccountName, ldapDomain);
-                DirectoryEntry ent = new DirectoryEntry(user);
-                ent.DeleteTree();
-                return false;
-            }
-
-
-            public string Create_Table(DataTable data, string table, SqlConnection sqlConn)
-            {
-                int i;
-                int Count;
-                StringBuilder sqlstring = new StringBuilder();
-                SqlCommand sqlComm;
-                Count = data.Columns.Count;
-
-                // make the temp table
-                sqlstring.Append("Create table " + table + "(");
-                for (i = 0; i < Count; i++)
-                {
-                    sqlstring.Append(data.Columns[i] + " VarChar(350), ");
-                }
-                sqlstring.Remove((sqlstring.Length - 2), 2);
-                sqlstring.Append(")");
-                sqlComm = new SqlCommand(sqlstring.ToString(), sqlConn);
-                try
-                {
-                    sqlComm.ExecuteNonQuery();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message, "An Big poblem arose with the table create", MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-                }
-
-                // copy data into table
-                SqlBulkCopy sbc = new SqlBulkCopy(sqlConn);
-                sbc.DestinationTableName = table;
-                sbc.WriteToServer(data);
-                sbc.Close();
-                return table;
-            }
-            public string Append_to_Table(DataTable data, string table, SqlConnection sqlConn)
-            {
-                // copy data into table
-                SqlBulkCopy sbc = new SqlBulkCopy(sqlConn);
-                sbc.DestinationTableName = table;
-                sbc.WriteToServer(data);
-                sbc.Close();
-                return table;
-            }
-            public SqlDataReader QueryNotExists(string table1, string table2, SqlConnection sqlConn, string pkey1, string pkey2)
-            {
-                // finds items in table1 who do not exist in table2 and returns them
-                // SqlCommand sqlComm = new SqlCommand("Select Table1.* Into #Table3ADTransfer From " + Table1 + " AS Table1, " + Table2 + " AS Table2 Where Table1." + pkey1 + " = Table2." + pkey2 + " And Table2." + pkey2 + " is null", sqlConn);
-                SqlCommand sqlComm = new SqlCommand("SELECT uptoDate.* FROM " + table1 + " uptoDate LEFT OUTER JOIN " + table2 + " outofDate ON outofDate." + pkey2 + " = uptoDate." + pkey1 + " WHERE outofDate." + pkey2 + " IS NULL;", sqlConn);
-                // create the command object
-                SqlDataReader r = sqlComm.ExecuteReader();
-                return r;
-            }
-            public SqlDataReader CheckUpdate(string table1, string table2, string pkey1, string pkey2, ArrayList compareFields1, ArrayList compareFields2, SqlConnection sqlConn)
-            {
-                // Assumes table1 holds the correct data and returns a data reader with the update fields columns from table1
-                // returns the rows which table2 differs from table1
-                string compare1 = "";
-                string compare2 = "";
-                string fields = "";
-                // need a comand builder and research on the best way to compare all fields in a row
-                // this basically will just issue a concatenation sql query to the DB for each field to compare
-                foreach (string key in compareFields1)
-                {
-                    compare1 = compare1 + table1 + "." + key + " + ";
-                    fields += table1 + "." + key + ", ";
-                }
-                foreach (string key in compareFields2)
-                {
-                    compare2 = compare2 + table2 + "." + key + " + ";
-                }
-                // remove trailing comma and + 
-                compare2 = compare2.Remove(compare2.Length - 2);
-                compare1 = compare1.Remove(compare1.Length - 2);
-                fields = fields.Remove(fields.Length - 2);
-                SqlCommand sqlComm = new SqlCommand("SELECT " + fields + " FROM " + table1 + " INNER JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2 + " WHERE (" + compare2 + ") <> (" + compare1 + ")", sqlConn);
-                //AND " + table2 + "." + pkey2 + " != NULL
-                SqlDataReader r = sqlComm.ExecuteReader();
-                return r;
-            }
-
-            // additional stuff
-            public bool SetUserExpiration(int days, string ldapDomain, string sAMAccountName)
-            {
-                string usrDN;
-                usrDN = GetObjectDistinguishedName(objectClass.user, returnType.distinguishedName, sAMAccountName, ldapDomain);
-                DirectoryEntry usr = new DirectoryEntry(usrDN);
-                Type type = usr.NativeObject.GetType();
-                Object adsNative = usr.NativeObject;
-                string formattedDate;
-
-                // Calculating the new date
-                DateTime yesterday = DateTime.Today.AddDays(days);
-                formattedDate = yesterday.ToString("dd/MM/yyyy");
-
-                type.InvokeMember("AccountExpirationDate", BindingFlags.SetProperty, null, adsNative, new object[] { formattedDate });
-                usr.CommitChanges();
-                return true;
-            }
-            public bool SetUserExpiration(int days, string usrDN)
-            {
-                DirectoryEntry usr = new DirectoryEntry(usrDN);
-                Type type = usr.NativeObject.GetType();
-                Object adsNative = usr.NativeObject;
-                string formattedDate;
-
-                // Calculating the new date
-                DateTime yesterday = DateTime.Today.AddDays(days);
-                formattedDate = yesterday.ToString("dd/MM/yyyy");
-
-                type.InvokeMember("AccountExpirationDate", BindingFlags.SetProperty, null, adsNative, new object[] { formattedDate });
-                usr.CommitChanges();
-                return true;
-            }
-            public ArrayList SetMultiPropertyUser(LinkedList<Dictionary<string, string>> userList, ArrayList propertyArray, string ldapDomain)
-            {
-                /*
-                 * takes a dictionary like such
-                 * sAMAccountName, userName
-                 * property1, value
-                 * property2, value
-                 * ....
-                 * 
-                 * and an arraylist of strings with the names of the keys for the properties
-                 * ["property1", "property2", ...etc]
-                 * 
-                 * RETURNS
-                 * users not found
-                 */
-
-                LinkedListNode<Dictionary<string, string>> userListNode = userList.First;
-                string sAMAccountName;
-                string userProperty;
-                string usrDN;
-                ArrayList returnvalue = new ArrayList();
-
-                while (userListNode != null)
-                {
-
-                    userListNode.Value.TryGetValue("sAMAccountName", out sAMAccountName);
-                    usrDN = GetObjectDistinguishedName(objectClass.user, returnType.distinguishedName, sAMAccountName, ldapDomain);
-                    if (usrDN == "")
-                    {
-                        returnvalue.Add(sAMAccountName);
-                    }
-
-                    //// get usr object for manipulation
-                    DirectoryEntry user = new DirectoryEntry(usrDN);
-
-
-                    foreach (string props in propertyArray)
-                    {
-                        userListNode.Value.TryGetValue(props, out userProperty);
-                        user.Properties[props].Value = userProperty;
-                    }
-                    user.CommitChanges();
-                    userListNode = userListNode.Next;
-                }
-                return returnvalue;
-            }
-            
-            public void ADobjectAttributes(string objectClass)
-            {
-            //Set objClass = GetObject("LDAP://schema/" & strGivenClass)
-
-            //i = 0
-            //For Each strPropName In objClass.MandatoryProperties
-            //    i = i + 1
-            //    WScript.Echo "Man " & i & ": " & strPropName
-            //Next
-
-            //i = 0
-            //For Each strPropName In objClass.OptionalProperties
-            //    i = i + 1
-            //    WScript.Echo "Opt " & i & ": " & strPropName
-            //Next
-            }
         }
 
         public class ObjectADSqlsyncGroup
@@ -1995,7 +2228,7 @@ namespace WindowsApplication1
 
                 sqlConn.Open();
                 // Setup the OU for the program
-                tools.CreateOURecursive("OU=" + groupapp + "," + groupOU);
+                tools.CreateOURecursive("OU=" + groupapp + "," + groupOU, log);
 
                 // grab list of groups from SQL insert into a temp table
                 SqlCommand sqlComm = new SqlCommand();
@@ -2132,8 +2365,8 @@ namespace WindowsApplication1
                         groupObject.Add("sAMAccountName", sAMAccountName);
                         groupObject.Add("CN", sAMAccountName);
                         groupObject.Add("description", description);
-                        tools.CreateGroup("OU=" + groupapp + "," + groupOU, groupObject);
-                        log.transactions.Add("Group added ;" + sAMAccountName + ",OU=" + groupapp + "," + groupOU + ";" + description);
+                        tools.CreateGroup("OU=" + groupapp + "," + groupOU, groupObject, log);
+                        // log.transactions.Add("Group added ;" + sAMAccountName + ",OU=" + groupapp + "," + groupOU + ";" + description);
                         //if (i % 1000 == 0)
                         //{
                         //    // FORGET the real progress bar for now groupsyn.progress = i;
@@ -2155,8 +2388,8 @@ namespace WindowsApplication1
                     while (delete.Read())
                     {
                        // i++;
-                        tools.DeleteGroup("OU=" + groupapp + "," + groupOU, (string)delete[adUpdateKeys[1].ToString()].ToString().Trim());
-                        log.transactions.Add("Group deleted ;" + (string)delete[adUpdateKeys[1].ToString()].ToString().Trim() + ",OU=" + groupapp + groupOU);
+                        tools.DeleteGroup("OU=" + groupapp + "," + groupOU, (string)delete[adUpdateKeys[1].ToString()].ToString().Trim(), log);
+                        // log.transactions.Add("Group deleted ;" + (string)delete[adUpdateKeys[1].ToString()].ToString().Trim() + ",OU=" + groupapp + groupOU);
                         //if (i % 1000 == 0)
                         //{
                         //    // FORGET the real progress bar for now groupsyn.progress = i;
@@ -2214,8 +2447,8 @@ namespace WindowsApplication1
                         if (tools.Exists("CN=" + groupObject["CN"] + ", OU=" + groupapp + "," + groupOU) == true)
                         {
                             // group exists in place just needs updating
-                            tools.UpdateGroup("OU=" + groupapp + "," + groupOU, groupObject);
-                            log.transactions.Add("Group update ; " + sAMAccountName + ",OU=" + groupapp + "," + groupOU + ";" + description);
+                            tools.UpdateGroup("OU=" + groupapp + "," + groupOU, groupObject, log);
+                            // log.transactions.Add("Group update ; " + sAMAccountName + ",OU=" + groupapp + "," + groupOU + ";" + description);
                         }
                         else
                         {
@@ -2252,8 +2485,8 @@ namespace WindowsApplication1
                         groupObject.Add("sAMAccountName", (string)add[1]);
                         groupObject.Add("CN", (string)add[1]);
                         groupObject.Add("description", (string)add[0]);
-                        tools.CreateGroup("OU=" + groupapp + "," + groupOU, groupObject);
-                        log.transactions.Add("Group added ;" + groupObject["sAMAccountName"] + ",OU=" + groupapp + "," + groupOU + ";" + groupObject["description"]);
+                        tools.CreateGroup("OU=" + groupapp + "," + groupOU, groupObject, log);
+                        // log.transactions.Add("Group added ;" + groupObject["sAMAccountName"] + ",OU=" + groupapp + "," + groupOU + ";" + groupObject["description"]);
 
                         groupObject.Clear();
                         //if (i % 500 == 0)
@@ -2351,8 +2584,8 @@ namespace WindowsApplication1
                 add = tools.QueryNotExists(sqlgroupMembersTable, ADgroupMembersTable, sqlConn, groupsyn.User_Group_Reference, ADusers.Columns[1].ColumnName);
                 while (add.Read())
                 {
-                    tools.AddUserToGroup((string)add[0], "CN=" + (string)add[1] + ",OU=" + groupapp + "," + groupOU);
-                    log.transactions.Add("User added ;" + (string)add[0] + ",OU=" + groupapp + "," + groupOU + ";" + (string)add[1]);
+                    tools.AddUserToGroup((string)add[0], "CN=" + (string)add[1] + ",OU=" + groupapp + "," + groupOU, log);
+                    // log.transactions.Add("User added ;" + (string)add[0] + ",OU=" + groupapp + "," + groupOU + ";" + (string)add[1]);
                     groupObject.Clear();
                 }
                 add.Close();
@@ -2362,8 +2595,8 @@ namespace WindowsApplication1
                 while (delete.Read())
                 {
 
-                    tools.RemoveUserFromGroup((string)delete[0], (string)delete[1]);
-                    log.transactions.Add("User removed ;" + (string)delete[adUpdateKeys[1].ToString()].ToString().Trim() + ",OU=" + groupapp + groupOU);
+                    tools.RemoveUserFromGroup((string)delete[0], (string)delete[1], log);
+                    // log.transactions.Add("User removed ;" + (string)delete[adUpdateKeys[1].ToString()].ToString().Trim() + ",OU=" + groupapp + groupOU);
 
                 }
                 delete.Close();
@@ -2402,13 +2635,13 @@ namespace WindowsApplication1
                 ArrayList userProperties = new ArrayList();
 
                 sqlConn.Open();
-                tools.CreateOURecursive(usersyn.BaseUserOU); 
-                tools.CreateOURecursive(usersyn.UserHoldingTank);
-                userObject.Add("sAMAccountName", " ");
-                userObject.Add("CN", " ");
-                userObject.Add("description", " ");
+                tools.CreateOURecursive(usersyn.BaseUserOU, log);
+                tools.CreateOURecursive(usersyn.UserHoldingTank, log);
+                userObject.Add("sAMAccountName", usersyn.UniversalGroup.Remove(0,3).Remove(usersyn.UniversalGroup.IndexOf(",") -3));
+                userObject.Add("CN", usersyn.UniversalGroup.Remove(0,3).Remove(usersyn.UniversalGroup.IndexOf(",") - 3));
+                userObject.Add("description", "Universal Group For Users");
                 // creates the group if it does not exist
-                tools.CreateGroup(usersyn.UniversalGroup, userObject);
+                tools.CreateGroup(usersyn.UniversalGroup.Remove(0,usersyn.UniversalGroup.IndexOf(",") + 1), userObject, log);
 
                 // grab users data from sql
                 if (usersyn.User_where == "")
@@ -2539,17 +2772,15 @@ namespace WindowsApplication1
                 debugReader.Close();
                 MessageBox.Show("table " + adUsersTable + "\n " + debugFieldCount + " fields \n sample data" + debug);
 
-                tools.CreateUserAccount(usersyn.UserHoldingTank, add, log, usersyn.UniversalGroup);
+                tools.CreateUserAccount(usersyn.UserHoldingTank, add, usersyn.UniversalGroup, usersyn, log);
                 add.Close();
 
                 delete = tools.QueryNotExists(sqlUsersTable, adUsersTable, sqlConn, usersyn.User_Lname, adUpdateKeys[1].ToString());
                 // delete groups in AD
                 while (delete.Read())
-                {
-
-                    tools.DeleteUserAccount((string)delete[0], (string)delete[1]);
-                    log.transactions.Add("User removed ;" + (string)delete[adUpdateKeys[1].ToString()].ToString().Trim());
-
+                { 
+                    tools.DeleteUserAccount((string)delete[0], (string)delete[1], log);
+                    // log.transactions.Add("User removed ;" + (string)delete[adUpdateKeys[1].ToString()].ToString().Trim()); 
                 }
                 delete.Close();
                 sqlConn.Close();
@@ -2936,7 +3167,7 @@ namespace WindowsApplication1
                 users_user_Mobile.DataSource = columnList.Clone();
                 users_user_sAMAccountName.DataSource = columnList.Clone();
                 users_user_password.DataSource = columnList.Clone();
-                ADColumn.DataSource = columnList.Clone();
+                ADColumn.DataSource = tools.ADobjectAttribute();
                 columnList.Add("Static Value");
                 SQLColumn.DataSource = columnList.Clone();
 
@@ -3003,7 +3234,7 @@ namespace WindowsApplication1
 
                     if (button == DialogResult.Yes)
                     {
-                        tools.CreateOURecursive(users_baseUserOU.Text.ToString());
+                        tools.CreateOURecursive(users_baseUserOU.Text.ToString(), log);
                         userconfig.BaseUserOU = users_baseUserOU.Text.ToString();
                     }
 
@@ -3029,7 +3260,7 @@ namespace WindowsApplication1
 
                     if (button == DialogResult.Yes)
                     {
-                        tools.CreateOURecursive(users_holdingTank.Text.ToString());
+                        tools.CreateOURecursive(users_holdingTank.Text.ToString(), log);
                         userconfig.UserHoldingTank = users_holdingTank.Text.ToString();
                     }
 
@@ -3052,7 +3283,34 @@ namespace WindowsApplication1
         
         private void users_see_test_results_Click(object sender, EventArgs e)
         {
+            int i;
+            StopWatch timer = new StopWatch();
+            timer.Start();
             groupSyncr.ExecuteUserSync(userconfig, tools, log, this);
+            timer.Stop();
+            MessageBox.Show("bulk " + timer.GetElapsedTimeSecs().ToString());
+            StringBuilder result = new StringBuilder();
+            StringBuilder result2 = new StringBuilder();
+            result.Append("***************************\n*                         *\n*        Transactions     *\n*                         *\n***************************");
+            for (i = 0; i < log.transactions.Count; i++)
+            {
+                result.Append(log.transactions[i].ToString() + "\n");
+            }
+
+            result.Append("***************************\n*                         *\n*        Warnings         *\n*                         *\n***************************");
+
+            for (i = 0; i < log.warnings.Count; i++)
+            {
+                result.Append(log.warnings[i].ToString() + "\n");
+            }
+
+            result.Append("***************************\n*                         *\n*        Errors           *\n*                         *\n***************************");
+            for (i = 0; i < log.errors.Count; i++)
+            {
+                result2.Append(log.errors[i].ToString() + "\n");
+            }
+            group_result1.AppendText(result.ToString());
+            group_result2.AppendText(result2.ToString());
         }
         private void users_Save_button(object sender, EventArgs e)
         {
@@ -3080,7 +3338,10 @@ namespace WindowsApplication1
                 CustomsString.Remove(CustomsString.Length - 1, 1);
                 CustomsString.Append("&");
             }
-            CustomsString.Remove(CustomsString.Length - 1, 1);
+            if (CustomsString.Length != 0)
+            {
+                CustomsString.Remove(CustomsString.Length - 1, 1);
+            }
             userconfig.CustomsString = CustomsString.ToString();
             
 
@@ -3154,20 +3415,23 @@ namespace WindowsApplication1
                 }
                 tableout.Append("\n");
             }
+            tableout.Append("\n rows " + mappinggrid.RowCount);
+            tableout.Append("\n columns " + mappinggrid.ColumnCount);
             MessageBox.Show(tableout.ToString());
 
         }
         private void users_ok_Click(object sender, EventArgs e)
         {
 
+            //group_result1.Text = tools.ADobjectAttributes("CN=user,CN=schema,CN=configuration,DC=fhchs,DC=edu");
+            //group_result1.Text = tools.ADobjectAttributes();
+
         }
         private void users_open_Click(object sender, EventArgs e)
         {
             Dictionary<string, string> properties = new Dictionary<string, string>();
             DataTable customs = new DataTable();
-            DataRow row;
-            int count = 0;
-            int i = 0;
+            BindingSource bs = new BindingSource();
 
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
             openFileDialog1.InitialDirectory = "c:\\";
@@ -3223,26 +3487,48 @@ namespace WindowsApplication1
             userconfig.load(properties);
             users_mapping_description.Text = userconfig.Notes;
             users_baseUserOU.Text = userconfig.BaseUserOU;
-            userconfig.load(properties);         
-            mappinggrid.DataSource = userconfig.UserCustoms;
+            users_group.Text = userconfig.UniversalGroup;
             userconfig.load(properties);
             
-            
-            
-            //DataTable mike = new DataTable();
-            //BindingSource bs = new BindingSource();
-            //bs.DataSource = mike;
+            DataGridViewRow row = new DataGridViewRow();
+            DataGridViewCell cell0;
+            DataGridViewCell cell1;
+            DataGridViewCell cell2;
+            ArrayList ad = tools.ADobjectAttribute();
+            //SQLColumn.DataSource = tools.SqlColumns(userconfig);
+            //ADColumn.DataSource = tools.ADobjectAttribute();
+            //SQLColumn.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+            //ADColumn.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;   
 
-            //bs.DataSource = mappinggrid.DataSource;
+            for (int i = 0; i < userconfig.UserCustoms.Rows.Count; i++)
+            {
+                cell0 = new DataGridViewComboBoxCell();
+                cell1 = new DataGridViewComboBoxCell();
+                cell2 = new DataGridViewTextBoxCell();
 
-
+                //row = userconfig.UserCustoms.Rows[i][j].ToString();
+                //MessageBox.Show( userconfig.UserCustoms.Rows[i][j].ToString());
+                cell0.Value = userconfig.UserCustoms.Rows[i][0].ToString();
+                cell1.Value = userconfig.UserCustoms.Rows[i][1].ToString();
+                cell2.Value = userconfig.UserCustoms.Rows[i][2].ToString();
+                row.Cells.Add(cell0);
+                row.Cells.Add(cell1);
+                row.Cells.Add(cell2);
+                mappinggrid.Rows.Add(row);
+                //mappinggrid.UpdateCellValue(i, 0);
+                //mappinggrid.UpdateCellValue(i, 1);
+                //  mappinggrid.Update();
+                row = new DataGridViewRow();
+            }
+            SQLColumn.DataSource = tools.SqlColumns(userconfig);
+            ADColumn.DataSource = tools.ADobjectAttribute();
+            SQLColumn.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+            ADColumn.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+               
         }
         private void users_remove_Click(object sender, EventArgs e)
         {
-            foreach (DataGridViewRow row in mappinggrid.SelectedRows)
-            {
-                mappinggrid.Rows.Remove(row);
-            }
+
         }
 
 
@@ -3644,15 +3930,28 @@ namespace WindowsApplication1
             //debugreader.Close();
             //group_result1.AppendText(debug.ToString());
 
-
+            StringBuilder result = new StringBuilder();
+            StringBuilder result2 = new StringBuilder();
+            result.Append("***************************\n*                         *\n*        Transactions     *\n*                         *\n***************************");
             for (i = 0; i < log.transactions.Count; i++)
             {
-                group_result1.AppendText(log.transactions[i].ToString() + "\n");
+                result.Append(log.transactions[i].ToString() + "\n");
             }
+
+            result.Append("***************************\n*                         *\n*        Warnings         *\n*                         *\n***************************");
+                           
+            for (i = 0; i < log.warnings.Count; i++)
+            {
+                result.Append(log.warnings[i].ToString() + "\n");
+            }
+
+            result.Append("***************************\n*                         *\n*        Errors           *\n*                         *\n***************************");
             for (i = 0; i < log.errors.Count; i++)
             {
-                group_result2.AppendText(log.errors[i].ToString() + "\n");
+                result2.Append(log.errors[i].ToString() + "\n");
             }
+            group_result1.AppendText(result.ToString());
+            group_result2.AppendText(result2.ToString());
             // groupSyncr.execute(groupconfig, tools, log);
             // users_result1.Text log.transactions.ToString();
             // users_result2.Text = log.errors.ToString();
@@ -4038,6 +4337,13 @@ namespace WindowsApplication1
             if (userMapping_DBServerName.Focused == false)
                 userMapping_DBServerName_Leave(null, null);
         }
+
+        private void mappinggrid_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+                // added to ignore the data error when working with an unbound datagridview and setting the datagridviewcombobox to have a selected value
+        }
+
+
 
 
 
