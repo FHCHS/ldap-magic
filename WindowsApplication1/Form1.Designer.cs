@@ -258,7 +258,6 @@ namespace WindowsApplication1
             this.button38 = new System.Windows.Forms.Button();
             this.button39 = new System.Windows.Forms.Button();
             this.button40 = new System.Windows.Forms.Button();
-            this.tabPage15 = new System.Windows.Forms.TabPage();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.Catalog = new System.Windows.Forms.ComboBox();
             this.test_data_source = new System.Windows.Forms.Button();
@@ -2652,16 +2651,6 @@ namespace WindowsApplication1
             this.button40.Text = "OK";
             this.button40.UseVisualStyleBackColor = true;
             // 
-            // tabPage15
-            // 
-            this.tabPage15.Location = new System.Drawing.Point(4, 22);
-            this.tabPage15.Name = "tabPage15";
-            this.tabPage15.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage15.Size = new System.Drawing.Size(1123, 613);
-            this.tabPage15.TabIndex = 6;
-            this.tabPage15.Text = "Users Synch";
-            this.tabPage15.UseVisualStyleBackColor = true;
-            // 
             // tabPage3
             // 
             this.tabPage3.Controls.Add(this.Catalog);
@@ -4140,7 +4129,7 @@ namespace WindowsApplication1
             // SQLColumn
             // 
             this.SQLColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.SQLColumn.HeaderText = "SQL Coluimn";
+            this.SQLColumn.HeaderText = "SQL Column";
             this.SQLColumn.Name = "SQLColumn";
             this.SQLColumn.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.SQLColumn.Width = 200;
@@ -4170,7 +4159,6 @@ namespace WindowsApplication1
             this.user_group_source.Controls.Add(this.tabPage4);
             this.user_group_source.Controls.Add(this.tabPage5);
             this.user_group_source.Controls.Add(this.tabPage3);
-            this.user_group_source.Controls.Add(this.tabPage15);
             this.user_group_source.Dock = System.Windows.Forms.DockStyle.Fill;
             this.user_group_source.Location = new System.Drawing.Point(0, 0);
             this.user_group_source.Name = "user_group_source";
@@ -4479,7 +4467,6 @@ namespace WindowsApplication1
         private System.Windows.Forms.Button button38;
         private System.Windows.Forms.Button button39;
         private System.Windows.Forms.Button button40;
-        private System.Windows.Forms.TabPage tabPage15;
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.ComboBox Catalog;
         private System.Windows.Forms.Button test_data_source;

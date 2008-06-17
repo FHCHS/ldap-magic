@@ -105,6 +105,7 @@ namespace WindowsApplication1
             {
                 logtransactions = new List<string>();
                 logterrors = new List<string>();
+                logwarnings = new List<string>();
             }
 
             public List<string> transactions
@@ -1547,6 +1548,7 @@ namespace WindowsApplication1
                 int i;                
                 int fieldcount;
                 int val; 
+                string name = "";
                 fieldcount = users.FieldCount;
                 while (users.Read())
                 {
@@ -1559,42 +1561,27 @@ namespace WindowsApplication1
 
                                 DirectoryEntry entry = new DirectoryEntry("LDAP://" + ouPath);
                                 DirectoryEntry newUser = entry.Children.Add("CN=" + System.Web.HttpUtility.UrlEncode(users[usersyn.User_sAMAccount].ToString()).Replace("+", " ").Replace("*", "%2A"), "user");
+                                 // generated
+                                newUser.Properties["samAccountName"].Value = System.Web.HttpUtility.UrlEncode(users[usersyn.User_sAMAccount].ToString()).Replace("+", " ").Replace("*", "%2A");
+                                newUser.Properties["UserPrincipalName"].Value = System.Web.HttpUtility.UrlEncode(users[usersyn.User_sAMAccount].ToString()).Replace("+", " ").Replace("*", "%2A");
+                                newUser.Properties["displayName"].Value = System.Web.HttpUtility.UrlEncode((string)users[usersyn.User_Lname]).Replace("+", " ").Replace("*", "%2A") + ", " + System.Web.HttpUtility.UrlEncode((string)users[usersyn.User_Fname]).Replace("+", " ").Replace("*", "%2A");
+                                newUser.Properties["description"].Value = System.Web.HttpUtility.UrlEncode((string)users[usersyn.User_Lname]).Replace("+", " ").Replace("*", "%2A") + ", " + System.Web.HttpUtility.UrlEncode((string)users[usersyn.User_Fname]).Replace("+", " ").Replace("*", "%2A");
+                                newUser.CommitChanges();
 
                                 // SQL query generated ensures matching field names between the SQL form fields and AD
                                 for (i = 0; i < fieldcount; i++)
                                 {
-                                    if (users.GetName(i) != "password")
+                                    name = users.GetName(i);
+                                    if (name != "password" && name != "CN")
                                     {
                                         if ((string)users[i] != "")
                                         {
                                             newUser.Properties[users.GetName(i)].Value = System.Web.HttpUtility.UrlEncode((string)users[i]).Replace("+", " ").Replace("*", "%2A");
                                         }
                                     }
-                                }
-
+                                }   
 
                                 
-                                // generated
-                                newUser.Properties["samAccountName"].Value = System.Web.HttpUtility.UrlEncode(users[usersyn.User_sAMAccount].ToString()).Replace("+", " ").Replace("*", "%2A");
-                                newUser.Properties["UserPrincipalName"].Value = System.Web.HttpUtility.UrlEncode(users[usersyn.User_sAMAccount].ToString()).Replace("+", " ").Replace("*", "%2A");
-                                newUser.Properties["displayName"].Value = System.Web.HttpUtility.UrlEncode((string)users[usersyn.User_Lname]).Replace("+", " ").Replace("*", "%2A") + ", " + System.Web.HttpUtility.UrlEncode((string)users[usersyn.User_Fname]).Replace("+", " ").Replace("*", "%2A");
-                                newUser.Properties["description"].Value = System.Web.HttpUtility.UrlEncode((string)users[usersyn.User_Lname]).Replace("+", " ").Replace("*", "%2A") + ", " + System.Web.HttpUtility.UrlEncode((string)users[usersyn.User_Fname]).Replace("+", " ").Replace("*", "%2A");
-
-
-                                for (i = 0 ; i < usersyn.UserCustoms.Rows.Count ; i++)
-                                {
-                                    //create props from rows in usercustoms datatable our column names match the appropriate fields in AD and SQL
-                                    if ( usersyn.UserCustoms.Rows[i][0].ToString() != "Static Value")
-                                    {
-                                        newUser.Properties[usersyn.UserCustoms.Rows[i][0].ToString()].Value = System.Web.HttpUtility.UrlEncode((string)users[usersyn.UserCustoms.Rows[i][1].ToString()]).Replace("+", " ").Replace("*", "%2A");
-                                    }
-                                    else
-                                    {
-                                        newUser.Properties[usersyn.UserCustoms.Rows[i][0].ToString()].Value = System.Web.HttpUtility.UrlEncode(usersyn.UserCustoms.Rows[i][2].ToString()).Replace("+", " ").Replace("*", "%2A");
-                                    }
-                                }
-
-                                newUser.CommitChanges();
                                 AddUserToGroup("CN=" + System.Web.HttpUtility.UrlEncode(users[usersyn.User_sAMAccount].ToString()).Replace("+", " ").Replace("*", "%2A") +  "," + usersyn.UserHoldingTank, groupDn, log);
                                 newUser.Invoke("SetPassword", new object[] { System.Web.HttpUtility.UrlEncode((string)users[usersyn.User_password]).Replace("+", " ").Replace("*", "%2A") });
                                 newUser.CommitChanges();
@@ -1628,7 +1615,7 @@ namespace WindowsApplication1
                           debugdata += users.GetName(i) + "=" + System.Web.HttpUtility.UrlEncode((string)users[i]).Replace("+", " ").Replace("*", "%2A") + ", ";
 
                         }
-                        log.errors.Add("issue create user LDAP://CN=" + System.Web.HttpUtility.UrlEncode((string)users["CN"]).Replace("+", " ").Replace("*", "%2A") + "," + ouPath + "\n" + debugdata);
+                        log.errors.Add("issue create user LDAP://CN=" + System.Web.HttpUtility.UrlEncode((string)users["CN"]).Replace("+", " ").Replace("*", "%2A") + "," + ouPath + "\n" + debugdata +  " failed field maybe " + name + " | " + e.Message.ToString());
                         // MessageBox.Show(e.Message.ToString() + "issue create user LDAP://CN=" + System.Web.HttpUtility.UrlEncode((string)users["CN"]).Replace("+", " ").Replace("*", "%2A") + "," + ouPath + "\n" + debugdata);
                     }
                 }
@@ -1684,7 +1671,7 @@ namespace WindowsApplication1
                 }
                 catch (System.DirectoryServices.DirectoryServicesCOMException E)
                 {
-                    log.warnings.Add(E.Message.ToString() + " error disabling user " + userDN);
+                    log.errors.Add(E.Message.ToString() + " error disabling user " + userDN);
                     return false;
                 }
                 
@@ -2194,7 +2181,7 @@ namespace WindowsApplication1
 
         public class ObjectADSqlsyncGroup
         {
-            public void ExecuteBulkcopy(GroupSynch groupsyn, ToolSet tools, LogFile log, Form1 gui)
+            public void ExecuteGroupSync(GroupSynch groupsyn, ToolSet tools, LogFile log, Form1 gui)
             {
                 string debug = "";
                 SqlDataReader debugreader;
@@ -2615,6 +2602,7 @@ namespace WindowsApplication1
 
                 string baseOU = usersyn.BaseUserOU;
                 string DC = baseOU.Substring(baseOU.IndexOf("DC"));
+                string sqlForCustomFields = "";
 
                 SqlDataReader add;
                 SqlDataReader delete;
@@ -2643,6 +2631,25 @@ namespace WindowsApplication1
                 // creates the group if it does not exist
                 tools.CreateGroup(usersyn.UniversalGroup.Remove(0,usersyn.UniversalGroup.IndexOf(",") + 1), userObject, log);
 
+                
+                // need to add this field first to use as a primary key when checking for existance in AD
+                userProperties.Add("sAMAccountName");
+                for (i = 0; i < usersyn.UserCustoms.Rows.Count; i++)
+                {
+                    // build fields to pull back from ad
+                    userProperties.Add(usersyn.UserCustoms.Rows[i][0].ToString());
+                    //create props from rows in usercustoms datatable our column names match the appropriate fields in AD and SQL
+                    if (usersyn.UserCustoms.Rows[i][1].ToString() != "Static Value")
+                    {
+                        sqlForCustomFields += ", RTRIM(" + usersyn.UserCustoms.Rows[i][1].ToString() + ") AS " + usersyn.UserCustoms.Rows[i][0].ToString();
+                    }
+                    // static fields get static values for the table to get updated
+                    else
+                    {
+                        sqlForCustomFields += ", '" + usersyn.UserCustoms.Rows[i][2].ToString() + "' AS " + usersyn.UserCustoms.Rows[i][0].ToString();
+                    }
+                }
+
                 // grab users data from sql
                 if (usersyn.User_where == "")
                 {
@@ -2655,7 +2662,8 @@ namespace WindowsApplication1
                         ", RTRIM(" + usersyn.User_Address + ") AS streetaddress"+
                         ", RTRIM(" + usersyn.User_city + ") AS l" +
                         ", RTRIM(" + usersyn.User_Zip + ") AS postalcode" +
-                        ", RTRIM(" + usersyn.User_password + ") AS password" +                        
+                        ", RTRIM(" + usersyn.User_password + ") AS password" + 
+                        sqlForCustomFields +
                         " INTO " + sqlUsersTable + " FROM " + usersyn.User_dbTable, sqlConn);
                 }
                 else
@@ -2669,19 +2677,20 @@ namespace WindowsApplication1
                         ", RTRIM(" + usersyn.User_Address + ") AS streetaddress"+
                         ", RTRIM(" + usersyn.User_city + ") AS l" +
                         ", RTRIM(" + usersyn.User_Zip + ") AS postalcode" +
-                        ", RTRIM(" + usersyn.User_password + ") AS password" +                        
+                        ", RTRIM(" + usersyn.User_password + ") AS password" +
+                        sqlForCustomFields +
                         " INTO " + sqlUsersTable + " FROM " + usersyn.User_dbTable +
                         " WHERE " + usersyn.User_where, sqlConn);
                 }
                 sqlComm.ExecuteNonQuery();
 
-                // set up fields to pull back from AD
-                userProperties.Add("sAMAccountName");
+                // set up fields to pull back from AD                 
                 userProperties.Add("CN");
                 userProperties.Add("sn");
                 userProperties.Add("givenname");
                 userProperties.Add("homephone");
-                userProperties.Add("state");
+                userProperties.Add("st");
+                userProperties.Add("streetaddress");
                 userProperties.Add("l");
                 userProperties.Add("postalcode");
                 userProperties.Add("distinguishedName");
@@ -2689,9 +2698,6 @@ namespace WindowsApplication1
                 adUsers = tools.EnumerateUsersInOUDataTable(usersyn.BaseUserOU, userProperties, adUsersTable);
                 // make the temp table for ou comparisons
                 tools.Create_Table(adUsers, adUsersTable, sqlConn);
-
-
-
 
 
 
@@ -3309,8 +3315,34 @@ namespace WindowsApplication1
             {
                 result2.Append(log.errors[i].ToString() + "\n");
             }
-            group_result1.AppendText(result.ToString());
-            group_result2.AppendText(result2.ToString());
+
+            // save log to disk
+            SaveFileDialog saveFileDialog1 = new SaveFileDialog();
+            saveFileDialog1.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
+            saveFileDialog1.FilterIndex = 2;
+            saveFileDialog1.RestoreDirectory = true;
+            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                // create a file stream, where "c:\\testing.txt" is the file path
+                System.IO.FileStream fs = new System.IO.FileStream(saveFileDialog1.FileName, System.IO.FileMode.OpenOrCreate, System.IO.FileAccess.Write, System.IO.FileShare.ReadWrite);
+
+                // create a stream writer
+                System.IO.StreamWriter sw = new System.IO.StreamWriter(fs, System.Text.Encoding.ASCII);
+
+                // write to file (buffer), where textbox1 is your text box
+                 sw.WriteLine("{0}", result2);
+                 sw.WriteLine("{0}", result);
+
+
+                // flush buffer (so the text really goes into the file)
+                sw.Flush();
+
+                // close stream writer and file
+                sw.Close();
+                fs.Close();
+            }
+//            group_result1.AppendText(result.ToString());
+//            group_result2.AppendText(result2.ToString());
         }
         private void users_Save_button(object sender, EventArgs e)
         {
@@ -3489,25 +3521,22 @@ namespace WindowsApplication1
             users_baseUserOU.Text = userconfig.BaseUserOU;
             users_group.Text = userconfig.UniversalGroup;
             userconfig.load(properties);
-            
+
+            // clear the grid in case the previous open user file had values in it
+            mappinggrid.Rows.Clear();
             DataGridViewRow row = new DataGridViewRow();
             DataGridViewCell cell0;
             DataGridViewCell cell1;
             DataGridViewCell cell2;
             ArrayList ad = tools.ADobjectAttribute();
-            //SQLColumn.DataSource = tools.SqlColumns(userconfig);
-            //ADColumn.DataSource = tools.ADobjectAttribute();
-            //SQLColumn.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
-            //ADColumn.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;   
+            ArrayList sql = tools.SqlColumns(userconfig);
 
+            // fill the grid with values
             for (int i = 0; i < userconfig.UserCustoms.Rows.Count; i++)
             {
                 cell0 = new DataGridViewComboBoxCell();
                 cell1 = new DataGridViewComboBoxCell();
                 cell2 = new DataGridViewTextBoxCell();
-
-                //row = userconfig.UserCustoms.Rows[i][j].ToString();
-                //MessageBox.Show( userconfig.UserCustoms.Rows[i][j].ToString());
                 cell0.Value = userconfig.UserCustoms.Rows[i][0].ToString();
                 cell1.Value = userconfig.UserCustoms.Rows[i][1].ToString();
                 cell2.Value = userconfig.UserCustoms.Rows[i][2].ToString();
@@ -3515,13 +3544,15 @@ namespace WindowsApplication1
                 row.Cells.Add(cell1);
                 row.Cells.Add(cell2);
                 mappinggrid.Rows.Add(row);
-                //mappinggrid.UpdateCellValue(i, 0);
-                //mappinggrid.UpdateCellValue(i, 1);
-                //  mappinggrid.Update();
+
                 row = new DataGridViewRow();
             }
-            SQLColumn.DataSource = tools.SqlColumns(userconfig);
-            ADColumn.DataSource = tools.ADobjectAttribute();
+
+            // create and set the comboboxes
+            sql.Add("Static Value");  
+            SQLColumn.DataSource = sql;
+            ADColumn.DataSource = ad;
+            // auto resize must be off to keep data errors from happening
             SQLColumn.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
             ADColumn.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
                
@@ -3903,7 +3934,7 @@ namespace WindowsApplication1
             int i;
             StopWatch timer = new StopWatch();
             timer.Start();
-            groupSyncr.ExecuteBulkcopy(groupconfig, tools, log, this);
+            groupSyncr.ExecuteGroupSync(groupconfig, tools, log, this);
             timer.Stop();
             MessageBox.Show("bulk " +timer.GetElapsedTimeSecs().ToString());
 
@@ -4343,13 +4374,6 @@ namespace WindowsApplication1
                 // added to ignore the data error when working with an unbound datagridview and setting the datagridviewcombobox to have a selected value
         }
 
-
-
-
-
-
-
- 
         // custom AD fields 
     }
 }
