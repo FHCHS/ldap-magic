@@ -4191,6 +4191,7 @@ namespace WindowsApplication1
 
         private void userMap_factAdd_Click(object sender, EventArgs e)
         {
+            //Note this saves SelectedIndex.  This means that any DB level column reording destroys these mappings.
             if (userMapping_factList.SelectedItems.Count == 1)
             {
                 //Edit
@@ -4372,6 +4373,13 @@ namespace WindowsApplication1
         private void mappinggrid_DataError(object sender, DataGridViewDataErrorEventArgs e)
         {
                 // added to ignore the data error when working with an unbound datagridview and setting the datagridviewcombobox to have a selected value
+        }
+
+        private void userMapping_factDelete_Click(object sender, EventArgs e)
+        {
+            foreach (ListViewItem deletable in userMapping_factList.SelectedItems) {
+                deletable.Remove();
+            }
         }
 
         // custom AD fields 

@@ -2823,6 +2823,7 @@ namespace WindowsApplication1
             this.userMapping_factDelete.TabIndex = 8;
             this.userMapping_factDelete.Text = "Delete";
             this.userMapping_factDelete.UseVisualStyleBackColor = true;
+            this.userMapping_factDelete.Click += new System.EventHandler(this.userMapping_factDelete_Click);
             // 
             // userMapping_fact_Add_Edit
             // 
