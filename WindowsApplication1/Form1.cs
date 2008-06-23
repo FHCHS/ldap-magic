@@ -4237,8 +4237,8 @@ namespace WindowsApplication1
                         userMapping_factList.Items.Add(bob);
                         userMapping_fact_Add_Edit.Text = "Add";
                         userMapping_factName.Text = "";
-                        userMapping_DBServerName.Text = "";
-                        userMapping_DatabaseName.DataSource = null;
+                        userMapping_DBServerName.Enabled = false;
+                        userMapping_DatabaseName.Enabled = false;
                         usermapping_user_table_view.SelectedIndex = -1;
                         usermapping_user_source.DataSource = null;
                         usermapping_user_sAMAccountName.DataSource = null;
@@ -4259,8 +4259,6 @@ namespace WindowsApplication1
             userMapping_fact_Add_Edit.Enabled = true;
             userMapping_fact_Add_Edit.Text = "Add";
             userMapping_factName.Text = "";
-            userMapping_DBServerName.Text = "";
-            userMapping_DatabaseName.DataSource = null;
             usermapping_user_table_view.SelectedIndex = -1;
             usermapping_user_source.DataSource = null;
             usermapping_user_sAMAccountName.DataSource = null;
@@ -4379,6 +4377,11 @@ namespace WindowsApplication1
         {
             foreach (ListViewItem deletable in userMapping_factList.SelectedItems) {
                 deletable.Remove();
+            }
+            if (userMapping_factList.Items.Count == 0)
+            {
+                userMapping_DBServerName.Enabled = true;
+                userMapping_DatabaseName.Enabled = true;
             }
         }
 

@@ -124,8 +124,7 @@ Note:  These "facts" are expected to return a list of User IDs matching the stud
   </data>
   <data name="userMappingStep1Instructions.Text" xml:space="preserve">
     <value>This step is used to create a series of "facts" that will be used in step 2 to determine which Active Directory OU a particular student belongs to.
-Note:  These "facts" are expected to return a list of User IDs matching the students for whom the "fact" is true.
-            Also note that a different Database Server or Database Name for any of these rules will result in unpredictable and incorrect behavior.</value>
+Note:  These "facts" are expected to return a list of User IDs matching the students for whom the "fact" is true.</value>
   </data>
   <metadata name="ADColumn.UserAddedColumn" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>

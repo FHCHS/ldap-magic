@@ -4176,7 +4176,7 @@ namespace WindowsApplication1
             this.Controls.Add(this.user_group_source);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "LDAP Magic";
             this.tabPage8.ResumeLayout(false);
             this.tabPage8.PerformLayout();
             this.groupBox2.ResumeLayout(false);
