@@ -126,15 +126,61 @@ Note:  These "facts" are expected to return a list of User IDs matching the stud
     <value>This step is used to create a series of "facts" that will be used in step 2 to determine which Active Directory OU a particular student belongs to.
 Note:  These "facts" are expected to return a list of User IDs matching the students for whom the "fact" is true.</value>
   </data>
-  <metadata name="ADColumn.UserAddedColumn" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="SQLColumn.UserAddedColumn" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="StaticValue.UserAddedColumn" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="userMapping_MovementDown.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAAlwSFlzAAALEQAA
+        CxEBf2RfkQAABK1JREFUWEetl2+s1mMYxzudnM4p51CR/JlmlVVnWC9ImERZw7xIVJsXYlgbMxKTF2go
+        tlZ40cKGzWy1SqGdtrbSsilZKEtNSMmfUXFkUXF8Psd9t/vc5/f8zlN6ts9+/+/7e133dV339dS0tbV1
+        K/s1NY3rzvPToRlugPEwGOrgCOyEFlgF2+BAa+vqo6WDpg8VUEZj49gecDZMhCWwD/6BtsB+jkthEpwP
+        p3Q1Zvq8dHJfdEC4AO6GNfBHMrkivF4H98Ig6HmyBdSFge/juAH+TAToCa83wgMwFOpPtgA9MAQehI/h
+        r8wDXm+GGTAMGk5YAB/XQG1wu5Y7eUMQMD1MlArQA1HAI2UCwtg1ubj2GAgPDbbe0A/OAQPq3HA+guPD
+        QcDhzANHwv1Hg4AOS5AZpUHO013aMzC8oLVOPByuhVvhdrgNboSb4Qn4LFgcM0APKMj7HQQkEzv2qdAX
+        zgzzNHLsCbUKUJEPtfJOeAGWwSpYDq/As7AQPg8TpmmogE+DgGYHDl51KeuhP2jY1XAdXAnGivcbFKDb
+        DTItfhO+hANwEH6F7+BDWA07g4DoAY9RgDGgAGPGWNLCs+ByuAeehwUwBzT0MkUo4DQYCU/BVnBNtTBa
+        +TfnrfA1fA9HIRfwCfcUoKVarVf7wKVg9rwDiv8BdsCiIKpZAbpf98yDPeCE6QSee+930CMKTJ+bBcaA
+        AqwDvSBmzh2cWz0VHsf1qDEvwVgFqHQUPA1fQG5hnMz7Fp0iDxgDj8FFwaDzOBq8xtM2yDNHQxbDBAUY
+        oRfCVDD4dFNuZRSh+jQAYwzo1lngug6EMfAkfABOlos2xpxrYqz1Z3BhHFhsWkCXFYlIYyP1zDe8r0tv
+        gnEwE9w3fgnjpKI14kd4w/cVYFEwYk0LU8SCY8S7yxXFQx4fXjuRLp0WJvf7n4PlRR5zWWY7X1oJo4ir
+        eKD7rPvudPkARQJM2fdhPujaomyJ3lPYSrgLhhzbjrkwdy2VlmEr3+tgVlQKylTIId7bAi6f8WCw5sK9
+        1qBN8AyMhn6d+gFu6gkLiqX1I3DwIqvzWvAt75lFv0HR0pmu1oJX4RYwWOuLBFhEBsAEsNPRZV0tg14y
+        ZozuIo/5/U/wNuh6S3Gv9s0o3x554FK4WZgVzwXVldJSLzi4Fuv2SpnjM13/OJiqVt//dsMKAlyGtA2z
+        CpZ5IYooWirF7YXXwDS1v2yfvFBA2MlMTWvD9fAyuL7VBGMuQGGKXwv3g7HVoV+o2JTyol5wc7EumJIG
+        Y1exkAuwBJvzc+EacN+praor5kWD0Y5oMpjbBtnxCND1lnUL1BQw6usKW7KiJpKXYzC6U1pmdx/HMji5
+        e4Dtuh68BNxzinvCSl0sH7itugxute75+a5WKehc981gJ+XG1Mn1pUEYH/KhlTEug02FRaasKLlExorr
+        Hjcnv3ecTtZXzIJEgMvQBFeANcFKl/8vSAVZB1yqt8B1H6wXy/4nVPvXzACyQ7Zn3FWwFFpumrrNvgfu
+        ihdDY1d/UqoRoBdss+x2bCa1bjsYZFY48fwreBceAhtR173H/xaQFCbLp4VET7iXm5pG+XpYAS+C3a+l
+        1m64qn/J/wJzsNsvT8ay8gAAAABJRU5ErkJggg==
+</value>
+  </data>
+  <data name="userMapping_MovementUp.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAAlwSFlzAAALEQAA
+        CxEBf2RfkQAABJdJREFUWEetl1uIVVUchxudMU1nxNG8FYmoUd7SB/NeqdlL4kNpJfSQSkmgSF6xHlLx
+        ViAqPUQlaCBBoRlaGAimEGQZ3kpT1Mq74qUaFe+O33dYe9ju2XufI9PAx+yz99lr/f7X9T9ltbW1DxT7
+        q6oaWcF3qqET9IGe4dp7d+ACHIRdsA9OwKWams0+y/9TQB6Vlc+XQzUMgGmwEY7Av3At4PUB+AImQC94
+        CMqKrZ+7uS+zSCX0hrfhWzgDt+AO1Ma4wfXfsAZegU5Q0SABLNAMusK4YN0x/t9MbBwXcZ1nf8AHMAiq
+        inkh1QO+pHp4BEbBR7AfrqZYHhfg9X+wAV4L7+d6IUtAY1427sNgEeyES3A7x/pIiKHYBbOgOzTLC0M9
+        AcH6Fvx/CmbANjDJStlcEeaHodJrz4A5lJmMaQKa8IIJZNy/gtP3sbkCTM6L8DVEYSjP8sI9Anghcv1z
+        XC8F465Lk3HO+6wAc+XX4EHD8GCpApry5R4wBX4A454st1LEGIaj8Cm8AG2gUZqIOg/4BegAZv0qOJnj
+        evMhT5jPFL8F3oTOegHq5UJBQNi8Jf+fhvdgB9jl0jaxD/ismAi/dxjsCf0hNRkjAbbNJ2EirIezGZvr
+        2n/AJPO6WC6c4zvr4CVoD/WSUeuNu1n/MqwMqu1oycW12CZjpzO+pSSnyfgLzAZzq14yKqA1PAsLQddf
+        SbHeUOj2g7AJ9oKLF0tIvXQcVsNo6Ah22LpcUEA30PXfgS5zs2TsXegUWNvLYStcLkGA62iQJTkXhkBb
+        qEtIBQyGxZBW8y7g5grbDO+Cp6IN6nwJAvSQoTNnfN/O6n6RiEYKsOw+B4/ZeLt1czPZjSwnNx8Zvm+b
+        /SuIi4chzXs+dx09aPimg1Vhb6hQwBjQtWZ3fDEt9wz4EXSfB5PJaqnOB/MhmYgKyDozFGFbd6/x8Di0
+        UIAlokvdLDlgGJYV8CI8Cp6QTjtzYHeKAEWbrFkl6n2raAEMhFYKoEMUTq4/Y+q1QpethTfARHU4sV88
+        AR61eyBZrlqpIVlHt+taFcvAk7JaAdbnW/Al6FbdZAdzqHgH+qkUnA3tGR4uCvDMT4YgqhaNqYEoHFFu
+        KPA3mAfmQUsFmJHG1WFyCXwMHwZRDqLtoFA2oBcUrIC0EChI8Wb8T3AC9Igla44dAmfG10GvNleAiyrC
+        VmyJjADdo6Xe1+rG4cxQiALsbEkBWqmA3+ETcJL6DL6B78HkM580tC+YT+UKcAZwYQ8Lu+LD4aFTkcOJ
+        zwudK4hRqALMATeMNy1zwvvvg53P5HVC1uKxMBw0zH1cuyx+GnocG2dbpdRtHJ3jCQE7+ZyckBXkfRuO
+        Vtp6HWwfC9du3DzsUzAqayZMneF40XDpAXPAjbQ46QHv22yiytEYrU01qugPk/gUExMwMyYg3jsUZN+3
+        ehTQsB8myREqhMA+MBV+huTQ4uftMBm6aHmDfhmlCDBZXXgSOK570sU94Of4GPa/e8A4mlCvgpOOp1wk
+        wFy4AHZPzxfny8xxPDLufnPAKrFMHWA8wu0FNhljb/u1O3p/KFjnqZNw3LN3AVUy375BRwieAAAAAElF
+        TkSuQmCC
+</value>
+  </data>
   <metadata name="ADColumn.UserAddedColumn" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
@@ -147,7 +193,6 @@ Note:  These "facts" are expected to return a list of User IDs matching the stud
   <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>232</value>
   </metadata>
-  <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         AAABAAIAEBAAAAAAIABoBAAAJgAAACAgAAAAACAAqBAAAI4EAAAoAAAAEAAAACAAAAABACAAAAAAAEAE

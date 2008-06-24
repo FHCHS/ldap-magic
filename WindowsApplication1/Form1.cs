@@ -4039,34 +4039,6 @@ namespace WindowsApplication1
 
 
         //UI DIALOG  DATA ENTRY EVENTS FOR USERMAP TAB
-        private void Database_or_AD_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (usermap_Database_or_AD.Text == "Database")
-            {
-                userMapping_UserData.Visible = true;
-                OUdata.Visible = false;
-            }
-            if (usermap_Database_or_AD.Text == "Active Directory OU")
-            {
-                userMapping_UserData.Visible = false;
-                OUdata.Visible = true;
-            }
-        }
-        private void move_delete_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (usermap_move_delete.Text == "Delete")
-            {
-                move_users.Visible = false;
-            }
-            if (usermap_move_delete.Text == "Move")
-            {
-                move_users.Visible = true;
-            }
-        }
-        private void usermap_active_disabled_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            usermapping.ActiveDisabled = usermap_active_disabled.Text;
-        }
         private void usermap_user_source_SelectedIndexChanged(object sender, EventArgs e)
         {
             usermapping.User_dbTable = usermapping_user_source.Text;
@@ -4200,12 +4172,18 @@ namespace WindowsApplication1
 //                if (usermapping_user_table_view.
                 bob.Text = userMapping_factName.Text;
                 bob.Name = userMapping_factName.Text;
-                bob.SubItems[1].Text = userMapping_DBServerName.Text;
-                bob.SubItems[2].Text = userMapping_DatabaseName.SelectedIndex.ToString();
-                bob.SubItems[3].Text = usermapping_user_table_view.SelectedIndex.ToString();
-                bob.SubItems[4].Text = usermapping_user_source.SelectedIndex.ToString();
-                bob.SubItems[5].Text = usermapping_user_sAMAccountName.SelectedIndex.ToString();
-                bob.SubItems[6].Text = usermapping_user_where.Text;
+                bob.SubItems["serverName"].Text = userMapping_DBServerName.Text;
+                bob.SubItems["serverName"].Tag = userMapping_DBServerName.Text;
+                bob.SubItems["databaseIndex"].Text = userMapping_DatabaseName.SelectedItem.ToString();
+                bob.SubItems["databaseIndex"].Tag = userMapping_DatabaseName.SelectedIndex;
+                bob.SubItems["typeIndex"].Text = usermapping_user_table_view.SelectedItem.ToString();
+                bob.SubItems["typeIndex"].Tag = usermapping_user_table_view.SelectedIndex;
+                bob.SubItems["tableIndex"].Text = usermapping_user_source.SelectedItem.ToString();
+                bob.SubItems["tableIndex"].Tag = usermapping_user_source.SelectedIndex;
+                bob.SubItems["columnIndex"].Text = usermapping_user_sAMAccountName.SelectedItem.ToString();
+                bob.SubItems["columnIndex"].Tag = usermapping_user_sAMAccountName.SelectedIndex;
+                bob.SubItems["whereText"].Text = usermapping_user_where.Text;
+                bob.SubItems["whereText"].Tag = usermapping_user_where.Text;
             }
             else
             {
@@ -4219,14 +4197,38 @@ namespace WindowsApplication1
                 else
                 {
                     ListViewItem bob = new ListViewItem();
+                    ListViewItem.ListViewSubItem jane = new ListViewItem.ListViewSubItem();
                     bob.Text = userMapping_factName.Text;
                     bob.Name = userMapping_factName.Text;
-                    bob.SubItems.Add(userMapping_DBServerName.Text);
-                    bob.SubItems.Add(userMapping_DatabaseName.SelectedIndex.ToString());
-                    bob.SubItems.Add(usermapping_user_table_view.SelectedIndex.ToString());
-                    bob.SubItems.Add(usermapping_user_source.SelectedIndex.ToString());
-                    bob.SubItems.Add(usermapping_user_sAMAccountName.SelectedIndex.ToString());
-                    bob.SubItems.Add(usermapping_user_where.Text);
+                    jane.Name = "serverName";
+                    jane.Text = userMapping_DBServerName.Text;
+                    jane.Tag = userMapping_DBServerName.Text;
+                    bob.SubItems.Add(jane);
+                    jane = new ListViewItem.ListViewSubItem();
+                    jane.Name = "databaseIndex";
+                    jane.Text = userMapping_DatabaseName.SelectedItem.ToString();
+                    jane.Tag = userMapping_DatabaseName.SelectedIndex;
+                    bob.SubItems.Add(jane);
+                    jane = new ListViewItem.ListViewSubItem();
+                    jane.Name = "typeIndex";
+                    jane.Text = usermapping_user_table_view.SelectedItem.ToString();
+                    jane.Tag = usermapping_user_table_view.SelectedIndex;
+                    bob.SubItems.Add(jane);
+                    jane = new ListViewItem.ListViewSubItem();
+                    jane.Name = "tableIndex";
+                    jane.Text = usermapping_user_source.SelectedItem.ToString();
+                    jane.Tag = usermapping_user_source.SelectedIndex;
+                    bob.SubItems.Add(jane);
+                    jane = new ListViewItem.ListViewSubItem();
+                    jane.Name = "columnIndex";
+                    jane.Text = usermapping_user_sAMAccountName.SelectedItem.ToString();
+                    jane.Tag = usermapping_user_sAMAccountName.SelectedIndex; ;
+                    bob.SubItems.Add(jane);
+                    jane = new ListViewItem.ListViewSubItem();
+                    jane.Name = "whereText";
+                    jane.Text = usermapping_user_where.Text;
+                    jane.Tag = usermapping_user_where.Text;
+                    bob.SubItems.Add(jane);
 
                     if (bob.Text.Trim().Length == 0 || userMapping_factList.Items.ContainsKey(bob.Text))
                     {
@@ -4267,16 +4269,16 @@ namespace WindowsApplication1
             if (userMapping_factList.SelectedItems.Count == 1)
             {
                 userMapping_factDelete.Enabled = true;
+                //This Doesn't Work right and I don't know why.
 
                 userMapping_fact_Add_Edit.Text = "Edit/Save";
                 ListViewItem bob = userMapping_factList.SelectedItems[0];
                 userMapping_factName.Text                     = bob.Text;
-                userMapping_DBServerName.Text                 = bob.SubItems[1].Text;
-                userMapping_DatabaseName.SelectedIndex        = Convert.ToInt32(bob.SubItems[2].Text);
-                usermapping_user_table_view.SelectedIndex     = Convert.ToInt32(bob.SubItems[3].Text);
-                usermapping_user_source.SelectedIndex         = Convert.ToInt32(bob.SubItems[4].Text);
-                usermapping_user_sAMAccountName.SelectedIndex = Convert.ToInt32(bob.SubItems[5].Text);
-                usermapping_user_where.Text                   = bob.SubItems[6].Text;
+                usermapping_user_table_view.SelectedIndex = -1;
+                usermapping_user_table_view.SelectedIndex     = Convert.ToInt32(bob.SubItems["typeIndex"].Tag);
+                usermapping_user_source.SelectedIndex         = Convert.ToInt32(bob.SubItems["tableIndex"].Tag);
+                usermapping_user_sAMAccountName.SelectedIndex = Convert.ToInt32(bob.SubItems["columnIndex"].Tag);
+                usermapping_user_where.Text = Convert.ToString(bob.SubItems["whereText"].Tag);
             }
             else if (userMapping_factList.SelectedItems.Count > 1)
             {
@@ -4382,6 +4384,23 @@ namespace WindowsApplication1
             {
                 userMapping_DBServerName.Enabled = true;
                 userMapping_DatabaseName.Enabled = true;
+            }
+        }
+
+        private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (tabControl1.SelectedIndex == 1 && userMapping_factList.Items.Count == 0)
+            {
+                tabControl1.SelectedIndex = 0;
+                MessageBox.Show("You must complete Step 1 before starting Step 2.");
+            }
+            if (userMapping_factList.Items.Count > 0)
+            {
+                userMapping_factSelectBox.Items.Clear();
+                foreach (ListViewItem temp in userMapping_factList.Items)
+                {
+                    userMapping_factSelectBox.Items.Add(temp.Text);
+                }
             }
         }
 
