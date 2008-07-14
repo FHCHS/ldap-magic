@@ -399,6 +399,19 @@ namespace WindowsApplication1
             this.StaticValue = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.users_remove = new System.Windows.Forms.Button();
             this.user_group_source = new System.Windows.Forms.TabControl();
+            this.tabPage15 = new System.Windows.Forms.TabPage();
+            this.groupBox12 = new System.Windows.Forms.GroupBox();
+            this.label49 = new System.Windows.Forms.Label();
+            this.mailDomain = new System.Windows.Forms.TextBox();
+            this.mailUser = new System.Windows.Forms.TextBox();
+            this.mailPassword = new System.Windows.Forms.TextBox();
+            this.label46 = new System.Windows.Forms.Label();
+            this.label47 = new System.Windows.Forms.Label();
+            this.mailCheckAuth = new System.Windows.Forms.Button();
+            this.label48 = new System.Windows.Forms.Label();
+            this.label41 = new System.Windows.Forms.Label();
+            this.tabPage17 = new System.Windows.Forms.TabPage();
+            this.authNotify = new System.Windows.Forms.Label();
             this.tabPage8.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -432,6 +445,8 @@ namespace WindowsApplication1
             this.tabPage16.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.mappinggrid)).BeginInit();
             this.user_group_source.SuspendLayout();
+            this.tabPage15.SuspendLayout();
+            this.groupBox12.SuspendLayout();
             this.SuspendLayout();
             // 
             // usermap_toOU
@@ -4114,6 +4129,8 @@ namespace WindowsApplication1
             this.user_group_source.Controls.Add(this.tabPage4);
             this.user_group_source.Controls.Add(this.tabPage5);
             this.user_group_source.Controls.Add(this.tabPage3);
+            this.user_group_source.Controls.Add(this.tabPage15);
+            this.user_group_source.Controls.Add(this.tabPage17);
             this.user_group_source.Dock = System.Windows.Forms.DockStyle.Fill;
             this.user_group_source.Location = new System.Drawing.Point(0, 0);
             this.user_group_source.Name = "user_group_source";
@@ -4121,6 +4138,137 @@ namespace WindowsApplication1
             this.user_group_source.Size = new System.Drawing.Size(1131, 639);
             this.user_group_source.TabIndex = 0;
             this.user_group_source.SelectedIndexChanged += new System.EventHandler(this.group_user_Group_reference_SelectedIndexChanged);
+            // 
+            // tabPage15
+            // 
+            this.tabPage15.Controls.Add(this.groupBox12);
+            this.tabPage15.Controls.Add(this.label41);
+            this.tabPage15.Location = new System.Drawing.Point(4, 22);
+            this.tabPage15.Name = "tabPage15";
+            this.tabPage15.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage15.Size = new System.Drawing.Size(1123, 613);
+            this.tabPage15.TabIndex = 5;
+            this.tabPage15.Text = "Gmail User Provisioning";
+            this.tabPage15.UseVisualStyleBackColor = true;
+            // 
+            // groupBox12
+            // 
+            this.groupBox12.Controls.Add(this.authNotify);
+            this.groupBox12.Controls.Add(this.label49);
+            this.groupBox12.Controls.Add(this.mailDomain);
+            this.groupBox12.Controls.Add(this.mailUser);
+            this.groupBox12.Controls.Add(this.mailPassword);
+            this.groupBox12.Controls.Add(this.label46);
+            this.groupBox12.Controls.Add(this.label47);
+            this.groupBox12.Controls.Add(this.mailCheckAuth);
+            this.groupBox12.Controls.Add(this.label48);
+            this.groupBox12.Location = new System.Drawing.Point(6, 6);
+            this.groupBox12.Name = "groupBox12";
+            this.groupBox12.Size = new System.Drawing.Size(310, 255);
+            this.groupBox12.TabIndex = 19;
+            this.groupBox12.TabStop = false;
+            this.groupBox12.Text = "Authentication Information";
+            // 
+            // label49
+            // 
+            this.label49.AutoSize = true;
+            this.label49.Location = new System.Drawing.Point(3, 164);
+            this.label49.Name = "label49";
+            this.label49.Size = new System.Drawing.Size(180, 13);
+            this.label49.TabIndex = 9;
+            this.label49.Text = "Complete Login Info To Authenticate";
+            // 
+            // mailDomain
+            // 
+            this.mailDomain.Location = new System.Drawing.Point(6, 32);
+            this.mailDomain.Name = "mailDomain";
+            this.mailDomain.Size = new System.Drawing.Size(169, 20);
+            this.mailDomain.TabIndex = 0;
+            this.mailDomain.TextChanged += new System.EventHandler(this.Domain_TextChanged);
+            // 
+            // mailUser
+            // 
+            this.mailUser.Location = new System.Drawing.Point(6, 82);
+            this.mailUser.Name = "mailUser";
+            this.mailUser.Size = new System.Drawing.Size(169, 20);
+            this.mailUser.TabIndex = 1;
+            this.mailUser.TextChanged += new System.EventHandler(this.mailUser_TextChanged);
+            this.mailUser.Enter += new System.EventHandler(this.mailUser_Enter);
+            // 
+            // mailPassword
+            // 
+            this.mailPassword.Location = new System.Drawing.Point(6, 132);
+            this.mailPassword.Name = "mailPassword";
+            this.mailPassword.PasswordChar = '*';
+            this.mailPassword.Size = new System.Drawing.Size(169, 20);
+            this.mailPassword.TabIndex = 2;
+            this.mailPassword.TextChanged += new System.EventHandler(this.mailPassword_TextChanged);
+            this.mailPassword.Enter += new System.EventHandler(this.mailPassword_Enter);
+            // 
+            // label46
+            // 
+            this.label46.AutoSize = true;
+            this.label46.Location = new System.Drawing.Point(6, 116);
+            this.label46.Name = "label46";
+            this.label46.Size = new System.Drawing.Size(53, 13);
+            this.label46.TabIndex = 8;
+            this.label46.Text = "Password";
+            // 
+            // label47
+            // 
+            this.label47.AutoSize = true;
+            this.label47.Location = new System.Drawing.Point(6, 16);
+            this.label47.Name = "label47";
+            this.label47.Size = new System.Drawing.Size(148, 13);
+            this.label47.TabIndex = 6;
+            this.label47.Text = "Domain ( students.fhchs.edu )";
+            // 
+            // mailCheckAuth
+            // 
+            this.mailCheckAuth.Location = new System.Drawing.Point(135, 224);
+            this.mailCheckAuth.Name = "mailCheckAuth";
+            this.mailCheckAuth.Size = new System.Drawing.Size(169, 25);
+            this.mailCheckAuth.TabIndex = 3;
+            this.mailCheckAuth.Text = "Check Authenticatation";
+            this.mailCheckAuth.UseVisualStyleBackColor = true;
+            this.mailCheckAuth.Visible = false;
+            this.mailCheckAuth.Click += new System.EventHandler(this.button41_Click);
+            // 
+            // label48
+            // 
+            this.label48.AutoSize = true;
+            this.label48.Location = new System.Drawing.Point(6, 66);
+            this.label48.Name = "label48";
+            this.label48.Size = new System.Drawing.Size(76, 13);
+            this.label48.TabIndex = 7;
+            this.label48.Text = "User@Domain";
+            // 
+            // label41
+            // 
+            this.label41.AutoSize = true;
+            this.label41.Location = new System.Drawing.Point(593, 245);
+            this.label41.Name = "label41";
+            this.label41.Size = new System.Drawing.Size(233, 13);
+            this.label41.TabIndex = 0;
+            this.label41.Text = "By default all users will be added to this email list";
+            // 
+            // tabPage17
+            // 
+            this.tabPage17.Location = new System.Drawing.Point(4, 22);
+            this.tabPage17.Name = "tabPage17";
+            this.tabPage17.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage17.Size = new System.Drawing.Size(1123, 613);
+            this.tabPage17.TabIndex = 6;
+            this.tabPage17.Text = "Gamil Email Lists";
+            this.tabPage17.UseVisualStyleBackColor = true;
+            // 
+            // authNotify
+            // 
+            this.authNotify.AutoSize = true;
+            this.authNotify.Location = new System.Drawing.Point(45, 188);
+            this.authNotify.Name = "authNotify";
+            this.authNotify.Size = new System.Drawing.Size(0, 13);
+            this.authNotify.TabIndex = 10;
             // 
             // Form1
             // 
@@ -4185,6 +4333,10 @@ namespace WindowsApplication1
             this.tabPage16.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.mappinggrid)).EndInit();
             this.user_group_source.ResumeLayout(false);
+            this.tabPage15.ResumeLayout(false);
+            this.tabPage15.PerformLayout();
+            this.groupBox12.ResumeLayout(false);
+            this.groupBox12.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -4561,6 +4713,19 @@ namespace WindowsApplication1
         private System.Windows.Forms.Button userMapping_MovementDelete;
         private System.Windows.Forms.Button userMapping_MovementAdd;
         private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.TabPage tabPage15;
+        private System.Windows.Forms.TabPage tabPage17;
+        private System.Windows.Forms.GroupBox groupBox12;
+        private System.Windows.Forms.TextBox mailDomain;
+        private System.Windows.Forms.TextBox mailUser;
+        private System.Windows.Forms.TextBox mailPassword;
+        private System.Windows.Forms.Label label46;
+        private System.Windows.Forms.Label label47;
+        private System.Windows.Forms.Button mailCheckAuth;
+        private System.Windows.Forms.Label label48;
+        private System.Windows.Forms.Label label41;
+        private System.Windows.Forms.Label label49;
+        private System.Windows.Forms.Label authNotify;
     }
 }
 

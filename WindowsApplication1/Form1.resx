@@ -130,8 +130,8 @@ Note:  These "facts" are expected to return a list of User IDs matching the stud
   <data name="userMapping_MovementDown.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAAlwSFlzAAALEQAA
-        CxEBf2RfkQAABK1JREFUWEetl2+s1mMYxzudnM4p51CR/JlmlVVnWC9ImERZw7xIVJsXYlgbMxKTF2go
+        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAAlwSFlzAAALEAAA
+        CxABrSO9dQAABK1JREFUWEetl2+s1mMYxzudnM4p51CR/JlmlVVnWC9ImERZw7xIVJsXYlgbMxKTF2go
         tlZ40cKGzWy1SqGdtrbSsilZKEtNSMmfUXFkUXF8Psd9t/vc5/f8zlN6ts9+/+/7e133dV339dS0tbV1
         K/s1NY3rzvPToRlugPEwGOrgCOyEFlgF2+BAa+vqo6WDpg8VUEZj49gecDZMhCWwD/6BtsB+jkthEpwP
         p3Q1Zvq8dHJfdEC4AO6GNfBHMrkivF4H98Ig6HmyBdSFge/juAH+TAToCa83wgMwFOpPtgA9MAQehI/h
@@ -157,8 +157,8 @@ Note:  These "facts" are expected to return a list of User IDs matching the stud
   <data name="userMapping_MovementUp.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAAlwSFlzAAALEQAA
-        CxEBf2RfkQAABJdJREFUWEetl1uIVVUchxudMU1nxNG8FYmoUd7SB/NeqdlL4kNpJfSQSkmgSF6xHlLx
+        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAAlwSFlzAAALEAAA
+        CxABrSO9dQAABJdJREFUWEetl1uIVVUchxudMU1nxNG8FYmoUd7SB/NeqdlL4kNpJfSQSkmgSF6xHlLx
         ViAqPUQlaCBBoRlaGAimEGQZ3kpT1Mq74qUaFe+O33dYe9ju2XufI9PAx+yz99lr/f7X9T9ltbW1DxT7
         q6oaWcF3qqET9IGe4dp7d+ACHIRdsA9OwKWams0+y/9TQB6Vlc+XQzUMgGmwEY7Av3At4PUB+AImQC94
         CMqKrZ+7uS+zSCX0hrfhWzgDt+AO1Ma4wfXfsAZegU5Q0SABLNAMusK4YN0x/t9MbBwXcZ1nf8AHMAiq
@@ -181,6 +181,15 @@ Note:  These "facts" are expected to return a list of User IDs matching the stud
         TkSuQmCC
 </value>
   </data>
+  <metadata name="ADColumn.UserAddedColumn" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <metadata name="SQLColumn.UserAddedColumn" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <metadata name="StaticValue.UserAddedColumn" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
   <metadata name="ADColumn.UserAddedColumn" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>

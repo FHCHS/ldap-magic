@@ -15,6 +15,8 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Web;
 using System.Windows.Forms;
+using Google.GData.Apps;
+using Google.GData.Client;
 
 
 // CONSIDERATIONS
@@ -2602,49 +2604,49 @@ namespace WindowsApplication1
 
 
 
-                debug = " total users in groups from SQL \n";
-                sqldebugComm = new SqlCommand("select top 20 * FROM " + sqlgroupMembersTable, sqlConn);
-                debugreader = sqldebugComm.ExecuteReader();
-                debugfieldcount = debugreader.FieldCount;
-                for (i = 0; i < debugfieldcount; i++)
-                {
-                    debug += debugreader.GetName(i);
-                }
-                debug += "\n";
-                while (debugreader.Read())
-                {
-                    for (i = 0; i < debugfieldcount; i++)
-                    {
-                        debug += (string)debugreader[i] + ",";
-                    }
-                    debug += "\n";
-                }
-                sqldebugComm = new SqlCommand("select count(" + ADusers.Columns[0].ColumnName + ") FROM " + sqlgroupMembersTable, sqlConn);
-                debugreader.Close();
-                debugrecourdcount = sqldebugComm.ExecuteScalar().ToString();
-                MessageBox.Show("table " + sqlgroupMembersTable + " has " + debugrecourdcount + " records \n " + debugfieldcount + " fields \n sample data" + debug);
+                //debug = " total users in groups from SQL \n";
+                //sqldebugComm = new SqlCommand("select top 20 * FROM " + sqlgroupMembersTable, sqlConn);
+                //debugreader = sqldebugComm.ExecuteReader();
+                //debugfieldcount = debugreader.FieldCount;
+                //for (i = 0; i < debugfieldcount; i++)
+                //{
+                //    debug += debugreader.GetName(i);
+                //}
+                //debug += "\n";
+                //while (debugreader.Read())
+                //{
+                //    for (i = 0; i < debugfieldcount; i++)
+                //    {
+                //        debug += (string)debugreader[i] + ",";
+                //    }
+                //    debug += "\n";
+                //}
+                //sqldebugComm = new SqlCommand("select count(" + ADusers.Columns[0].ColumnName + ") FROM " + sqlgroupMembersTable, sqlConn);
+                //debugreader.Close();
+                //debugrecourdcount = sqldebugComm.ExecuteScalar().ToString();
+                //MessageBox.Show("table " + sqlgroupMembersTable + " has " + debugrecourdcount + " records \n " + debugfieldcount + " fields \n sample data" + debug);
 
-                debug = " total users in groups from AD \n";
-                sqldebugComm = new SqlCommand("select top 20 * FROM " + ADgroupMembersTable, sqlConn);
-                debugreader = sqldebugComm.ExecuteReader();
-                debugfieldcount = debugreader.FieldCount;
-                for (i = 0; i < debugfieldcount; i++)
-                {
-                    debug += debugreader.GetName(i);
-                }
-                debug += "\n";
-                while (debugreader.Read())
-                {
-                    for (i = 0; i < debugfieldcount; i++)
-                    {
-                        debug += (string)debugreader[i] + ",";
-                    }
-                    debug += "\n";
-                }
-                sqldebugComm = new SqlCommand("select count(" + ADusers.Columns[0].ColumnName + ") FROM " + ADgroupMembersTable, sqlConn);
-                debugreader.Close();
-                debugrecourdcount = sqldebugComm.ExecuteScalar().ToString();
-                MessageBox.Show("table " + ADgroupMembersTable + " has " + debugrecourdcount + " records \n " + debugfieldcount + " fields \n sample data" + debug);
+                //debug = " total users in groups from AD \n";
+                //sqldebugComm = new SqlCommand("select top 20 * FROM " + ADgroupMembersTable, sqlConn);
+                //debugreader = sqldebugComm.ExecuteReader();
+                //debugfieldcount = debugreader.FieldCount;
+                //for (i = 0; i < debugfieldcount; i++)
+                //{
+                //    debug += debugreader.GetName(i);
+                //}
+                //debug += "\n";
+                //while (debugreader.Read())
+                //{
+                //    for (i = 0; i < debugfieldcount; i++)
+                //    {
+                //        debug += (string)debugreader[i] + ",";
+                //    }
+                //    debug += "\n";
+                //}
+                //sqldebugComm = new SqlCommand("select count(" + ADusers.Columns[0].ColumnName + ") FROM " + ADgroupMembersTable, sqlConn);
+                //debugreader.Close();
+                //debugrecourdcount = sqldebugComm.ExecuteScalar().ToString();
+                //MessageBox.Show("table " + ADgroupMembersTable + " has " + debugrecourdcount + " records \n " + debugfieldcount + " fields \n sample data" + debug);
 
 
                 
@@ -2839,51 +2841,51 @@ namespace WindowsApplication1
                     //                   DEBUG AND TEST DATA
                     //
                     //************************************************************
-                    debug = " total users from sql \n";
-                    sqlDebugComm = new SqlCommand("select top 20 * FROM " + sqlUsersTable, sqlConn);
-                    debugReader = sqlDebugComm.ExecuteReader();
-                    debugFieldCount = debugReader.FieldCount;
-                    for (i = 0; i < debugFieldCount; i++)
-                    {
-                        debug += debugReader.GetName(i) + ", ";
-                    }
-                    debug += "\n";
-                    while (debugReader.Read())
-                    {
-                        for (i = 0; i < debugFieldCount; i++)
-                        {
-                            debug += (string)debugReader[i].ToString() + ", ";
-                        }
-                        debug += "\n";
-                    }
-                    sqlDebugComm = new SqlCommand("select count(sAMAccountName) FROM " + sqlUsersTable, sqlConn);
-                    debugReader.Close();
-                    debugRecordCount = sqlDebugComm.ExecuteScalar().ToString();
-                    MessageBox.Show("table " + sqlUsersTable + " has " + debugRecordCount + " records \n " + debugFieldCount + " fields \n sample data" + debug);
+                    //debug = " total users from sql \n";
+                    //sqlDebugComm = new SqlCommand("select top 20 * FROM " + sqlUsersTable, sqlConn);
+                    //debugReader = sqlDebugComm.ExecuteReader();
+                    //debugFieldCount = debugReader.FieldCount;
+                    //for (i = 0; i < debugFieldCount; i++)
+                    //{
+                    //    debug += debugReader.GetName(i) + ", ";
+                    //}
+                    //debug += "\n";
+                    //while (debugReader.Read())
+                    //{
+                    //    for (i = 0; i < debugFieldCount; i++)
+                    //    {
+                    //        debug += (string)debugReader[i].ToString() + ", ";
+                    //    }
+                    //    debug += "\n";
+                    //}
+                    //sqlDebugComm = new SqlCommand("select count(sAMAccountName) FROM " + sqlUsersTable, sqlConn);
+                    //debugReader.Close();
+                    //debugRecordCount = sqlDebugComm.ExecuteScalar().ToString();
+                    //MessageBox.Show("table " + sqlUsersTable + " has " + debugRecordCount + " records \n " + debugFieldCount + " fields \n sample data" + debug);
 
 
-                    debug = "";
-                    debug = " total users from AD \n";
-                    sqlDebugComm = new SqlCommand("select top 20 * FROM " + adUsersTable, sqlConn);
-                    debugReader = sqlDebugComm.ExecuteReader();
-                    debugFieldCount = debugReader.FieldCount;
-                    for (i = 0; i < debugFieldCount; i++)
-                    {
-                        debug += debugReader.GetName(i) + ", ";
-                    }
-                    debug += "\n";
-                    while (debugReader.Read())
-                    {
-                        for (i = 0; i < debugFieldCount; i++)
-                        {
-                            debug += (string)debugReader[i] + ", ";
-                        }
-                        debug += "\n";
-                    }
-                    sqlDebugComm = new SqlCommand("select count(" + adUsers.Columns[0].ColumnName + ") FROM " + adUsersTable, sqlConn);
-                    debugReader.Close();
-                    debugRecordCount = sqlDebugComm.ExecuteScalar().ToString();
-                    MessageBox.Show("table " + adUsersTable + " has " + debugRecordCount + " records \n " + debugFieldCount + " fields \n sample data" + debug);
+                    //debug = "";
+                    //debug = " total users from AD \n";
+                    //sqlDebugComm = new SqlCommand("select top 20 * FROM " + adUsersTable, sqlConn);
+                    //debugReader = sqlDebugComm.ExecuteReader();
+                    //debugFieldCount = debugReader.FieldCount;
+                    //for (i = 0; i < debugFieldCount; i++)
+                    //{
+                    //    debug += debugReader.GetName(i) + ", ";
+                    //}
+                    //debug += "\n";
+                    //while (debugReader.Read())
+                    //{
+                    //    for (i = 0; i < debugFieldCount; i++)
+                    //    {
+                    //        debug += (string)debugReader[i] + ", ";
+                    //    }
+                    //    debug += "\n";
+                    //}
+                    //sqlDebugComm = new SqlCommand("select count(" + adUsers.Columns[0].ColumnName + ") FROM " + adUsersTable, sqlConn);
+                    //debugReader.Close();
+                    //debugRecordCount = sqlDebugComm.ExecuteScalar().ToString();
+                    //MessageBox.Show("table " + adUsersTable + " has " + debugRecordCount + " records \n " + debugFieldCount + " fields \n sample data" + debug);
                     //************************************************************
                     //                            END
                     //                   DEBUG AND TEST DATA
@@ -2964,6 +2966,15 @@ namespace WindowsApplication1
                     // add the users without doing additional checks
                 }
                 sqlConn.Close();
+            }
+        }
+        public class ObjectADGoogleSync
+        {
+            public void EmailListSync()
+            {
+            }
+            public void EmailUsersSync()
+            {
             }
         }
 
@@ -4577,6 +4588,70 @@ namespace WindowsApplication1
                 }
             }
         }
+
+        private void Domain_TextChanged(object sender, EventArgs e)
+        {
+            label48.Text = "User@" + mailDomain.Text.ToString();
+        }
+
+        private void mailUser_TextChanged(object sender, EventArgs e)
+        {
+            label48.Text = mailUser.Text.ToString() + "@" + mailDomain.Text.ToString();
+        }
+
+
+        private void mailPassword_Enter(object sender, EventArgs e)
+        {
+            if (mailUser.Text.ToString() == "")
+            {
+                mailUser.Focus();
+            }
+        }
+
+        private void mailUser_Enter(object sender, EventArgs e)
+        {
+            if (mailDomain.Text.ToString() == "")
+            {
+                mailDomain.Focus();
+            }
+        }
+
+        private void mailPassword_TextChanged(object sender, EventArgs e)
+        {
+            if (mailPassword.Text != "")
+            {
+                label49.Text = "Press Below To Check Authentication";
+                mailCheckAuth.Visible = true;
+            }
+            else
+            {
+                label49.Text = "Complete Login Info To Authenticate";
+                mailCheckAuth.Visible = false;
+            }
+        }
+
+        private void button41_Click(object sender, EventArgs e)
+        {
+            authNotify.Text = "Contacting google";
+            AppsService service = new AppsService(mailDomain.Text.ToString(), mailUser.Text.ToString() + "@" + mailDomain.Text.ToString(), mailPassword.Text.ToString());
+
+
+            try
+            {
+                authNotify.Text = "Checking for user";
+                UserEntry gAdmin = service.RetrieveUser(mailUser.Text.ToString());
+                authNotify.Text = "Successfully Authenticated! \n" + gAdmin.Login.UserName.ToString();
+
+            }
+            catch
+            {
+                
+                authNotify.Text = "Failed Authentication";
+            }
+        }
+
+
+
 
         // custom AD fields 
     }
