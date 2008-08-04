@@ -74,6 +74,8 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="utils\arguments.cs" />
+    <Compile Include="utils\Toolset.cs" />
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="ActiveDs">
