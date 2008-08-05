@@ -328,6 +328,7 @@ namespace WindowsApplication1
 			this.group_user_sAMAccountName = new System.Windows.Forms.ComboBox();
 			this.label7 = new System.Windows.Forms.Label();
 			this.label8 = new System.Windows.Forms.Label();
+			this.label146 = new System.Windows.Forms.Label();
 			this.label6 = new System.Windows.Forms.Label();
 			this.group_user_Table_View = new System.Windows.Forms.ComboBox();
 			this.label12 = new System.Windows.Forms.Label();
@@ -339,13 +340,12 @@ namespace WindowsApplication1
 			this.label5 = new System.Windows.Forms.Label();
 			this.label4 = new System.Windows.Forms.Label();
 			this.label3 = new System.Windows.Forms.Label();
+			this.label145 = new System.Windows.Forms.Label();
 			this.label11 = new System.Windows.Forms.Label();
 			this.group_group_where = new System.Windows.Forms.MaskedTextBox();
 			this.group_group_sAMAccountName = new System.Windows.Forms.ComboBox();
 			this.group_group_CN = new System.Windows.Forms.ComboBox();
 			this.group_group_source = new System.Windows.Forms.ComboBox();
-			this.label146 = new System.Windows.Forms.Label();
-			this.label145 = new System.Windows.Forms.Label();
 			this.group_execute_now = new System.Windows.Forms.Button();
 			this.group_open = new System.Windows.Forms.Button();
 			this.button4 = new System.Windows.Forms.Button();
@@ -428,6 +428,10 @@ namespace WindowsApplication1
 			this.tabPage17 = new System.Windows.Forms.TabPage();
 			this.group_result2 = new System.Windows.Forms.RichTextBox();
 			this.group_result1 = new System.Windows.Forms.RichTextBox();
+			this.users_user_email = new System.Windows.Forms.ComboBox();
+			this.label2 = new System.Windows.Forms.Label();
+			this.label147 = new System.Windows.Forms.Label();
+			this.users_user_emailDomain = new System.Windows.Forms.TextBox();
 			this.tabPage8.SuspendLayout();
 			this.groupBox2.SuspendLayout();
 			this.groupBox3.SuspendLayout();
@@ -3220,8 +3224,6 @@ namespace WindowsApplication1
 			this.tabPage2.Controls.Add(this.groupBox17);
 			this.tabPage2.Controls.Add(this.groupBox16);
 			this.tabPage2.Controls.Add(this.groupBox15);
-			this.tabPage2.Controls.Add(this.label146);
-			this.tabPage2.Controls.Add(this.label145);
 			this.tabPage2.Controls.Add(this.group_execute_now);
 			this.tabPage2.Controls.Add(this.group_open);
 			this.tabPage2.Controls.Add(this.button4);
@@ -3343,9 +3345,9 @@ namespace WindowsApplication1
 			this.label13.AutoSize = true;
 			this.label13.Location = new System.Drawing.Point(124, 190);
 			this.label13.Name = "label13";
-			this.label13.Size = new System.Drawing.Size(214, 13);
+			this.label13.Size = new System.Drawing.Size(216, 13);
 			this.label13.TabIndex = 68;
-			this.label13.Text = "description of mapping... eg groups in nmcrs";
+			this.label13.Text = "Description of mapping... eg groups in nmcrs";
 			// 
 			// label10
 			// 
@@ -3386,6 +3388,7 @@ namespace WindowsApplication1
 			this.groupBox16.Controls.Add(this.group_user_sAMAccountName);
 			this.groupBox16.Controls.Add(this.label7);
 			this.groupBox16.Controls.Add(this.label8);
+			this.groupBox16.Controls.Add(this.label146);
 			this.groupBox16.Controls.Add(this.label6);
 			this.groupBox16.Controls.Add(this.group_user_Table_View);
 			this.groupBox16.Controls.Add(this.label12);
@@ -3425,6 +3428,16 @@ namespace WindowsApplication1
 			this.label8.Size = new System.Drawing.Size(74, 13);
 			this.label8.TabIndex = 53;
 			this.label8.Text = "Where Clause";
+			// 
+			// label146
+			// 
+			this.label146.AutoSize = true;
+			this.label146.Location = new System.Drawing.Point(6, 200);
+			this.label146.Name = "label146";
+			this.label146.Size = new System.Drawing.Size(293, 26);
+			this.label146.TabIndex = 78;
+			this.label146.Text = "User data references the many to many table which identifies\r\nwhich user belongs " +
+				"to which group.";
 			// 
 			// label6
 			// 
@@ -3491,6 +3504,7 @@ namespace WindowsApplication1
 			this.groupBox15.Controls.Add(this.label5);
 			this.groupBox15.Controls.Add(this.label4);
 			this.groupBox15.Controls.Add(this.label3);
+			this.groupBox15.Controls.Add(this.label145);
 			this.groupBox15.Controls.Add(this.label11);
 			this.groupBox15.Controls.Add(this.group_group_where);
 			this.groupBox15.Controls.Add(this.group_group_sAMAccountName);
@@ -3542,6 +3556,15 @@ namespace WindowsApplication1
 			this.label3.Size = new System.Drawing.Size(74, 13);
 			this.label3.TabIndex = 48;
 			this.label3.Text = "Where Clause";
+			// 
+			// label145
+			// 
+			this.label145.AutoSize = true;
+			this.label145.Location = new System.Drawing.Point(6, 200);
+			this.label145.Name = "label145";
+			this.label145.Size = new System.Drawing.Size(300, 13);
+			this.label145.TabIndex = 77;
+			this.label145.Text = "Group data references the table which contains all the groups.";
 			// 
 			// label11
 			// 
@@ -3598,25 +3621,6 @@ namespace WindowsApplication1
 			this.group_group_source.TabIndex = 3;
 			this.group_group_source.SelectedIndexChanged += new System.EventHandler(this.group_group_source_SelectedIndexChanged);
 			// 
-			// label146
-			// 
-			this.label146.AutoSize = true;
-			this.label146.Location = new System.Drawing.Point(682, 53);
-			this.label146.Name = "label146";
-			this.label146.Size = new System.Drawing.Size(293, 26);
-			this.label146.TabIndex = 78;
-			this.label146.Text = "User data references the many to many table which identifies\r\nwhich user belongs " +
-				"to which group.";
-			// 
-			// label145
-			// 
-			this.label145.AutoSize = true;
-			this.label145.Location = new System.Drawing.Point(682, 19);
-			this.label145.Name = "label145";
-			this.label145.Size = new System.Drawing.Size(300, 13);
-			this.label145.TabIndex = 77;
-			this.label145.Text = "Group data references the table which contains all the groups.";
-			// 
 			// group_execute_now
 			// 
 			this.group_execute_now.Location = new System.Drawing.Point(1015, 584);
@@ -3670,6 +3674,8 @@ namespace WindowsApplication1
 			// 
 			// tabPage6
 			// 
+			this.tabPage6.Controls.Add(this.users_user_emailDomain);
+			this.tabPage6.Controls.Add(this.label147);
 			this.tabPage6.Controls.Add(this.groupBox18);
 			this.tabPage6.Controls.Add(this.users_group);
 			this.tabPage6.Controls.Add(this.label138);
@@ -3694,6 +3700,8 @@ namespace WindowsApplication1
 			// 
 			// groupBox18
 			// 
+			this.groupBox18.Controls.Add(this.users_user_email);
+			this.groupBox18.Controls.Add(this.label2);
 			this.groupBox18.Controls.Add(this.label28);
 			this.groupBox18.Controls.Add(this.users_user_PostalCode);
 			this.groupBox18.Controls.Add(this.users_user_password);
@@ -3714,10 +3722,10 @@ namespace WindowsApplication1
 			this.groupBox18.Controls.Add(this.users_user_Lname);
 			this.groupBox18.Location = new System.Drawing.Point(347, 6);
 			this.groupBox18.Name = "groupBox18";
-			this.groupBox18.Size = new System.Drawing.Size(452, 374);
+			this.groupBox18.Size = new System.Drawing.Size(452, 393);
 			this.groupBox18.TabIndex = 112;
 			this.groupBox18.TabStop = false;
-			this.groupBox18.Text = "groupBox18";
+			this.groupBox18.Text = "User Information";
 			// 
 			// label28
 			// 
@@ -3919,7 +3927,7 @@ namespace WindowsApplication1
 			// 
 			this.users_mapping_description.Location = new System.Drawing.Point(6, 183);
 			this.users_mapping_description.Name = "users_mapping_description";
-			this.users_mapping_description.Size = new System.Drawing.Size(331, 197);
+			this.users_mapping_description.Size = new System.Drawing.Size(331, 213);
 			this.users_mapping_description.TabIndex = 1;
 			this.users_mapping_description.Text = "";
 			this.users_mapping_description.TextChanged += new System.EventHandler(this.users_mapping_description_TextChanged);
@@ -4190,7 +4198,7 @@ namespace WindowsApplication1
 			this.groupBox14.Size = new System.Drawing.Size(358, 254);
 			this.groupBox14.TabIndex = 91;
 			this.groupBox14.TabStop = false;
-			this.groupBox14.Text = "Fiedl Mapping setup";
+			this.groupBox14.Text = "Field Mapping Setup";
 			// 
 			// label52
 			// 
@@ -4454,6 +4462,39 @@ namespace WindowsApplication1
 			this.group_result1.TabIndex = 2;
 			this.group_result1.Text = "";
 			// 
+			// users_user_email
+			// 
+			this.users_user_email.FormattingEnabled = true;
+			this.users_user_email.Location = new System.Drawing.Point(174, 360);
+			this.users_user_email.Name = "users_user_email";
+			this.users_user_email.Size = new System.Drawing.Size(174, 21);
+			this.users_user_email.TabIndex = 102;
+			// 
+			// label2
+			// 
+			this.label2.AutoSize = true;
+			this.label2.Location = new System.Drawing.Point(6, 360);
+			this.label2.Name = "label2";
+			this.label2.Size = new System.Drawing.Size(59, 13);
+			this.label2.TabIndex = 101;
+			this.label2.Text = "Email (mail)";
+			// 
+			// label147
+			// 
+			this.label147.AutoSize = true;
+			this.label147.Location = new System.Drawing.Point(9, 557);
+			this.label147.Name = "label147";
+			this.label147.Size = new System.Drawing.Size(71, 13);
+			this.label147.TabIndex = 113;
+			this.label147.Text = "Email Domain";
+			// 
+			// users_user_emailDomain
+			// 
+			this.users_user_emailDomain.Location = new System.Drawing.Point(197, 556);
+			this.users_user_emailDomain.Name = "users_user_emailDomain";
+			this.users_user_emailDomain.Size = new System.Drawing.Size(479, 20);
+			this.users_user_emailDomain.TabIndex = 114;
+			// 
 			// Form1
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -4507,7 +4548,6 @@ namespace WindowsApplication1
 			this.groupBox4.ResumeLayout(false);
 			this.groupBox4.PerformLayout();
 			this.tabPage2.ResumeLayout(false);
-			this.tabPage2.PerformLayout();
 			this.groupBox17.ResumeLayout(false);
 			this.groupBox17.PerformLayout();
 			this.groupBox16.ResumeLayout(false);
@@ -4939,6 +4979,10 @@ namespace WindowsApplication1
 		private System.Windows.Forms.Button mail_open;
 		private System.Windows.Forms.Button mail_save;
 		private System.Windows.Forms.GroupBox groupBox18;
+		private System.Windows.Forms.ComboBox users_user_email;
+		private System.Windows.Forms.Label label2;
+		private System.Windows.Forms.TextBox users_user_emailDomain;
+		private System.Windows.Forms.Label label147;
     }
 }
 

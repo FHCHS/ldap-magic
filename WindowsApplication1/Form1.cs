@@ -781,7 +781,7 @@ namespace WindowsApplication1
                
         }
 
-		//deprcated
+		//deprecated
 		private void users_read_custom_table()
 		{
 
@@ -1845,8 +1845,9 @@ namespace WindowsApplication1
 		}
 		private void mail_execute_Click(object sender, EventArgs e)
 		{
-			gmailSyncr.EmailUsersSync(guserconfig);
+			gmailSyncr.EmailUsersSync(guserconfig, tools, log);
 		}
+
 
 
 
