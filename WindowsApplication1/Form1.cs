@@ -79,224 +79,6 @@ namespace WindowsApplication1
         ObjectADSqlsyncGroup groupSyncr = new ObjectADSqlsyncGroup();
 		ObjectADGoogleSync gmailSyncr = new ObjectADGoogleSync();
 
-        //private void group_git_er_done_Click(object sender, System.EventArgs e)
-        //{
-
-        //    //PURPOSE
-        //    //
-        //    // get all users in the right groups regardless of what OU they are in
-        //    // ensure all the groups are in the right OU's
-        //    //
-        //    //
-
-        //    // variables for the group setup and iteration
-        //    LinkedList<Dictionary<string, string>> DBgroups = new LinkedList<Dictionary<string, string>>();
-        //    Dictionary<string, string> DBgroupDictionary;
-        //    LinkedListNode<Dictionary<string, string>> DBgroupsNode;
-        //    string groupDN;
-        //    ArrayList compare = new ArrayList();
-        //    ArrayList groupProperties = new ArrayList();
-        //    ArrayList listupdate = new ArrayList();
-        //    LinkedList<Dictionary<string, string>> ADgroups = new LinkedList<Dictionary<string, string>>();
-        //    Dictionary<string, string> ADgroupsDictionary = new Dictionary<string, string>();
-        //    LinkedListNode<Dictionary<string, string>> ADgroupsNode;
-
-        //    // variables for the user synch
-        //    LinkedList<Dictionary<string, string>> DBgroupList = new LinkedList<Dictionary<string, string>>();
-        //    LinkedListNode<Dictionary<string, string>> DBgroupListNode;
-        //    Dictionary<string, string> UsergroupDictionary;
-        //    LinkedList<Dictionary<string, string>> DBUsers = new LinkedList<Dictionary<string, string>>();
-        //    LinkedList<Dictionary<string, string>> ADgroupUsers = new LinkedList<Dictionary<string, string>>();
-        //    LinkedListNode<Dictionary<string, string>> ADUsersNode;
-        //    LinkedListNode<Dictionary<string, string>> DBUsersNode;
-        //    string DC = groupconfig.BaseGroupOU.Substring(groupconfig.BaseGroupOU.IndexOf("DC"));
-
-        //    // Setup the OU for the program
-        //    tools.createOURecursive("OU=" + groupconfig.Group_Append + "," + groupconfig.BaseGroupOU);
-
-        //    // grab list of groups from SQL
-        //    SqlConnection sqlConn = new SqlConnection("Data Source=" + groupconfig.DataServer.ToString() + ";Initial Catalog=" + groupconfig.DBCatalog.ToString() + ";Integrated Security=SSPI;");
-
-        //    sqlConn.Open();
-        //    // create the command object
-        //    SqlCommand sqlComm = new SqlCommand();
-        //    if (groupconfig.Group_where == "")
-        //    {
-        //        sqlComm = new SqlCommand("SELECT " + groupconfig.Group_sAMAccount + ", " + groupconfig.Group_CN + " FROM " + groupconfig.Group_dbTable, sqlConn);
-        //    }
-        //    else
-        //    {
-        //        sqlComm = new SqlCommand("SELECT " + groupconfig.Group_sAMAccount + ", " + groupconfig.Group_CN + " FROM " + groupconfig.Group_dbTable + " WHERE " + groupconfig.Group_where, sqlConn);
-        //    }
-        //    SqlDataReader r = sqlComm.ExecuteReader();
-
-        //    // interate thru a recordset based on query generated from text and generate the linked list of dictionary for diff
-        //    while (r.Read())
-        //    {
-        //        DBgroupDictionary = new Dictionary<string, string>();
-        //        DBgroupDictionary.Add("sAMAccountName", (string)r[groupconfig.Group_CN].ToString().Trim() + groupconfig.Group_Append);
-        //        DBgroupDictionary.Add("CN", (string)r[groupconfig.Group_CN].ToString().Trim() + groupconfig.Group_Append);
-        //        DBgroupDictionary.Add("description", (string)r[groupconfig.Group_sAMAccount].ToString().Trim());
-        //        DBgroups.AddLast(DBgroupDictionary);
-
-        //    }
-        //    r.Close();
-        //    sqlConn.Close();
-
-        //    DBgroupsNode = DBgroups.First;
-        //    while (DBgroupsNode != null)
-        //    {
-        //        DBgroupList.AddFirst(DBgroupsNode.Value);
-        //        DBgroupsNode = DBgroupsNode.Next;
-        //    }
-
-        //    // build a list of all data gathered from the SQL command so if any field changes we wil be able to detect it in our diff
-        //    DBgroupDictionary = DBgroups.First.Value;
-        //    foreach (KeyValuePair<string, string> kvp in DBgroupDictionary)
-        //    {
-        //        groupProperties.Add(kvp.Key.ToString());
-        //    }
-
-        //    // list of keys must be fields pulled in SQL query and Group pull
-        //    compare.Add("CN");
-        //    compare.Add("sAMAccountName");
-        //    // list of fields to synch must be pulled in SQL query and Group pull
-        //    listupdate.Add("description");
-
-
-        //    // grab list of groups from AD EnumerateGroupsInOU(string groupDN)
-        //    ADgroups = tools.EnumerateGroupsInOU("OU=" + groupconfig.Group_Append + "," + groupconfig.BaseGroupOU, groupProperties);
-
-
-
-        //    // diff groups
-        //    tools.Diff(DBgroups, ADgroups, compare, compare, listupdate, listupdate);
-
-        //    // Delete rogue nodes from AD
-        //    ADgroupsNode = ADgroups.First;
-        //    while (ADgroupsNode != null)
-        //    {
-        //        tools.DeleteGroup("OU=" + groupconfig.Group_Append + groupconfig.BaseGroupOU, ADgroupsNode.Value["CN"]);
-        //        ADgroupsNode = ADgroupsNode.Next;
-        //    }
-
-        //    // These groups do not exist in the right place, Find them and move them or make them
-        //    DBgroupsNode = DBgroups.First;
-        //    while (DBgroupsNode != null)
-        //    {
-        //        // if it exists in place its got to get updated
-        //        if (tools.Exists("CN=" + DBgroupsNode.Value["CN"] + ", OU=" + groupconfig.Group_Append + "," + groupconfig.BaseGroupOU) == true)
-        //        {
-        //            // update the group information it has changed
-        //            tools.UpdateGroup("OU=" + groupconfig.Group_Append + "," + groupconfig.BaseGroupOU, DBgroupsNode.Value);
-        //        }
-        //        else
-        //        {
-        //            // it might be lost, go acquire their DN if they exist on the server
-        //            groupDN = tools.GetObjectDistinguishedName(objectClass.group, returnType.distinguishedName, DBgroupsNode.Value[compare[1].ToString()], DC);
-        //            if (groupDN != string.Empty)
-        //            {
-        //                // groups exists move it to the correct spot
-        //                tools.MoveADObject(groupDN, "LDAP://OU=" + groupconfig.Group_Append + ',' + groupconfig.BaseGroupOU);
-        //                // group may also have the wrong information
-        //                tools.UpdateGroup("OU=" + groupconfig.Group_Append + "," + groupconfig.BaseGroupOU, DBgroupsNode.Value);
-
-
-        //            }
-        //            else
-        //            {
-        //                // groups really doos not exist create it
-        //                // CreateGroup("OU=" + groupconfig.Group_Append + "," + groupconfig.BaseGroupOU, DBgroupsNode.Value[compare[1].ToString()], DBgroupsNode.Value[compare[0].ToString()]);
-        //                tools.CreateGroup("OU=" + groupconfig.Group_Append + "," + groupconfig.BaseGroupOU, DBgroupsNode.Value);
-        //            }
-        //        }
-        //        DBgroupsNode = DBgroupsNode.Next;
-        //    }
-
-
-        //    // show final output for groups
-        //    group_result1.AppendText("add these groups to AD \n");
-        //    DBgroupsNode = DBgroups.First;
-        //    while (DBgroupsNode != null)
-        //    {
-        //        group_result1.AppendText(DBgroupsNode.Value[compare[0].ToString()] + "\n");
-        //        DBgroupsNode = DBgroupsNode.Next;
-        //    }
-
-        //    ADgroupsNode = ADgroups.First;
-        //    group_result2.AppendText("delete these groups from AD \n");
-        //    while (ADgroupsNode != null)
-        //    {
-        //        group_result2.AppendText(ADgroupsNode.Value[compare[0].ToString()] + "\n");
-        //        ADgroupsNode = ADgroupsNode.Next;
-        //    }
-
-
-        //    // list of groups from SQL DBgroupList retained from above
-
-        //    // grab list of users from SQL for the group set
-        //    sqlConn = new SqlConnection("Data Source=" + groupconfig.DataServer.ToString() + ";Initial Catalog=" + groupconfig.DBCatalog.ToString() + ";Integrated Security=SSPI;");
-
-        //    sqlConn.Open();
-        //    // create the command object
-        //    sqlComm = new SqlCommand();
-        //    if (groupconfig.User_where == "")
-        //    {
-        //        sqlComm = new SqlCommand("SELECT " + groupconfig.User_sAMAccount + ", " + groupconfig.User_Lname + " FROM " + groupconfig.User_dbTable, sqlConn);
-        //    }
-        //    else
-        //    {
-        //        sqlComm = new SqlCommand("SELECT " + groupconfig.User_sAMAccount + ", " + groupconfig.User_Lname + " FROM " + groupconfig.User_dbTable + " WHERE " + groupconfig.User_where, sqlConn);
-        //    }
-        //    r = sqlComm.ExecuteReader();
-
-        //    // interate thru a recordset based on query generated from text and generate the linked list of dictionary for diff
-        //    while (r.Read())
-        //    {
-        //        UsergroupDictionary = new Dictionary<string, string>();
-        //        //  groupconfig.User_Lname holds the value for the cross refernce aginst the group CN 
-        //        UsergroupDictionary.Add("sAMAccountName", (string)r[groupconfig.User_sAMAccount].ToString().Trim());
-        //        UsergroupDictionary.Add("CN", (string)r[groupconfig.User_Lname].ToString().Trim() + groupconfig.Group_Append);
-        //        DBUsers.AddLast(UsergroupDictionary);
-
-        //    }
-        //    r.Close();
-        //    sqlConn.Close();
-
-        //    //generate a list of users for all groups in base ou
-        //    DBgroupListNode = DBgroupList.First;
-        //    while (DBgroupListNode != null)
-        //    {
-        //        // grab list of users in AD for group[x] EnumerateUsersInGroup(string ouDN) get DN o removing them will be easier
-        //        ADgroupUsers = tools.linkedlistadd(ADgroupUsers, tools.EnumerateUsersInGroup("CN=" + DBgroupListNode.Value["CN"] + ",OU=" + groupconfig.Group_Append + "," + groupconfig.BaseGroupOU));
-        //        DBgroupListNode = DBgroupListNode.Next;
-        //    }
-        //    compare.Clear();
-        //    compare.Add("sAMAccountName");
-        //    compare.Add("CN");
-
-        //    // no need to check fro updates
-        //    tools.Diff(DBUsers, ADgroupUsers, compare, compare);
-        //    // diff users
-        //    // SQL vs group[x]
-        //    // add or delete update group memberships
-        //    // Delete rogue nodes from AD
-        //    ADUsersNode = ADgroupUsers.First;
-        //    while (ADUsersNode != null)
-        //    {
-        //        // we have their Distinguished Name so we can send it righ off to the remove
-        //        tools.RemoveUserFromGroup(ADUsersNode.Value["sAMAccountName"], ADUsersNode.Value["CN"]);
-        //        ADUsersNode = ADUsersNode.Next;
-        //    }
-        //    DBUsersNode = DBUsers.First;
-        //    while (DBUsersNode != null)
-        //    {
-        //        // we need to get the Distinguished name before we can add them the DBn info does not provide the DN fro where the user is
-        //        tools.AddUserToGroup(tools.GetObjectDistinguishedName(objectClass.user, returnType.distinguishedName, DBUsersNode.Value["sAMAccountName"], DC), DBUsersNode.Value["CN"]);
-        //        DBUsersNode = DBUsersNode.Next;
-        //    }
-        //}
-
 
         // UI DIALOG  DATA ENTRY EVENTS FOR USER MAPPING TAB
         private void usersMap_mapping_description_TextChanged(object sender, EventArgs e)
@@ -450,6 +232,7 @@ namespace WindowsApplication1
                 users_user_Mobile.DataSource = columnList.Clone();
                 users_user_sAMAccountName.DataSource = columnList.Clone();
                 users_user_password.DataSource = columnList.Clone();
+//                users_user_email.DataSource = columnList.Clone();
                 ADColumn.DataSource = tools.ADobjectAttribute();
                 columnList.Add("Static Value");
                 SQLColumn.DataSource = columnList.Clone();
@@ -497,6 +280,10 @@ namespace WindowsApplication1
         {
             userconfig.User_password = users_user_password.Text.ToString();
         }
+        //private void users_user_email_SelectedIndexChanged(object sender, EventArgs e)
+        //{
+        //    userconfig.User_mail = users_user_email.Text.ToString();
+        //}
 
         private void users_user_where_TextChanged(object sender, EventArgs e)
         {
@@ -528,7 +315,7 @@ namespace WindowsApplication1
                 }
             }
         }
-        private void users_holdingTank_TextChanged(object sender, EventArgs e)
+        private void users_holdingTank_Leave(object sender, EventArgs e)
         {
             if (users_holdingTank.Text.ToString() != "")
             {
@@ -539,7 +326,7 @@ namespace WindowsApplication1
                 else
                 {
 
-                    DialogResult button = MessageBox.Show("OU LDAP://" + users_baseUserOU.Text.ToString() + " does Not exist shall I create it", "Nonexistent OU", MessageBoxButtons.YesNo);
+                    DialogResult button = MessageBox.Show("OU LDAP://" + users_holdingTank.Text.ToString() + " does Not exist shall I create it", "Nonexistent OU", MessageBoxButtons.YesNo);
 
                     if (button == DialogResult.Yes)
                     {
@@ -744,6 +531,8 @@ namespace WindowsApplication1
             users_baseUserOU.Text = userconfig.BaseUserOU;
             users_group.Text = userconfig.UniversalGroup;
             userconfig.load(properties);
+            //users_user_emailDomain.Text = userconfig.UserEmailDomain;
+            //userconfig.load(properties);
 
             // clear the grid in case the previous open user file had values in it
             mappinggrid.Rows.Clear();
@@ -1752,7 +1541,67 @@ namespace WindowsApplication1
 		{
 			guserconfig.User_where = mail_user_where.Text.ToString();
 		}
+        private void mail_user_AD_or_SQL_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if(mail_user_AD_or_SQL.Text.ToString() == "Active Directory")
+            {
+                label50.Visible = false;
+                label51.Visible = false;
+                mail_user_source.Visible = false;
+                mail_user_Table_View.Visible = false;
+                mail_user_where.Visible = false;
+                groupBox13.Text = "Active Directory OU Info";
+                mail_user_OU.Visible = true;
+                label149.Visible = true;
 
+            }
+            else if (mail_user_AD_or_SQL.Text.ToString() == "Database")
+            {
+                label50.Visible = true;
+                label51.Visible = true;
+                mail_user_source.Visible = true;
+                mail_user_Table_View.Visible = true;
+                mail_user_where.Visible = true;
+                groupBox13.Text = "Database Table Info";
+                mail_user_OU.Visible = false;
+                label149.Visible = false;
+            }
+        } 
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            if (mail_writeback_database.Checked == true)
+            {
+                label150.Enabled = true;
+                label147.Enabled = true;
+                label151.Enabled = true;
+                mail_writeback_table.Enabled = true;
+                mail_writeback_where.Enabled = true;
+                mail_writeback_email.Enabled = true;
+
+            }
+            if (mail_writeback_database.Checked == false)
+            {
+                label150.Enabled = false;
+                label147.Enabled = false;
+                label151.Enabled = false;
+                mail_writeback_table.Enabled = false;
+                mail_writeback_where.Enabled = false;
+                mail_writeback_email.Enabled = false;
+            }
+        } 
+        private void mail_writeback_Active_directory_CheckedChanged(object sender, EventArgs e)
+        {
+            if (mail_writeback_Active_directory.Checked == true)
+            {
+                label152.Enabled = true;
+                mail_writeback_ou.Enabled = true;
+            }
+            if (mail_writeback_Active_directory.Checked == false)
+            {
+                label152.Enabled = false;
+                mail_writeback_ou.Enabled = false;
+            }
+        }
 
 
 
@@ -1847,6 +1696,16 @@ namespace WindowsApplication1
 		{
 			gmailSyncr.EmailUsersSync(guserconfig, tools, log);
 		}
+
+
+
+
+
+
+
+
+
+
 
 
 
