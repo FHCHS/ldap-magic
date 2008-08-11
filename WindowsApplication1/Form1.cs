@@ -570,55 +570,6 @@ namespace WindowsApplication1
                
         }
 
-		//deprecated
-		private void users_read_custom_table()
-		{
-
-			DataSet bob = new DataSet();
-			DataTable mike = new DataTable();
-			BindingSource bs = new BindingSource();
-			bs.DataSource = mike;
-
-			bs.DataSource = mappinggrid.DataSource;
-			// mappinggrid.DataSource = bs;
-			// bs.EndEdit();
-
-			StringBuilder tableout = new StringBuilder();
-			int i = 0;
-			int j = 0;
-			for (i = 0; i < mike.Rows.Count; i++)
-			{
-				for (j = 0; j < mike.Columns.Count; j++)
-				{
-					tableout.Append(mike.Rows[i][j] + ", ");
-				}
-				tableout.Append("\n");
-			}
-			MessageBox.Show(tableout.ToString());
-
-
-			for (i = 0; i < mappinggrid.RowCount; i++)
-			{
-				for (j = 0; j < mappinggrid.ColumnCount; j++)
-				{
-					if (mappinggrid.Rows[i].Cells[j].Value == null)
-					{
-						tableout.Append("NULL , ");
-					}
-					else
-					{
-						tableout.Append(mappinggrid.Rows[i].Cells[j].Value.ToString() + ", ");
-					}
-				}
-				tableout.Append("\n");
-			}
-			tableout.Append("\n rows " + mappinggrid.RowCount);
-			tableout.Append("\n columns " + mappinggrid.ColumnCount);
-			MessageBox.Show(tableout.ToString());
-
-		}
-
-
 
 
         /* UI DIALOG  DATA ENTRY EVENTS FOR GROUP SYNCH TAB */
@@ -1026,8 +977,10 @@ namespace WindowsApplication1
                 sqlConn.Open();
                 groupconfig.DBCatalog = Catalog.Text.ToString();
                 userconfig.DBCatalog = Catalog.Text.ToString();
+                guserconfig.DBCatalog = Catalog.Text.ToString();
                 groupconfig.DataServer = DBserver.Text.ToString();
                 userconfig.DataServer = DBserver.Text.ToString();
+                guserconfig.DataServer = DBserver.Text.ToString();
                 sqlConn.Close();
             }
             catch
@@ -1417,71 +1370,7 @@ namespace WindowsApplication1
         }
 
 		//UI DIALOG  DATA ENTRY FOR GMAIL TAB
-		private void mail_user_Table_View_SelectedIndexChanged(object sender, EventArgs e)
-		{
-			// only valid for SQL server 2000
-			if (guserconfig.DBCatalog != "" && guserconfig.DataServer != "")
-			{
-				//populates table dialog with tables or views depending on the results of a query
-				ArrayList tableList = new ArrayList();
-				SqlConnection sqlConn = new SqlConnection("Data Source=" + guserconfig.DataServer.ToString() + ";Initial Catalog=" + guserconfig.DBCatalog.ToString() + ";Integrated Security=SSPI;");
-				SqlCommand sqlComm;
-				sqlConn.Open();
-				// create the command object
-				if (mail_user_Table_View.Text.ToLower() == "table")
-				{
-					sqlComm = new SqlCommand("SELECT name FROM sysobjects where TYPE = 'U' order by NAME", sqlConn);
-				}
-				else
-				{
-					sqlComm = new SqlCommand("SELECT name from SYSOBJECTS where TYPE = 'V' order by NAME", sqlConn);
-				}
-				SqlDataReader r = sqlComm.ExecuteReader();
-				while (r.Read())
-				{
-					tableList.Add((string)r[0].ToString().Trim());
-				}
-				r.Close();
-				sqlConn.Close();
 
-				guserconfig.User_table_view = mail_user_Table_View.Text.ToString();
-				mail_user_source.DataSource = tableList;
-			}
-			else
-			{
-				MessageBox.Show("Please set the dataserver and catalog");
-			}
-		}
-		private void mail_user_source_SelectedIndexChanged(object sender, EventArgs e)
-		{
-			if (guserconfig.DBCatalog != "" && guserconfig.DataServer != "")
-			{
-				//populates columns dialog with columns depending on the results of a query
-				ArrayList columnList = new ArrayList();
-				SqlConnection sqlConn = new SqlConnection("Data Source=" + guserconfig.DataServer.ToString() + ";Initial Catalog=" + guserconfig.DBCatalog.ToString() + ";Integrated Security=SSPI;");
-
-				sqlConn.Open();
-				// create the command object
-				SqlCommand sqlComm = new SqlCommand("SELECT column_name FROM information_schema.columns WHERE table_name = '" + mail_user_source.Text.ToString() + "'", sqlConn);
-				SqlDataReader r = sqlComm.ExecuteReader();
-				while (r.Read())
-				{
-					columnList.Add((string)r[0].ToString().Trim());
-				}
-				r.Close();
-				sqlConn.Close();
-
-				guserconfig.User_dbTable = mail_user_source.Text.ToString();
-				mail_fields_Fname.DataSource = columnList;
-				mail_fields_password.DataSource = columnList.Clone();
-				mail_fields_userID.DataSource = columnList.Clone();
-				mail_fields_Lname.DataSource = columnList.Clone();
-			}
-			else
-			{
-				MessageBox.Show("Please select table or view");
-			}
-		}
 		private void Domain_TextChanged(object sender, EventArgs e)
         {
             label48.Text = "User@" + mailDomain.Text.ToString();
@@ -1492,21 +1381,7 @@ namespace WindowsApplication1
         {
             label48.Text = mailUser.Text.ToString() + "@" + mailDomain.Text.ToString();
 			guserconfig.Admin_user = mailUser.Text.ToString();
-        }
-        private void mailPassword_Enter(object sender, EventArgs e)
-        {
-            if (mailUser.Text.ToString() == "")
-            {
-                mailUser.Focus();
-            }
-        }
-        private void mailUser_Enter(object sender, EventArgs e)
-        {
-            if (mailDomain.Text.ToString() == "")
-            {
-                mailDomain.Focus();
-            }
-        }
+        }   
         private void mailPassword_TextChanged(object sender, EventArgs e)
         {
             if (mailPassword.Text != "")
@@ -1520,7 +1395,145 @@ namespace WindowsApplication1
                 label49.Text = "Complete Login Info To Authenticate";
                 mailCheckAuth.Visible = false;
             }
+        } 
+        private void mailUser_Enter(object sender, EventArgs e)
+        {
+            if (mailDomain.Text.ToString() == "")
+            {
+                mailDomain.Focus();
+            }
         }
+        private void mailPassword_Enter(object sender, EventArgs e)
+        {
+            if (mailUser.Text.ToString() == "")
+            {
+                mailUser.Focus();
+            }
+        }
+
+        private void mail_user_AD_or_SQL_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            guserconfig.User_Datasource = mail_user_AD_or_SQL.Text.ToString();
+            ArrayList adobjects = new ArrayList();
+            if (mail_user_AD_or_SQL.Text.ToString() == "Active Directory")
+            {
+                mail_fields_Fname.DataSource = null;
+                mail_fields_password.DataSource = null;
+                mail_fields_userID.DataSource = null;
+                mail_fields_Mname.DataSource = null;
+                mail_fields_Lname.DataSource = null;
+
+                label50.Visible = false;
+                label51.Visible = false;
+                mail_user_source.Visible = false;
+                mail_user_Table_View.Visible = false;
+                mail_user_where.Visible = false;
+                groupBox13.Text = "Active Directory OU Info";
+                mail_user_OU.Visible = true;
+                label149.Visible = true;
+                adobjects = tools.ADobjectAttribute();
+                mail_fields_Fname.DataSource = adobjects.Clone();
+                mail_fields_password.DataSource = adobjects.Clone();
+                mail_fields_userID.DataSource = adobjects.Clone();
+                mail_fields_Mname.DataSource = adobjects.Clone();
+                mail_fields_Lname.DataSource = adobjects.Clone();
+
+
+            }
+            else if (mail_user_AD_or_SQL.Text.ToString() == "Database")
+            {
+                mail_fields_Fname.DataSource = null;
+                mail_fields_password.DataSource = null;
+                mail_fields_userID.DataSource = null;
+                mail_fields_Mname.DataSource = null;
+                mail_fields_Lname.DataSource = null;
+
+                label50.Visible = true;
+                label51.Visible = true;
+                mail_user_source.Visible = true;
+                mail_user_Table_View.Visible = true;
+                mail_user_where.Visible = true;
+                groupBox13.Text = "Database Table Info";
+                mail_user_OU.Visible = false;
+                label149.Visible = false; 
+            }
+            
+        }
+        private void mail_user_Table_View_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // only valid for SQL server 2000
+            if (guserconfig.DBCatalog != "" && guserconfig.DataServer != "")
+            {
+                //populates table dialog with tables or views depending on the results of a query
+                ArrayList tableList = new ArrayList();
+                SqlConnection sqlConn = new SqlConnection("Data Source=" + guserconfig.DataServer.ToString() + ";Initial Catalog=" + guserconfig.DBCatalog.ToString() + ";Integrated Security=SSPI;");
+                SqlCommand sqlComm;
+                sqlConn.Open();
+                // create the command object
+                if (mail_user_Table_View.Text.ToLower() == "table")
+                {
+                    sqlComm = new SqlCommand("SELECT name FROM sysobjects where TYPE = 'U' order by NAME", sqlConn);
+                }
+                else
+                {
+                    sqlComm = new SqlCommand("SELECT name from SYSOBJECTS where TYPE = 'V' order by NAME", sqlConn);
+                }
+                SqlDataReader r = sqlComm.ExecuteReader();
+                while (r.Read())
+                {
+                    tableList.Add((string)r[0].ToString().Trim());
+                }
+                r.Close();
+                sqlConn.Close();
+
+                guserconfig.User_table_view = mail_user_Table_View.Text.ToString();
+                mail_user_source.DataSource = tableList;
+            }
+            else
+            {
+                MessageBox.Show("Please set the dataserver and catalog");
+            }
+        }
+        private void mail_user_source_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (guserconfig.DBCatalog != "" && guserconfig.DataServer != "")
+            {
+                //populates columns dialog with columns depending on the results of a query
+                ArrayList columnList = new ArrayList();
+                SqlConnection sqlConn = new SqlConnection("Data Source=" + guserconfig.DataServer.ToString() + ";Initial Catalog=" + guserconfig.DBCatalog.ToString() + ";Integrated Security=SSPI;");
+
+                sqlConn.Open();
+                // create the command object
+                SqlCommand sqlComm = new SqlCommand("SELECT column_name FROM information_schema.columns WHERE table_name = '" + mail_user_source.Text.ToString() + "'", sqlConn);
+                SqlDataReader r = sqlComm.ExecuteReader();
+                while (r.Read())
+                {
+                    columnList.Add((string)r[0].ToString().Trim());
+                }
+                r.Close();
+                sqlConn.Close();
+
+                guserconfig.User_dbTable = mail_user_source.Text.ToString();
+                mail_fields_Fname.DataSource = columnList;
+                mail_fields_password.DataSource = columnList.Clone();
+                mail_fields_userID.DataSource = columnList.Clone();
+                mail_fields_Mname.DataSource = columnList.Clone();
+                mail_fields_Lname.DataSource = columnList.Clone();
+            }
+            else
+            {
+                MessageBox.Show("Please select table or view");
+            }
+        }
+        private void mail_user_where_TextChanged(object sender, EventArgs e)
+        {
+            guserconfig.User_where = mail_user_where.Text.ToString();
+        }         
+        private void mail_user_OU_TextChanged(object sender, EventArgs e)
+        {
+            guserconfig.User_ad_OU = mail_user_OU.Text.ToString();
+        }
+
 		private void mail_fields_userID_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			guserconfig.User_StuID = mail_fields_userID.Text.ToString();
@@ -1537,46 +1550,54 @@ namespace WindowsApplication1
 		{
 			guserconfig.User_Lname = mail_fields_Lname.Text.ToString();
 		}
-		private void mail_user_where_TextChanged(object sender, EventArgs e)
-		{
-			guserconfig.User_where = mail_user_where.Text.ToString();
-		}
-        private void mail_user_AD_or_SQL_SelectedIndexChanged(object sender, EventArgs e)
+        private void mail_fields_Mname_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if(mail_user_AD_or_SQL.Text.ToString() == "Active Directory")
-            {
-                label50.Visible = false;
-                label51.Visible = false;
-                mail_user_source.Visible = false;
-                mail_user_Table_View.Visible = false;
-                mail_user_where.Visible = false;
-                groupBox13.Text = "Active Directory OU Info";
-                mail_user_OU.Visible = true;
-                label149.Visible = true;
+            guserconfig.User_Mname = mail_fields_Mname.Text.ToString();
+        }
 
-            }
-            else if (mail_user_AD_or_SQL.Text.ToString() == "Database")
-            {
-                label50.Visible = true;
-                label51.Visible = true;
-                mail_user_source.Visible = true;
-                mail_user_Table_View.Visible = true;
-                mail_user_where.Visible = true;
-                groupBox13.Text = "Database Table Info";
-                mail_user_OU.Visible = false;
-                label149.Visible = false;
-            }
-        } 
-        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        private void mail_writeback_Database_CheckedChanged(object sender, EventArgs e)
         {
             if (mail_writeback_database.Checked == true)
             {
                 label150.Enabled = true;
                 label147.Enabled = true;
                 label151.Enabled = true;
+                label153.Enabled = true;
+                label154.Enabled = true;
+                label155.Enabled = true;
+                label156.Enabled = true;
                 mail_writeback_table.Enabled = true;
+                mail_writeback_key.Enabled = true;
+                mail_writeback_use_secondary_email.Enabled = true;
+                mail_writeback_secondary_email.Enabled = true;
                 mail_writeback_where.Enabled = true;
                 mail_writeback_email.Enabled = true;
+                
+				// only valid for SQL server 2000
+				if (guserconfig.DBCatalog != "" && guserconfig.DataServer != "" && mail_writeback_table.DataSource == null)
+				{
+					//populates table dialog with tables or views depending on the results of a query
+					ArrayList tableList = new ArrayList();
+					SqlConnection sqlConn = new SqlConnection("Data Source=" + guserconfig.DataServer.ToString() + ";Initial Catalog=" + guserconfig.DBCatalog.ToString() + ";Integrated Security=SSPI;");
+					SqlCommand sqlComm;
+					sqlConn.Open();
+					// create the command object
+					sqlComm = new SqlCommand("SELECT name FROM sysobjects where TYPE = 'U' order by NAME", sqlConn);
+					SqlDataReader r = sqlComm.ExecuteReader();
+					while (r.Read())
+					{
+						tableList.Add((string)r[0].ToString().Trim());
+					}
+					r.Close();
+					sqlConn.Close();
+
+					guserconfig.Writeback_DB_checkbox = true;
+					mail_writeback_table.DataSource = tableList;
+				}
+				else if (guserconfig.DBCatalog == "" && guserconfig.DataServer == "")
+				{
+					MessageBox.Show("Please set the dataserver and catalog");
+				}
 
             }
             if (mail_writeback_database.Checked == false)
@@ -1584,9 +1605,18 @@ namespace WindowsApplication1
                 label150.Enabled = false;
                 label147.Enabled = false;
                 label151.Enabled = false;
+                label153.Enabled = false;
+                label154.Enabled = false;
+                label155.Enabled = false;
+                label156.Enabled = false;
                 mail_writeback_table.Enabled = false;
+                mail_writeback_key.Enabled = false;
+                mail_writeback_use_secondary_email.Enabled = false;
+                mail_writeback_secondary_email.Enabled = false;
                 mail_writeback_where.Enabled = false;
                 mail_writeback_email.Enabled = false;
+				guserconfig.Writeback_DB_checkbox = false;
+
             }
         } 
         private void mail_writeback_Active_directory_CheckedChanged(object sender, EventArgs e)
@@ -1595,21 +1625,86 @@ namespace WindowsApplication1
             {
                 label152.Enabled = true;
                 mail_writeback_ou.Enabled = true;
+				guserconfig.Writeback_AD_checkbox = true;
             }
             if (mail_writeback_Active_directory.Checked == false)
             {
                 label152.Enabled = false;
                 mail_writeback_ou.Enabled = false;
+				guserconfig.Writeback_AD_checkbox = false;
             }
         }
+        private void mail_writeback_table_SelectedIndexChanged(object sender, EventArgs e)
+        {
+			if (guserconfig.DBCatalog != "" && guserconfig.DataServer != "")
+			{
+				//populates columns dialog with columns depending on the results of a query
+				ArrayList columnList = new ArrayList();
+				SqlConnection sqlConn = new SqlConnection("Data Source=" + guserconfig.DataServer.ToString() + ";Initial Catalog=" + guserconfig.DBCatalog.ToString() + ";Integrated Security=SSPI;");
+
+				sqlConn.Open();
+				// create the command object
+				SqlCommand sqlComm = new SqlCommand("SELECT column_name FROM information_schema.columns WHERE table_name = '" + mail_writeback_table.Text.ToString() + "'", sqlConn);
+				SqlDataReader r = sqlComm.ExecuteReader();
+				while (r.Read())
+				{
+					columnList.Add((string)r[0].ToString().Trim());
+				}
+				r.Close();
+				sqlConn.Close();
+
+				guserconfig.Writeback_table = mail_writeback_table.Text.ToString();
+				mail_writeback_email.DataSource = columnList;
+                mail_writeback_secondary_email.DataSource = columnList.Clone();
+                mail_writeback_key.DataSource = columnList.Clone();   
+			}
+        }
+        private void mail_writeback_key_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            guserconfig.Writeback_primary_key = mail_writeback_key.Text.ToString();
+        }
+        private void mail_writeback_use_secondary_email_CheckedChanged(object sender, EventArgs e)
+        {
+            if (mail_writeback_use_secondary_email.Checked == true)
+            {
+                mail_writeback_secondary_email.Visible = true;
+                label154.Visible = true;
+                label155.Visible = false;
+                label156.Visible = false;
+                guserconfig.Writeback_transfer_email_checkbox = true;
+            }
+            else
+            {
+                mail_writeback_secondary_email.Visible = false;
+                label154.Visible = false;
+                label155.Visible = true;
+                label156.Visible = true;
+                guserconfig.Writeback_transfer_email_checkbox = false;
+            }
+        }
+        private void mail_writeback_where_TextChanged(object sender, EventArgs e)
+        {
+            guserconfig.Writeback_where_clause = mail_writeback_where.Text.ToString();
+        }
+        private void mail_writeback_email_SelectedIndexChanged(object sender, EventArgs e)
+        {
+			guserconfig.Writeback_email_field = mail_writeback_email.Text.ToString();
+        }
+        private void mail_writeback_secondary_email_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            guserconfig.Writeback_secondary_email_field = mail_writeback_secondary_email.Text.ToString();
+        }
+        private void mail_writeback_ou_TextChanged(object sender, EventArgs e)
+        {
+			guserconfig.Writeback_ad_OU = mail_writeback_ou.Text.ToString();
+        }                          
 
 
-
-        private void gmail_Chek_Authorization_Click(object sender, EventArgs e)
+        // BUTTONS FOR GMAIL TAB
+        private void gmail_Check_Authorization_Click(object sender, EventArgs e)
         {
             authNotify.Text = "Contacting google";
             AppsService service = new AppsService(mailDomain.Text.ToString(), mailUser.Text.ToString() + "@" + mailDomain.Text.ToString(), mailPassword.Text.ToString());
-
 
             try
             {
@@ -1619,8 +1714,7 @@ namespace WindowsApplication1
 
             }
             catch
-            {
-                
+            {                
                 authNotify.Text = "Failed Authentication";
             }
         }
@@ -1641,7 +1735,7 @@ namespace WindowsApplication1
 				System.IO.StreamWriter sw = new System.IO.StreamWriter(fs, System.Text.Encoding.ASCII);
 
 				// write to file (buffer), where textbox1 is your text box
-				properties = groupconfig.ToDictionary();
+				properties = guserconfig.ToDictionary();
 				ICollection<string> c = properties.Keys;
 				i = c.Count;
 				foreach (string str in c)
@@ -1683,13 +1777,58 @@ namespace WindowsApplication1
 			// Load values into text boxes
 			// reload properties each time as they are overwritten with the combo object trigger events
 			guserconfig.load(properties);
+            DBserver.Text = guserconfig.DataServer;
+            guserconfig.load(properties);
+            Catalog.Text = guserconfig.DBCatalog;
+            guserconfig.load(properties);
 			//mail = userconfig.DataServer;
+            mailDomain.Text = guserconfig.Admin_domain;
 			guserconfig.load(properties);
-			Catalog.Text = userconfig.DBCatalog;
+            mailUser.Text = guserconfig.Admin_user;
 			guserconfig.load(properties);
+            mailPassword.Text = guserconfig.Admin_password;
+            guserconfig.load(properties);
+            
+            mail_user_AD_or_SQL.Text = guserconfig.User_Datasource;
+            guserconfig.load(properties);
+            mail_user_Table_View.Text = guserconfig.User_table_view;
+            guserconfig.load(properties);
+            mail_user_source.Text = guserconfig.User_dbTable;
+            guserconfig.load(properties);
+            mail_user_where.Text = guserconfig.User_where;
+            guserconfig.load(properties);
+            mail_user_OU.Text = guserconfig.User_ad_OU;
+            guserconfig.load(properties);
 
-			users_user_Table_View.Text = userconfig.User_table_view;
-			guserconfig.load(properties);
+            mail_fields_Fname.Text = guserconfig.User_Fname;
+            guserconfig.load(properties);
+            mail_fields_Lname.Text = guserconfig.User_Lname;
+            guserconfig.load(properties);
+            mail_fields_Mname.Text = guserconfig.User_Mname;
+            guserconfig.load(properties);
+            mail_fields_password.Text = guserconfig.User_password;
+            guserconfig.load(properties);
+            mail_fields_userID.Text = guserconfig.User_StuID;
+            guserconfig.load(properties);
+
+            mail_writeback_Active_directory.Checked = guserconfig.Writeback_AD_checkbox;
+            guserconfig.load(properties);
+            mail_writeback_database.Checked = guserconfig.Writeback_DB_checkbox;
+            guserconfig.load(properties);
+            mail_writeback_table.Text = guserconfig.Writeback_table;
+            guserconfig.load(properties);
+            mail_writeback_key.Text = guserconfig.Writeback_primary_key;
+            guserconfig.load(properties);
+            mail_writeback_use_secondary_email.Checked = guserconfig.Writeback_transfer_email_checkbox;
+            guserconfig.load(properties);
+            mail_writeback_where.Text = guserconfig.Writeback_where_clause;
+            guserconfig.load(properties);
+            mail_writeback_email.Text = guserconfig.Writeback_email_field;
+            guserconfig.load(properties);
+            mail_writeback_secondary_email.Text = guserconfig.Writeback_secondary_email_field;
+            guserconfig.load(properties);
+            mail_writeback_ou.Text = guserconfig.Writeback_ad_OU;
+            guserconfig.load(properties);
 			
 		}
 		private void mail_execute_Click(object sender, EventArgs e)
@@ -1699,24 +1838,12 @@ namespace WindowsApplication1
 
 
 
+        
 
 
 
 
 
-
-
-
-
-
-
-		
-
-		
-
-		
-
-	
 
 
         // custom AD fields 

@@ -310,8 +310,6 @@ namespace WindowsApplication1
             this.label43 = new System.Windows.Forms.Label();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.groupBox17 = new System.Windows.Forms.GroupBox();
-            this.comboBox56 = new System.Windows.Forms.ComboBox();
-            this.label1 = new System.Windows.Forms.Label();
             this.label31 = new System.Windows.Forms.Label();
             this.label32 = new System.Windows.Forms.Label();
             this.group_group_prepend = new System.Windows.Forms.TextBox();
@@ -398,13 +396,21 @@ namespace WindowsApplication1
             this.user_group_source = new System.Windows.Forms.TabControl();
             this.tabPage15 = new System.Windows.Forms.TabPage();
             this.groupBox19 = new System.Windows.Forms.GroupBox();
+            this.label156 = new System.Windows.Forms.Label();
+            this.label155 = new System.Windows.Forms.Label();
+            this.mail_writeback_use_secondary_email = new System.Windows.Forms.CheckBox();
+            this.label154 = new System.Windows.Forms.Label();
+            this.mail_writeback_secondary_email = new System.Windows.Forms.ComboBox();
+            this.label153 = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.mail_writeback_key = new System.Windows.Forms.ComboBox();
             this.label152 = new System.Windows.Forms.Label();
             this.mail_writeback_ou = new System.Windows.Forms.RichTextBox();
             this.label151 = new System.Windows.Forms.Label();
             this.mail_writeback_email = new System.Windows.Forms.ComboBox();
+            this.mail_writeback_where = new System.Windows.Forms.MaskedTextBox();
             this.label150 = new System.Windows.Forms.Label();
             this.mail_writeback_table = new System.Windows.Forms.ComboBox();
-            this.mail_writeback_where = new System.Windows.Forms.MaskedTextBox();
             this.label147 = new System.Windows.Forms.Label();
             this.mail_writeback_Active_directory = new System.Windows.Forms.CheckBox();
             this.mail_writeback_database = new System.Windows.Forms.CheckBox();
@@ -424,7 +430,6 @@ namespace WindowsApplication1
             this.mail_fields_userID = new System.Windows.Forms.ComboBox();
             this.groupBox13 = new System.Windows.Forms.GroupBox();
             this.label149 = new System.Windows.Forms.Label();
-            this.mail_user_OU = new System.Windows.Forms.RichTextBox();
             this.label148 = new System.Windows.Forms.Label();
             this.mail_user_AD_or_SQL = new System.Windows.Forms.ComboBox();
             this.label50 = new System.Windows.Forms.Label();
@@ -432,6 +437,7 @@ namespace WindowsApplication1
             this.label51 = new System.Windows.Forms.Label();
             this.mail_user_where = new System.Windows.Forms.MaskedTextBox();
             this.mail_user_Table_View = new System.Windows.Forms.ComboBox();
+            this.mail_user_OU = new System.Windows.Forms.RichTextBox();
             this.groupBox12 = new System.Windows.Forms.GroupBox();
             this.authNotify = new System.Windows.Forms.Label();
             this.label49 = new System.Windows.Forms.Label();
@@ -445,6 +451,7 @@ namespace WindowsApplication1
             this.tabPage17 = new System.Windows.Forms.TabPage();
             this.group_result2 = new System.Windows.Forms.RichTextBox();
             this.group_result1 = new System.Windows.Forms.RichTextBox();
+            this.label157 = new System.Windows.Forms.Label();
             this.tabPage8.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -3251,8 +3258,6 @@ namespace WindowsApplication1
             // 
             // groupBox17
             // 
-            this.groupBox17.Controls.Add(this.comboBox56);
-            this.groupBox17.Controls.Add(this.label1);
             this.groupBox17.Controls.Add(this.label31);
             this.groupBox17.Controls.Add(this.label32);
             this.groupBox17.Controls.Add(this.group_group_prepend);
@@ -3267,27 +3272,10 @@ namespace WindowsApplication1
             this.groupBox17.Controls.Add(this.group_baseGroupOU);
             this.groupBox17.Location = new System.Drawing.Point(23, 269);
             this.groupBox17.Name = "groupBox17";
-            this.groupBox17.Size = new System.Drawing.Size(636, 295);
+            this.groupBox17.Size = new System.Drawing.Size(636, 258);
             this.groupBox17.TabIndex = 81;
             this.groupBox17.TabStop = false;
             this.groupBox17.Text = "Group Location and Setup";
-            // 
-            // comboBox56
-            // 
-            this.comboBox56.FormattingEnabled = true;
-            this.comboBox56.Location = new System.Drawing.Point(127, 252);
-            this.comboBox56.Name = "comboBox56";
-            this.comboBox56.Size = new System.Drawing.Size(174, 21);
-            this.comboBox56.TabIndex = 78;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 256);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(63, 13);
-            this.label1.TabIndex = 77;
-            this.label1.Text = "Group Type";
             // 
             // label31
             // 
@@ -3303,7 +3291,7 @@ namespace WindowsApplication1
             // label32
             // 
             this.label32.AutoSize = true;
-            this.label32.Location = new System.Drawing.Point(6, 165);
+            this.label32.Location = new System.Drawing.Point(6, 157);
             this.label32.Name = "label32";
             this.label32.Size = new System.Drawing.Size(104, 13);
             this.label32.TabIndex = 75;
@@ -3330,7 +3318,7 @@ namespace WindowsApplication1
             // label27
             // 
             this.label27.AutoSize = true;
-            this.label27.Location = new System.Drawing.Point(6, 104);
+            this.label27.Location = new System.Drawing.Point(6, 103);
             this.label27.Name = "label27";
             this.label27.Size = new System.Drawing.Size(98, 13);
             this.label27.TabIndex = 71;
@@ -3366,7 +3354,7 @@ namespace WindowsApplication1
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(6, 214);
+            this.label10.Location = new System.Drawing.Point(6, 209);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(104, 13);
             this.label10.TabIndex = 59;
@@ -3383,7 +3371,7 @@ namespace WindowsApplication1
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(6, 47);
+            this.label9.Location = new System.Drawing.Point(6, 46);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(103, 13);
             this.label9.TabIndex = 57;
@@ -4166,28 +4154,120 @@ namespace WindowsApplication1
             // 
             // groupBox19
             // 
+            this.groupBox19.Controls.Add(this.label157);
+            this.groupBox19.Controls.Add(this.label156);
+            this.groupBox19.Controls.Add(this.label155);
+            this.groupBox19.Controls.Add(this.mail_writeback_use_secondary_email);
+            this.groupBox19.Controls.Add(this.label154);
+            this.groupBox19.Controls.Add(this.mail_writeback_secondary_email);
+            this.groupBox19.Controls.Add(this.label153);
+            this.groupBox19.Controls.Add(this.label1);
+            this.groupBox19.Controls.Add(this.mail_writeback_key);
             this.groupBox19.Controls.Add(this.label152);
             this.groupBox19.Controls.Add(this.mail_writeback_ou);
             this.groupBox19.Controls.Add(this.label151);
             this.groupBox19.Controls.Add(this.mail_writeback_email);
+            this.groupBox19.Controls.Add(this.mail_writeback_where);
             this.groupBox19.Controls.Add(this.label150);
             this.groupBox19.Controls.Add(this.mail_writeback_table);
-            this.groupBox19.Controls.Add(this.mail_writeback_where);
             this.groupBox19.Controls.Add(this.label147);
             this.groupBox19.Controls.Add(this.mail_writeback_Active_directory);
             this.groupBox19.Controls.Add(this.mail_writeback_database);
             this.groupBox19.Location = new System.Drawing.Point(6, 267);
             this.groupBox19.Name = "groupBox19";
-            this.groupBox19.Size = new System.Drawing.Size(310, 308);
+            this.groupBox19.Size = new System.Drawing.Size(626, 330);
             this.groupBox19.TabIndex = 92;
             this.groupBox19.TabStop = false;
             this.groupBox19.Text = "E-mail Write Back";
+            // 
+            // label156
+            // 
+            this.label156.AutoSize = true;
+            this.label156.Enabled = false;
+            this.label156.Location = new System.Drawing.Point(438, 159);
+            this.label156.Name = "label156";
+            this.label156.Size = new System.Drawing.Size(126, 26);
+            this.label156.TabIndex = 118;
+            this.label156.Text = "Primary E-mail field will be\r\n      OVERWRITTEN.";
+            // 
+            // label155
+            // 
+            this.label155.AutoSize = true;
+            this.label155.Enabled = false;
+            this.label155.Location = new System.Drawing.Point(323, 163);
+            this.label155.Name = "label155";
+            this.label155.Size = new System.Drawing.Size(117, 13);
+            this.label155.TabIndex = 117;
+            this.label155.Text = "DEFAULT BEHAVIOR:";
+            // 
+            // mail_writeback_use_secondary_email
+            // 
+            this.mail_writeback_use_secondary_email.AutoSize = true;
+            this.mail_writeback_use_secondary_email.Enabled = false;
+            this.mail_writeback_use_secondary_email.Location = new System.Drawing.Point(9, 118);
+            this.mail_writeback_use_secondary_email.Name = "mail_writeback_use_secondary_email";
+            this.mail_writeback_use_secondary_email.Size = new System.Drawing.Size(487, 30);
+            this.mail_writeback_use_secondary_email.TabIndex = 116;
+            this.mail_writeback_use_secondary_email.Text = " Copy the primary E-mail field to the secondary E-mail. Then update the primary E" +
+                "-mail field with the\r\n newly created G-mail account. ";
+            this.mail_writeback_use_secondary_email.UseVisualStyleBackColor = true;
+            this.mail_writeback_use_secondary_email.CheckedChanged += new System.EventHandler(this.mail_writeback_use_secondary_email_CheckedChanged);
+            // 
+            // label154
+            // 
+            this.label154.AutoSize = true;
+            this.label154.Location = new System.Drawing.Point(323, 163);
+            this.label154.Name = "label154";
+            this.label154.Size = new System.Drawing.Size(112, 13);
+            this.label154.TabIndex = 114;
+            this.label154.Text = "Secondary E-Mail field";
+            this.label154.Visible = false;
+            // 
+            // mail_writeback_secondary_email
+            // 
+            this.mail_writeback_secondary_email.FormattingEnabled = true;
+            this.mail_writeback_secondary_email.Location = new System.Drawing.Point(441, 160);
+            this.mail_writeback_secondary_email.Name = "mail_writeback_secondary_email";
+            this.mail_writeback_secondary_email.Size = new System.Drawing.Size(174, 21);
+            this.mail_writeback_secondary_email.TabIndex = 113;
+            this.mail_writeback_secondary_email.Visible = false;
+            this.mail_writeback_secondary_email.SelectedIndexChanged += new System.EventHandler(this.mail_writeback_secondary_email_SelectedIndexChanged);
+            // 
+            // label153
+            // 
+            this.label153.AutoSize = true;
+            this.label153.Enabled = false;
+            this.label153.Location = new System.Drawing.Point(323, 89);
+            this.label153.Name = "label153";
+            this.label153.Size = new System.Drawing.Size(61, 13);
+            this.label153.TabIndex = 111;
+            this.label153.Text = "Unique key";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(121, 30);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(454, 13);
+            this.label1.TabIndex = 112;
+            this.label1.Text = "All records matching in the query will be updated. Try to use the where clause to" +
+                " get a 1:1 ratio.";
+            // 
+            // mail_writeback_key
+            // 
+            this.mail_writeback_key.Enabled = false;
+            this.mail_writeback_key.FormattingEnabled = true;
+            this.mail_writeback_key.Location = new System.Drawing.Point(441, 86);
+            this.mail_writeback_key.Name = "mail_writeback_key";
+            this.mail_writeback_key.Size = new System.Drawing.Size(174, 21);
+            this.mail_writeback_key.TabIndex = 110;
+            this.mail_writeback_key.SelectedIndexChanged += new System.EventHandler(this.mail_writeback_key_SelectedIndexChanged);
             // 
             // label152
             // 
             this.label152.AutoSize = true;
             this.label152.Enabled = false;
-            this.label152.Location = new System.Drawing.Point(3, 201);
+            this.label152.Location = new System.Drawing.Point(6, 232);
             this.label152.Name = "label152";
             this.label152.Size = new System.Drawing.Size(66, 13);
             this.label152.TabIndex = 111;
@@ -4196,17 +4276,18 @@ namespace WindowsApplication1
             // mail_writeback_ou
             // 
             this.mail_writeback_ou.Enabled = false;
-            this.mail_writeback_ou.Location = new System.Drawing.Point(6, 217);
+            this.mail_writeback_ou.Location = new System.Drawing.Point(9, 248);
             this.mail_writeback_ou.Name = "mail_writeback_ou";
-            this.mail_writeback_ou.Size = new System.Drawing.Size(292, 76);
+            this.mail_writeback_ou.Size = new System.Drawing.Size(606, 76);
             this.mail_writeback_ou.TabIndex = 110;
             this.mail_writeback_ou.Text = "";
+            this.mail_writeback_ou.TextChanged += new System.EventHandler(this.mail_writeback_ou_TextChanged);
             // 
             // label151
             // 
             this.label151.AutoSize = true;
             this.label151.Enabled = false;
-            this.label151.Location = new System.Drawing.Point(3, 171);
+            this.label151.Location = new System.Drawing.Point(6, 163);
             this.label151.Name = "label151";
             this.label151.Size = new System.Drawing.Size(58, 13);
             this.label151.TabIndex = 109;
@@ -4216,16 +4297,26 @@ namespace WindowsApplication1
             // 
             this.mail_writeback_email.Enabled = false;
             this.mail_writeback_email.FormattingEnabled = true;
-            this.mail_writeback_email.Location = new System.Drawing.Point(124, 168);
+            this.mail_writeback_email.Location = new System.Drawing.Point(124, 160);
             this.mail_writeback_email.Name = "mail_writeback_email";
             this.mail_writeback_email.Size = new System.Drawing.Size(174, 21);
             this.mail_writeback_email.TabIndex = 108;
+            this.mail_writeback_email.SelectedIndexChanged += new System.EventHandler(this.mail_writeback_email_SelectedIndexChanged);
+            // 
+            // mail_writeback_where
+            // 
+            this.mail_writeback_where.Enabled = false;
+            this.mail_writeback_where.Location = new System.Drawing.Point(124, 197);
+            this.mail_writeback_where.Name = "mail_writeback_where";
+            this.mail_writeback_where.Size = new System.Drawing.Size(174, 20);
+            this.mail_writeback_where.TabIndex = 79;
+            this.mail_writeback_where.TextChanged += new System.EventHandler(this.mail_writeback_where_TextChanged);
             // 
             // label150
             // 
             this.label150.AutoSize = true;
             this.label150.Enabled = false;
-            this.label150.Location = new System.Drawing.Point(3, 93);
+            this.label150.Location = new System.Drawing.Point(6, 89);
             this.label150.Name = "label150";
             this.label150.Size = new System.Drawing.Size(34, 13);
             this.label150.TabIndex = 81;
@@ -4235,24 +4326,17 @@ namespace WindowsApplication1
             // 
             this.mail_writeback_table.Enabled = false;
             this.mail_writeback_table.FormattingEnabled = true;
-            this.mail_writeback_table.Location = new System.Drawing.Point(124, 90);
+            this.mail_writeback_table.Location = new System.Drawing.Point(124, 86);
             this.mail_writeback_table.Name = "mail_writeback_table";
             this.mail_writeback_table.Size = new System.Drawing.Size(174, 21);
             this.mail_writeback_table.TabIndex = 78;
-            // 
-            // mail_writeback_where
-            // 
-            this.mail_writeback_where.Enabled = false;
-            this.mail_writeback_where.Location = new System.Drawing.Point(124, 127);
-            this.mail_writeback_where.Name = "mail_writeback_where";
-            this.mail_writeback_where.Size = new System.Drawing.Size(174, 20);
-            this.mail_writeback_where.TabIndex = 79;
+            this.mail_writeback_table.SelectedIndexChanged += new System.EventHandler(this.mail_writeback_table_SelectedIndexChanged);
             // 
             // label147
             // 
             this.label147.AutoSize = true;
             this.label147.Enabled = false;
-            this.label147.Location = new System.Drawing.Point(3, 130);
+            this.label147.Location = new System.Drawing.Point(6, 200);
             this.label147.Name = "label147";
             this.label147.Size = new System.Drawing.Size(73, 13);
             this.label147.TabIndex = 80;
@@ -4278,7 +4362,7 @@ namespace WindowsApplication1
             this.mail_writeback_database.TabIndex = 0;
             this.mail_writeback_database.Text = "Database";
             this.mail_writeback_database.UseVisualStyleBackColor = true;
-            this.mail_writeback_database.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            this.mail_writeback_database.CheckedChanged += new System.EventHandler(this.mail_writeback_Database_CheckedChanged);
             // 
             // mail_execute
             // 
@@ -4345,6 +4429,7 @@ namespace WindowsApplication1
             this.mail_fields_Mname.Name = "mail_fields_Mname";
             this.mail_fields_Mname.Size = new System.Drawing.Size(174, 21);
             this.mail_fields_Mname.TabIndex = 107;
+            this.mail_fields_Mname.SelectedIndexChanged += new System.EventHandler(this.mail_fields_Mname_SelectedIndexChanged);
             // 
             // label52
             // 
@@ -4358,11 +4443,11 @@ namespace WindowsApplication1
             // label143
             // 
             this.label143.AutoSize = true;
-            this.label143.Location = new System.Drawing.Point(6, 39);
+            this.label143.Location = new System.Drawing.Point(6, 23);
             this.label143.Name = "label143";
-            this.label143.Size = new System.Drawing.Size(92, 13);
+            this.label143.Size = new System.Drawing.Size(145, 39);
             this.label143.TabIndex = 101;
-            this.label143.Text = "Email Login Name";
+            this.label143.Text = "Email Login (must be unique).\r\nUsed in email writeback as\r\nthe key field.";
             // 
             // mail_fields_password
             // 
@@ -4421,7 +4506,6 @@ namespace WindowsApplication1
             // groupBox13
             // 
             this.groupBox13.Controls.Add(this.label149);
-            this.groupBox13.Controls.Add(this.mail_user_OU);
             this.groupBox13.Controls.Add(this.label148);
             this.groupBox13.Controls.Add(this.mail_user_AD_or_SQL);
             this.groupBox13.Controls.Add(this.label50);
@@ -4429,6 +4513,7 @@ namespace WindowsApplication1
             this.groupBox13.Controls.Add(this.label51);
             this.groupBox13.Controls.Add(this.mail_user_where);
             this.groupBox13.Controls.Add(this.mail_user_Table_View);
+            this.groupBox13.Controls.Add(this.mail_user_OU);
             this.groupBox13.Location = new System.Drawing.Point(322, 6);
             this.groupBox13.Name = "groupBox13";
             this.groupBox13.Size = new System.Drawing.Size(310, 255);
@@ -4446,19 +4531,10 @@ namespace WindowsApplication1
             this.label149.Text = "OU to get users from";
             this.label149.Visible = false;
             // 
-            // mail_user_OU
-            // 
-            this.mail_user_OU.Location = new System.Drawing.Point(7, 90);
-            this.mail_user_OU.Name = "mail_user_OU";
-            this.mail_user_OU.Size = new System.Drawing.Size(292, 76);
-            this.mail_user_OU.TabIndex = 94;
-            this.mail_user_OU.Text = "";
-            this.mail_user_OU.Visible = false;
-            // 
             // label148
             // 
             this.label148.AutoSize = true;
-            this.label148.Location = new System.Drawing.Point(6, 39);
+            this.label148.Location = new System.Drawing.Point(6, 24);
             this.label148.Name = "label148";
             this.label148.Size = new System.Drawing.Size(87, 13);
             this.label148.TabIndex = 93;
@@ -4471,7 +4547,7 @@ namespace WindowsApplication1
             this.mail_user_AD_or_SQL.Items.AddRange(new object[] {
             "Active Directory",
             "Database"});
-            this.mail_user_AD_or_SQL.Location = new System.Drawing.Point(99, 36);
+            this.mail_user_AD_or_SQL.Location = new System.Drawing.Point(7, 37);
             this.mail_user_AD_or_SQL.Name = "mail_user_AD_or_SQL";
             this.mail_user_AD_or_SQL.Size = new System.Drawing.Size(112, 21);
             this.mail_user_AD_or_SQL.TabIndex = 92;
@@ -4529,6 +4605,16 @@ namespace WindowsApplication1
             this.mail_user_Table_View.TabIndex = 0;
             this.mail_user_Table_View.Visible = false;
             this.mail_user_Table_View.SelectedIndexChanged += new System.EventHandler(this.mail_user_Table_View_SelectedIndexChanged);
+            // 
+            // mail_user_OU
+            // 
+            this.mail_user_OU.Location = new System.Drawing.Point(7, 90);
+            this.mail_user_OU.Name = "mail_user_OU";
+            this.mail_user_OU.Size = new System.Drawing.Size(292, 76);
+            this.mail_user_OU.TabIndex = 94;
+            this.mail_user_OU.Text = "";
+            this.mail_user_OU.Visible = false;
+            this.mail_user_OU.TextChanged += new System.EventHandler(this.mail_user_OU_TextChanged);
             // 
             // groupBox12
             // 
@@ -4619,7 +4705,7 @@ namespace WindowsApplication1
             this.mailCheckAuth.Text = "Check Authenticatation";
             this.mailCheckAuth.UseVisualStyleBackColor = true;
             this.mailCheckAuth.Visible = false;
-            this.mailCheckAuth.Click += new System.EventHandler(this.gmail_Chek_Authorization_Click);
+            this.mailCheckAuth.Click += new System.EventHandler(this.gmail_Check_Authorization_Click);
             // 
             // label48
             // 
@@ -4657,6 +4743,16 @@ namespace WindowsApplication1
             this.group_result1.Size = new System.Drawing.Size(361, 243);
             this.group_result1.TabIndex = 2;
             this.group_result1.Text = "";
+            // 
+            // label157
+            // 
+            this.label157.AutoSize = true;
+            this.label157.Location = new System.Drawing.Point(121, 53);
+            this.label157.Name = "label157";
+            this.label157.Size = new System.Drawing.Size(433, 13);
+            this.label157.TabIndex = 119;
+            this.label157.Text = "AD will search the subtree for the user whose SAMAccountName matches the unique k" +
+                "ey.";
             // 
             // Form1
             // 
@@ -5137,9 +5233,7 @@ namespace WindowsApplication1
 		private System.Windows.Forms.Label label145;
 		private System.Windows.Forms.GroupBox groupBox16;
 		private System.Windows.Forms.GroupBox groupBox15;
-		private System.Windows.Forms.GroupBox groupBox17;
-		private System.Windows.Forms.Label label1;
-		private System.Windows.Forms.ComboBox comboBox56;
+        private System.Windows.Forms.GroupBox groupBox17;
 		private System.Windows.Forms.Button mail_execute;
 		private System.Windows.Forms.Button mail_open;
 		private System.Windows.Forms.Button mail_save;
@@ -5155,12 +5249,21 @@ namespace WindowsApplication1
         private System.Windows.Forms.ComboBox mail_fields_Mname;
         private System.Windows.Forms.Label label151;
         private System.Windows.Forms.ComboBox mail_writeback_email;
-        private System.Windows.Forms.Label label150;
         private System.Windows.Forms.ComboBox mail_writeback_table;
         private System.Windows.Forms.MaskedTextBox mail_writeback_where;
         private System.Windows.Forms.Label label147;
         private System.Windows.Forms.Label label152;
         private System.Windows.Forms.RichTextBox mail_writeback_ou;
+        private System.Windows.Forms.Label label150;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label153;
+        private System.Windows.Forms.ComboBox mail_writeback_key;
+        private System.Windows.Forms.Label label154;
+        private System.Windows.Forms.ComboBox mail_writeback_secondary_email;
+        private System.Windows.Forms.CheckBox mail_writeback_use_secondary_email;
+        private System.Windows.Forms.Label label156;
+        private System.Windows.Forms.Label label155;
+        private System.Windows.Forms.Label label157;
     }
 }
 
