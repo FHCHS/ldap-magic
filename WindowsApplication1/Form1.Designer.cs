@@ -396,6 +396,7 @@ namespace WindowsApplication1
             this.user_group_source = new System.Windows.Forms.TabControl();
             this.tabPage15 = new System.Windows.Forms.TabPage();
             this.groupBox19 = new System.Windows.Forms.GroupBox();
+            this.label157 = new System.Windows.Forms.Label();
             this.label156 = new System.Windows.Forms.Label();
             this.label155 = new System.Windows.Forms.Label();
             this.mail_writeback_use_secondary_email = new System.Windows.Forms.CheckBox();
@@ -451,7 +452,6 @@ namespace WindowsApplication1
             this.tabPage17 = new System.Windows.Forms.TabPage();
             this.group_result2 = new System.Windows.Forms.RichTextBox();
             this.group_result1 = new System.Windows.Forms.RichTextBox();
-            this.label157 = new System.Windows.Forms.Label();
             this.tabPage8.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -4180,6 +4180,16 @@ namespace WindowsApplication1
             this.groupBox19.TabStop = false;
             this.groupBox19.Text = "E-mail Write Back";
             // 
+            // label157
+            // 
+            this.label157.AutoSize = true;
+            this.label157.Location = new System.Drawing.Point(121, 53);
+            this.label157.Name = "label157";
+            this.label157.Size = new System.Drawing.Size(502, 13);
+            this.label157.TabIndex = 119;
+            this.label157.Text = "Search the AD subtree for the user whose SAMAccountName matches the unique key an" +
+                "d set mail field. ";
+            // 
             // label156
             // 
             this.label156.AutoSize = true;
@@ -4743,16 +4753,6 @@ namespace WindowsApplication1
             this.group_result1.Size = new System.Drawing.Size(361, 243);
             this.group_result1.TabIndex = 2;
             this.group_result1.Text = "";
-            // 
-            // label157
-            // 
-            this.label157.AutoSize = true;
-            this.label157.Location = new System.Drawing.Point(121, 53);
-            this.label157.Name = "label157";
-            this.label157.Size = new System.Drawing.Size(433, 13);
-            this.label157.TabIndex = 119;
-            this.label157.Text = "AD will search the subtree for the user whose SAMAccountName matches the unique k" +
-                "ey.";
             // 
             // Form1
             // 

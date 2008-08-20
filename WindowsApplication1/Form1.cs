@@ -1836,16 +1836,6 @@ namespace WindowsApplication1
 			gmailSyncr.EmailUsersSync(guserconfig, tools, log);
 		}
 
-
-
-        
-
-
-
-
-
-
-
         // custom AD fields 
     }
 }
