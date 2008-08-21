@@ -561,6 +561,7 @@ namespace WindowsApplication1
             }
 
             // create and set the comboboxes
+
             sql.Add("Static Value");  
             SQLColumn.DataSource = sql;
             ADColumn.DataSource = ad;
@@ -1542,6 +1543,17 @@ namespace WindowsApplication1
 		{
 			guserconfig.User_password = mail_fields_password.Text.ToString();
 		}
+        private void mail_fields_generate_password_CheckedChanged(object sender, EventArgs e)
+        {
+            if (mail_fields_generate_password == true)
+            {
+                mail_fields_password.Enabled = false;
+            }
+            else
+            {
+                mail_fields_password.Enabled = true;
+            }
+        }
 		private void mail_fields_Fname_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			guserconfig.User_Fname = mail_fields_Fname.Text.ToString();
@@ -1835,6 +1847,9 @@ namespace WindowsApplication1
 		{
 			gmailSyncr.EmailUsersSync(guserconfig, tools, log);
 		}
+
+
+
 
         // custom AD fields 
     }
