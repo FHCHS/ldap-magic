@@ -28,7 +28,3 @@ C:\Documents and Settings\MNE4D7\My Documents\Visual Studio 2005\Projects\sql_ad
 C:\Documents and Settings\MNE4D7\My Documents\Visual Studio 2005\Projects\sql_ad_mapper_fresh_copy\WindowsApplication1\obj\Release\WindowsApplication1.Form1.resources
 C:\Documents and Settings\MNE4D7\My Documents\Visual Studio 2005\Projects\sql_ad_mapper_fresh_copy\WindowsApplication1\obj\Release\WindowsApplication1.Properties.Resources.resources
 C:\Documents and Settings\MNE4D7\My Documents\Visual Studio 2005\Projects\sql_ad_mapper_fresh_copy\WindowsApplication1\obj\Release\SQL_AD_mapper.csproj.GenerateResource.Cache
-C:\Documents and Settings\MNE4D7\My Documents\Visual Studio 2005\Projects\sql_ad_mapper_fresh_copy\WindowsApplication1\bin\Release\Google.GData.Apps.dll
-C:\Documents and Settings\MNE4D7\My Documents\Visual Studio 2005\Projects\sql_ad_mapper_fresh_copy\WindowsApplication1\bin\Release\Google.GData.Client.dll
-C:\Documents and Settings\MNE4D7\My Documents\Visual Studio 2005\Projects\sql_ad_mapper_fresh_copy\WindowsApplication1\bin\Release\Google.GData.Extensions.dll
-C:\Documents and Settings\MNE4D7\My Documents\Visual Studio 2005\Projects\sql_ad_mapper_fresh_copy\WindowsApplication1\bin\Release\Google.GData.GoogleBase.dll

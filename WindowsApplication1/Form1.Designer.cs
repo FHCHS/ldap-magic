@@ -260,7 +260,6 @@ namespace WindowsApplication1
             this.button40 = new System.Windows.Forms.Button();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.Catalog = new System.Windows.Forms.ComboBox();
-            this.test_data_source = new System.Windows.Forms.Button();
             this.label25 = new System.Windows.Forms.Label();
             this.label24 = new System.Windows.Forms.Label();
             this.DBserver = new System.Windows.Forms.TextBox();
@@ -451,8 +450,11 @@ namespace WindowsApplication1
             this.mailCheckAuth = new System.Windows.Forms.Button();
             this.label48 = new System.Windows.Forms.Label();
             this.tabPage17 = new System.Windows.Forms.TabPage();
-            this.group_result2 = new System.Windows.Forms.RichTextBox();
-            this.group_result1 = new System.Windows.Forms.RichTextBox();
+            this.execution_warnings = new System.Windows.Forms.Button();
+            this.execution_errors = new System.Windows.Forms.Button();
+            this.execution_transactions = new System.Windows.Forms.Button();
+            this.execution_errors_textbox = new System.Windows.Forms.RichTextBox();
+            this.execution_transactions_warnings_textbox = new System.Windows.Forms.RichTextBox();
             this.tabPage8.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -2713,7 +2715,6 @@ namespace WindowsApplication1
             // tabPage3
             // 
             this.tabPage3.Controls.Add(this.Catalog);
-            this.tabPage3.Controls.Add(this.test_data_source);
             this.tabPage3.Controls.Add(this.label25);
             this.tabPage3.Controls.Add(this.label24);
             this.tabPage3.Controls.Add(this.DBserver);
@@ -2732,16 +2733,7 @@ namespace WindowsApplication1
             this.Catalog.Name = "Catalog";
             this.Catalog.Size = new System.Drawing.Size(368, 21);
             this.Catalog.TabIndex = 1;
-            // 
-            // test_data_source
-            // 
-            this.test_data_source.Location = new System.Drawing.Point(548, 337);
-            this.test_data_source.Name = "test_data_source";
-            this.test_data_source.Size = new System.Drawing.Size(133, 25);
-            this.test_data_source.TabIndex = 2;
-            this.test_data_source.Text = "Set Database";
-            this.test_data_source.UseVisualStyleBackColor = true;
-            this.test_data_source.Click += new System.EventHandler(this.test_data_source_Click);
+            this.Catalog.SelectedIndexChanged += new System.EventHandler(this.Catalog_SelectedIndexChanged);
             // 
             // label25
             // 
@@ -4741,8 +4733,11 @@ namespace WindowsApplication1
             // 
             // tabPage17
             // 
-            this.tabPage17.Controls.Add(this.group_result2);
-            this.tabPage17.Controls.Add(this.group_result1);
+            this.tabPage17.Controls.Add(this.execution_warnings);
+            this.tabPage17.Controls.Add(this.execution_errors);
+            this.tabPage17.Controls.Add(this.execution_transactions);
+            this.tabPage17.Controls.Add(this.execution_errors_textbox);
+            this.tabPage17.Controls.Add(this.execution_transactions_warnings_textbox);
             this.tabPage17.Location = new System.Drawing.Point(4, 22);
             this.tabPage17.Name = "tabPage17";
             this.tabPage17.Padding = new System.Windows.Forms.Padding(3);
@@ -4751,21 +4746,51 @@ namespace WindowsApplication1
             this.tabPage17.Text = "Execution Logs";
             this.tabPage17.UseVisualStyleBackColor = true;
             // 
-            // group_result2
+            // execution_warnings
             // 
-            this.group_result2.Location = new System.Drawing.Point(381, 320);
-            this.group_result2.Name = "group_result2";
-            this.group_result2.Size = new System.Drawing.Size(361, 243);
-            this.group_result2.TabIndex = 3;
-            this.group_result2.Text = "";
+            this.execution_warnings.Location = new System.Drawing.Point(775, 82);
+            this.execution_warnings.Name = "execution_warnings";
+            this.execution_warnings.Size = new System.Drawing.Size(176, 26);
+            this.execution_warnings.TabIndex = 6;
+            this.execution_warnings.Text = "Show Warnings";
+            this.execution_warnings.UseVisualStyleBackColor = true;
+            this.execution_warnings.Click += new System.EventHandler(this.execution_warnings_Click);
             // 
-            // group_result1
+            // execution_errors
             // 
-            this.group_result1.Location = new System.Drawing.Point(381, 50);
-            this.group_result1.Name = "group_result1";
-            this.group_result1.Size = new System.Drawing.Size(361, 243);
-            this.group_result1.TabIndex = 2;
-            this.group_result1.Text = "";
+            this.execution_errors.Location = new System.Drawing.Point(775, 319);
+            this.execution_errors.Name = "execution_errors";
+            this.execution_errors.Size = new System.Drawing.Size(176, 26);
+            this.execution_errors.TabIndex = 5;
+            this.execution_errors.Text = "Show Errors";
+            this.execution_errors.UseVisualStyleBackColor = true;
+            this.execution_errors.Click += new System.EventHandler(this.execution_errors_Click);
+            // 
+            // execution_transactions
+            // 
+            this.execution_transactions.Location = new System.Drawing.Point(775, 50);
+            this.execution_transactions.Name = "execution_transactions";
+            this.execution_transactions.Size = new System.Drawing.Size(176, 26);
+            this.execution_transactions.TabIndex = 4;
+            this.execution_transactions.Text = "Show Transactions";
+            this.execution_transactions.UseVisualStyleBackColor = true;
+            this.execution_transactions.Click += new System.EventHandler(this.execution_transactions_Click);
+            // 
+            // execution_errors_textbox
+            // 
+            this.execution_errors_textbox.Location = new System.Drawing.Point(381, 320);
+            this.execution_errors_textbox.Name = "execution_errors_textbox";
+            this.execution_errors_textbox.Size = new System.Drawing.Size(361, 243);
+            this.execution_errors_textbox.TabIndex = 3;
+            this.execution_errors_textbox.Text = "";
+            // 
+            // execution_transactions_warnings_textbox
+            // 
+            this.execution_transactions_warnings_textbox.Location = new System.Drawing.Point(381, 50);
+            this.execution_transactions_warnings_textbox.Name = "execution_transactions_warnings_textbox";
+            this.execution_transactions_warnings_textbox.Size = new System.Drawing.Size(361, 243);
+            this.execution_transactions_warnings_textbox.TabIndex = 2;
+            this.execution_transactions_warnings_textbox.Text = "";
             // 
             // Form1
             // 
@@ -5085,7 +5110,6 @@ namespace WindowsApplication1
         private System.Windows.Forms.Button button40;
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.ComboBox Catalog;
-        private System.Windows.Forms.Button test_data_source;
         private System.Windows.Forms.Label label25;
         private System.Windows.Forms.Label label24;
         private System.Windows.Forms.TextBox DBserver;
@@ -5240,8 +5264,8 @@ namespace WindowsApplication1
 		private System.Windows.Forms.ComboBox mail_fields_Lname;
 		private System.Windows.Forms.Label label142;
 		private System.Windows.Forms.ComboBox mail_fields_userID;
-		private System.Windows.Forms.RichTextBox group_result2;
-		private System.Windows.Forms.RichTextBox group_result1;
+		private System.Windows.Forms.RichTextBox execution_errors_textbox;
+		private System.Windows.Forms.RichTextBox execution_transactions_warnings_textbox;
 		private System.Windows.Forms.Label label146;
 		private System.Windows.Forms.Label label145;
 		private System.Windows.Forms.GroupBox groupBox16;
@@ -5278,6 +5302,9 @@ namespace WindowsApplication1
         private System.Windows.Forms.Label label155;
         private System.Windows.Forms.Label label157;
         private System.Windows.Forms.CheckBox mail_fields_generate_password;
+        private System.Windows.Forms.Button execution_errors;
+        private System.Windows.Forms.Button execution_transactions;
+        private System.Windows.Forms.Button execution_warnings;
     }
 }
 

@@ -103,12 +103,20 @@ namespace WindowsApplication1
                 {
                     sqlComm = new SqlCommand("select name from SYSOBJECTS where TYPE = 'V' order by NAME", sqlConn);
                 }
-                SqlDataReader r = sqlComm.ExecuteReader();
-                while (r.Read())
+                try
                 {
-                    tableList.Add((string)r[0].ToString().Trim());
+                    SqlDataReader r = sqlComm.ExecuteReader();
+                    while (r.Read())
+                    {
+                        tableList.Add((string)r[0].ToString().Trim());
+                    }
+                    r.Close();
                 }
-                r.Close();
+                catch (Exception ex)
+                {
+                    log.errors.Add("Failed SQL command " + sqlComm.ToString() + " error " + ex);
+                } 
+
                 sqlConn.Close();
 
                 userconfig.User_table_view = users_user_Table_View.Text.ToString();
@@ -130,12 +138,20 @@ namespace WindowsApplication1
                 sqlConn.Open();
                 // create the command object
                 SqlCommand sqlComm = new SqlCommand("SELECT column_name FROM information_schema.columns WHERE table_name = '" + users_user_source.Text.ToString() + "'", sqlConn);
-                SqlDataReader r = sqlComm.ExecuteReader();
-                while (r.Read())
+                try
                 {
-                    columnList.Add((string)r[0].ToString().Trim());
+                    SqlDataReader r = sqlComm.ExecuteReader();
+                    while (r.Read())
+                    {
+                        columnList.Add((string)r[0].ToString().Trim());
+                    }
+                    r.Close();
                 }
-                r.Close();
+                catch (Exception ex)
+                {
+                    log.errors.Add("Failed SQL command " + sqlComm.ToString() + " error " + ex);
+                }
+
                 sqlConn.Close();
 
                 userconfig.User_dbTable = users_user_source.Text.ToString();
@@ -187,12 +203,20 @@ namespace WindowsApplication1
                 {
                     sqlComm = new SqlCommand("select name from SYSOBJECTS where TYPE = 'V' order by NAME", sqlConn);
                 }
-                SqlDataReader r = sqlComm.ExecuteReader();
-                while (r.Read())
+                try
                 {
-                    tableList.Add((string)r[0].ToString().Trim());
+                    SqlDataReader r = sqlComm.ExecuteReader();
+                    while (r.Read())
+                    {
+                        tableList.Add((string)r[0].ToString().Trim());
+                    }
+                    r.Close();
                 }
-                r.Close();
+                catch (Exception ex)
+                {
+                    log.errors.Add("Failed SQL command " + sqlComm.ToString() + " error " + ex);
+                } 
+
                 sqlConn.Close();
 
                 userconfig.User_table_view = users_user_Table_View.Text.ToString();
@@ -214,12 +238,20 @@ namespace WindowsApplication1
                 sqlConn.Open();
                 // create the command object
                 SqlCommand sqlComm = new SqlCommand("SELECT column_name FROM information_schema.columns WHERE table_name = '" + users_user_source.Text.ToString() + "'", sqlConn);
-                SqlDataReader r = sqlComm.ExecuteReader();
-                while (r.Read())
+                try
                 {
-                    columnList.Add((string)r[0].ToString().Trim());
+                    SqlDataReader r = sqlComm.ExecuteReader();
+                    while (r.Read())
+                    {
+                        columnList.Add((string)r[0].ToString().Trim());
+                    }
+                    r.Close();
                 }
-                r.Close();
+                catch (Exception ex)
+                {
+                    log.errors.Add("Failed SQL command " + sqlComm.ToString() + " error " + ex);
+                } 
+
                 sqlConn.Close();
 
                 userconfig.User_dbTable = users_user_source.Text.ToString();
@@ -414,58 +446,58 @@ namespace WindowsApplication1
         }        
         private void users_Execute_Click(object sender, EventArgs e)
         {
-			int i;
-			StopWatch timer = new StopWatch();
-			timer.Start();
+            //int i;
+            //StopWatch timer = new StopWatch();
+            //timer.Start();
 			groupSyncr.ExecuteUserSync(userconfig, tools, log);
-			timer.Stop();
-			MessageBox.Show("bulk " + timer.GetElapsedTimeSecs().ToString());
-			StringBuilder result = new StringBuilder();
-			StringBuilder result2 = new StringBuilder();
-			result.Append("***************************\n*                         *\n*        Transactions     *\n*                         *\n***************************");
-			for (i = 0; i < log.transactions.Count; i++)
-			{
-				result.Append(log.transactions[i].ToString() + "\n");
-			}
+            //timer.Stop();
+            //MessageBox.Show("bulk " + timer.GetElapsedTimeSecs().ToString());
+            //StringBuilder result = new StringBuilder();
+            //StringBuilder result2 = new StringBuilder();
+            //result.Append("***************************\n*                         *\n*        Transactions     *\n*                         *\n***************************");
+            //for (i = 0; i < log.transactions.Count; i++)
+            //{
+            //    result.Append(log.transactions[i].ToString() + "\n");
+            //}
 
-			result.Append("***************************\n*                         *\n*        Warnings         *\n*                         *\n***************************");
+            //result.Append("***************************\n*                         *\n*        Warnings         *\n*                         *\n***************************");
 
-			for (i = 0; i < log.warnings.Count; i++)
-			{
-				result.Append(log.warnings[i].ToString() + "\n");
-			}
+            //for (i = 0; i < log.warnings.Count; i++)
+            //{
+            //    result.Append(log.warnings[i].ToString() + "\n");
+            //}
 
-			result.Append("***************************\n*                         *\n*        Errors           *\n*                         *\n***************************");
-			for (i = 0; i < log.errors.Count; i++)
-			{
-				result2.Append(log.errors[i].ToString() + "\n");
-			}
+            //result.Append("***************************\n*                         *\n*        Errors           *\n*                         *\n***************************");
+            //for (i = 0; i < log.errors.Count; i++)
+            //{
+            //    result2.Append(log.errors[i].ToString() + "\n");
+            //}
 
 			// save log to disk
-			SaveFileDialog saveFileDialog1 = new SaveFileDialog();
-			saveFileDialog1.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
-			saveFileDialog1.FilterIndex = 2;
-			saveFileDialog1.RestoreDirectory = true;
-			if (saveFileDialog1.ShowDialog() == DialogResult.OK)
-			{
-				// create a file stream, where "c:\\testing.txt" is the file path
-				System.IO.FileStream fs = new System.IO.FileStream(saveFileDialog1.FileName, System.IO.FileMode.OpenOrCreate, System.IO.FileAccess.Write, System.IO.FileShare.ReadWrite);
+            //SaveFileDialog saveFileDialog1 = new SaveFileDialog();
+            //saveFileDialog1.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
+            //saveFileDialog1.FilterIndex = 2;
+            //saveFileDialog1.RestoreDirectory = true;
+            //if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+            //{
+            //    // create a file stream, where "c:\\testing.txt" is the file path
+            //    System.IO.FileStream fs = new System.IO.FileStream(saveFileDialog1.FileName, System.IO.FileMode.OpenOrCreate, System.IO.FileAccess.Write, System.IO.FileShare.ReadWrite);
 
-				// create a stream writer
-				System.IO.StreamWriter sw = new System.IO.StreamWriter(fs, System.Text.Encoding.ASCII);
+            //    // create a stream writer
+            //    System.IO.StreamWriter sw = new System.IO.StreamWriter(fs, System.Text.Encoding.ASCII);
 
-				// write to file (buffer), where textbox1 is your text box
-				sw.WriteLine("{0}", result2);
-				sw.WriteLine("{0}", result);
+            //    // write to file (buffer), where textbox1 is your text box
+            //    sw.WriteLine("{0}", result2);
+            //    sw.WriteLine("{0}", result);
 
 
-				// flush buffer (so the text really goes into the file)
-				sw.Flush();
+            //    // flush buffer (so the text really goes into the file)
+            //    sw.Flush();
 
-				// close stream writer and file
-				sw.Close();
-				fs.Close();
-			}
+            //    // close stream writer and file
+            //    sw.Close();
+            //    fs.Close();
+            //}
 			//            group_result1.AppendText(result.ToString());
 			//            group_result2.AppendText(result2.ToString());
         }
@@ -593,12 +625,20 @@ namespace WindowsApplication1
                 {
                     sqlComm = new SqlCommand("SELECT name from SYSOBJECTS where TYPE = 'V' order by NAME", sqlConn);
                 }
-                SqlDataReader r = sqlComm.ExecuteReader();
-                while (r.Read())
+                try
                 {
-                    tableList.Add((string)r[0].ToString().Trim());
+                    SqlDataReader r = sqlComm.ExecuteReader();
+                    while (r.Read())
+                    {
+                        tableList.Add((string)r[0].ToString().Trim());
+                    }
+                    r.Close();
                 }
-                r.Close();
+                catch (Exception ex)
+                {
+                    log.errors.Add("Failed SQL command " + sqlComm.ToString() + " error " + ex);
+                } 
+
                 sqlConn.Close();
 
                 groupconfig.Group_table_view = group_group_Table_View.Text.ToString();
@@ -620,12 +660,20 @@ namespace WindowsApplication1
                 sqlConn.Open();
                 // create the command object
                 SqlCommand sqlComm = new SqlCommand("SELECT column_name FROM information_schema.columns WHERE table_name = '" + group_group_source.Text.ToString() + "'", sqlConn);
-                SqlDataReader r = sqlComm.ExecuteReader();
-                while (r.Read())
+                try
                 {
-                    columnList.Add((string)r[0].ToString().Trim());
+                    SqlDataReader r = sqlComm.ExecuteReader();
+                    while (r.Read())
+                    {
+                        columnList.Add((string)r[0].ToString().Trim());
+                    }
+                    r.Close();
                 }
-                r.Close();
+                catch (Exception ex)
+                {
+                    log.errors.Add("Failed SQL command " + sqlComm.ToString() + " error " + ex);
+                } 
+
                 sqlConn.Close();
 
                 groupconfig.Group_dbTable = group_group_source.Text.ToString();
@@ -674,12 +722,20 @@ namespace WindowsApplication1
                 {
                     sqlComm = new SqlCommand("select name from SYSOBJECTS where TYPE = 'V' order by NAME", sqlConn);
                 }
-                SqlDataReader r = sqlComm.ExecuteReader();
-                while (r.Read())
+                try
                 {
-                    tableList.Add((string)r[0].ToString().Trim());
+                    SqlDataReader r = sqlComm.ExecuteReader();
+                    while (r.Read())
+                    {
+                        tableList.Add((string)r[0].ToString().Trim());
+                    }
+                    r.Close();
                 }
-                r.Close();
+                catch (Exception ex)
+                {
+                    log.errors.Add("Failed SQL command " + sqlComm.ToString() + " error " + ex);
+                } 
+
                 sqlConn.Close();
 
                 groupconfig.User_table_view = group_user_Table_View.Text.ToString();
@@ -701,12 +757,20 @@ namespace WindowsApplication1
                 sqlConn.Open();
                 // create the command object
                 SqlCommand sqlComm = new SqlCommand("SELECT column_name FROM information_schema.columns WHERE table_name = '" + group_user_source.Text.ToString() + "'", sqlConn);
-                SqlDataReader r = sqlComm.ExecuteReader();
-                while (r.Read())
+                try
                 {
-                    columnList.Add((string)r[0].ToString().Trim());
+                    SqlDataReader r = sqlComm.ExecuteReader();
+                    while (r.Read())
+                    {
+                        columnList.Add((string)r[0].ToString().Trim());
+                    }
+                    r.Close();
                 }
-                r.Close();
+                catch (Exception ex)
+                {
+                    log.errors.Add("Failed SQL command " + sqlComm.ToString() + " error " + ex);
+                } 
+
                 sqlConn.Close();
 
                 groupconfig.User_dbTable = group_user_source.Text.ToString();
@@ -882,8 +946,8 @@ namespace WindowsApplication1
 			{
 				result2.Append(log.errors[i].ToString() + "\n");
 			}
-			group_result1.AppendText(result.ToString());
-			group_result2.AppendText(result2.ToString());
+			execution_transactions_warnings_textbox.AppendText(result.ToString());
+			execution_errors_textbox.AppendText(result2.ToString());
 			// groupSyncr.execute(groupconfig, tools, log);
 			// users_result1.Text log.transactions.ToString();
 			// users_result2.Text = log.errors.ToString();
@@ -937,40 +1001,98 @@ namespace WindowsApplication1
 		}
 		private void group_see_query_Click(object sender, EventArgs e)
 		{
-			group_result1.Clear();
-			group_result1.AppendText("This is your group query \n");
-			group_result1.AppendText("Select ");
-			group_result1.AppendText(groupconfig.Group_CN);
-			group_result1.AppendText(", ");
-			group_result1.AppendText(groupconfig.Group_sAMAccount);
-			group_result1.AppendText(" From ");
-			group_result1.AppendText(groupconfig.Group_dbTable);
+			execution_transactions_warnings_textbox.Clear();
+			execution_transactions_warnings_textbox.AppendText("This is your group query \n");
+			execution_transactions_warnings_textbox.AppendText("Select ");
+			execution_transactions_warnings_textbox.AppendText(groupconfig.Group_CN);
+			execution_transactions_warnings_textbox.AppendText(", ");
+			execution_transactions_warnings_textbox.AppendText(groupconfig.Group_sAMAccount);
+			execution_transactions_warnings_textbox.AppendText(" From ");
+			execution_transactions_warnings_textbox.AppendText(groupconfig.Group_dbTable);
 			if (groupconfig.Group_where != string.Empty)
 			{
-				group_result1.AppendText(" Where ");
-				group_result1.AppendText(groupconfig.Group_where);
+				execution_transactions_warnings_textbox.AppendText(" Where ");
+				execution_transactions_warnings_textbox.AppendText(groupconfig.Group_where);
 			}
-			group_result1.AppendText("\n");
+			execution_transactions_warnings_textbox.AppendText("\n");
 
-			group_result2.Clear();
-			group_result2.AppendText("This is your user query \n");
-			group_result2.AppendText("Select ");
-			group_result2.AppendText(groupconfig.User_Group_Reference);
-			group_result2.AppendText(", ");
-			group_result2.AppendText(groupconfig.User_sAMAccount);
-			group_result2.AppendText(" From ");
-			group_result2.AppendText(groupconfig.User_dbTable);
+			execution_errors_textbox.Clear();
+			execution_errors_textbox.AppendText("This is your user query \n");
+			execution_errors_textbox.AppendText("Select ");
+			execution_errors_textbox.AppendText(groupconfig.User_Group_Reference);
+			execution_errors_textbox.AppendText(", ");
+			execution_errors_textbox.AppendText(groupconfig.User_sAMAccount);
+			execution_errors_textbox.AppendText(" From ");
+			execution_errors_textbox.AppendText(groupconfig.User_dbTable);
 			if (groupconfig.User_where != string.Empty)
 			{
-				group_result2.AppendText(" Where ");
-				group_result2.AppendText(groupconfig.User_where);
+				execution_errors_textbox.AppendText(" Where ");
+				execution_errors_textbox.AppendText(groupconfig.User_where);
 			}
-			group_result2.AppendText("\n");
+			execution_errors_textbox.AppendText("\n");
 		}
 
 
         // UI DIALOG  DATA ENTRY EVENTS FOR CONFIGURATION TAB
-        private void test_data_source_Click(object sender, EventArgs e)
+        //private void test_data_source_Click(object sender, EventArgs e)
+        //{
+        //    SqlConnection sqlConn = new SqlConnection("Data Source=" + DBserver.Text.ToString() + ";Initial Catalog=" + Catalog.Text.ToString() + ";Integrated Security=SSPI;");
+        //    try
+        //    {
+        //        sqlConn.Open();
+        //        groupconfig.DBCatalog = Catalog.Text.ToString();
+        //        userconfig.DBCatalog = Catalog.Text.ToString();
+        //        guserconfig.DBCatalog = Catalog.Text.ToString();
+        //        groupconfig.DataServer = DBserver.Text.ToString();
+        //        userconfig.DataServer = DBserver.Text.ToString();
+        //        guserconfig.DataServer = DBserver.Text.ToString();
+        //        sqlConn.Close();
+        //    }
+        //    catch
+        //    {
+        //        MessageBox.Show("Cannot Locate Database");
+        //        Catalog.Text = "";
+        //        DBserver.Text = "";
+        //    }
+        //}
+        // BUTTONS FOR THE TAB
+        private void DBserver_TextChanged(object sender, EventArgs e)
+        {
+            ArrayList tableList = new ArrayList();
+            System.Data.SqlClient.SqlConnection SqlCon = new System.Data.SqlClient.SqlConnection("server=" + DBserver.Text.ToString() + ";Integrated Security=SSPI;");
+            try
+            {
+            SqlCon.Open();
+
+            System.Data.SqlClient.SqlCommand sqlComm = new System.Data.SqlClient.SqlCommand();
+            sqlComm.Connection = SqlCon;
+            sqlComm.CommandType = CommandType.StoredProcedure;
+            sqlComm.CommandText = "sp_databases";
+
+            System.Data.SqlClient.SqlDataReader r;
+
+                r = sqlComm.ExecuteReader();
+                while (r.Read())
+                {
+                    tableList.Add((string)r[0].ToString().Trim());
+                }
+                r.Close();
+            }
+            catch
+            {
+                DBserver.Text = "";
+                MessageBox.Show("Could not find database server " + DBserver.Text.ToString());
+                DBserver.Focus();
+            } 
+
+
+            SqlCon.Close();
+
+            Catalog.DataSource = tableList;
+
+        }
+
+        private void Catalog_SelectedIndexChanged(object sender, EventArgs e)
         {
             SqlConnection sqlConn = new SqlConnection("Data Source=" + DBserver.Text.ToString() + ";Initial Catalog=" + Catalog.Text.ToString() + ";Integrated Security=SSPI;");
             try
@@ -990,31 +1112,6 @@ namespace WindowsApplication1
                 Catalog.Text = "";
                 DBserver.Text = "";
             }
-        }
-        // BUTTONS FOR THE TAB
-        private void DBserver_TextChanged(object sender, EventArgs e)
-        {
-            ArrayList tableList = new ArrayList();
-            System.Data.SqlClient.SqlConnection SqlCon = new System.Data.SqlClient.SqlConnection("server=" + DBserver.Text.ToString() + ";Integrated Security=SSPI;");
-            SqlCon.Open();
-
-            System.Data.SqlClient.SqlCommand SqlCom = new System.Data.SqlClient.SqlCommand();
-            SqlCom.Connection = SqlCon;
-            SqlCom.CommandType = CommandType.StoredProcedure;
-            SqlCom.CommandText = "sp_databases";
-
-            System.Data.SqlClient.SqlDataReader r;
-            r = SqlCom.ExecuteReader();
-
-            while (r.Read())
-            {
-                tableList.Add((string)r[0].ToString().Trim());
-            }
-            r.Close();
-            SqlCon.Close();
-
-            Catalog.DataSource = tableList;
-
         }
 
 
@@ -1038,12 +1135,20 @@ namespace WindowsApplication1
                 sqlConn.Open();
                 // create the command object
                 SqlCommand sqlComm = new SqlCommand("SELECT column_name FROM information_schema.columns WHERE table_name = '" + usermapping_user_source.Text.ToString() + "'", sqlConn);
-                SqlDataReader r = sqlComm.ExecuteReader();
-                while (r.Read())
+                try
                 {
-                    columnList.Add((string)r[0].ToString().Trim());
+                    SqlDataReader r = sqlComm.ExecuteReader();
+                    while (r.Read())
+                    {
+                        columnList.Add((string)r[0].ToString().Trim());
+                    }
+                    r.Close();
                 }
-                r.Close();
+                catch (Exception ex)
+                {
+                    log.errors.Add("Failed SQL command " + sqlComm.ToString() + " error " + ex);
+                } 
+
                 sqlConn.Close();
 
                 usermapping_user_sAMAccountName.DataSource = columnList;
@@ -1077,12 +1182,20 @@ namespace WindowsApplication1
                 {
                     sqlComm = new SqlCommand("SELECT name from SYSOBJECTS where TYPE = 'V' order by NAME", sqlConn);
                 }
-                SqlDataReader r = sqlComm.ExecuteReader();
-                while (r.Read())
+                try
                 {
-                    tableList.Add((string)r[0].ToString().Trim());
+                    SqlDataReader r = sqlComm.ExecuteReader();
+                    while (r.Read())
+                    {
+                        tableList.Add((string)r[0].ToString().Trim());
+                    }
+                    r.Close();
                 }
-                r.Close();
+                catch (Exception ex)
+                {
+                    log.errors.Add("Failed SQL command " + sqlComm.ToString() + " error " + ex);
+                }
+
                 sqlConn.Close();
 
                 usermapping.User_table_view = usermapping_user_table_view.Text;
@@ -1277,19 +1390,27 @@ namespace WindowsApplication1
                     ArrayList tableList = new ArrayList();
                     System.Data.SqlClient.SqlConnection SqlCon = new System.Data.SqlClient.SqlConnection("server=" + userMapping_DBServerName.Text + ";Integrated Security=SSPI;");
                     SqlCon.Open();
-                    System.Data.SqlClient.SqlCommand SqlCom = new System.Data.SqlClient.SqlCommand();
-                    SqlCom.Connection = SqlCon;
-                    SqlCom.CommandType = CommandType.StoredProcedure;
-                    SqlCom.CommandText = "sp_databases";
+                    System.Data.SqlClient.SqlCommand sqlComm = new System.Data.SqlClient.SqlCommand();
+                    sqlComm.Connection = SqlCon;
+                    sqlComm.CommandType = CommandType.StoredProcedure;
+                    sqlComm.CommandText = "sp_databases";
 
                     System.Data.SqlClient.SqlDataReader r;
-                    r = SqlCom.ExecuteReader();
-
-                    while (r.Read())
+                    try
                     {
-                        tableList.Add((string)r[0].ToString().Trim());
+                        r = sqlComm.ExecuteReader();
+                        while (r.Read())
+                        {
+                            tableList.Add((string)r[0].ToString().Trim());
+                        }
+                        r.Close();
                     }
-                    r.Close();
+                    catch (Exception ex)
+                    {
+                        log.errors.Add("Failed SQL command " + sqlComm.ToString() + " error " + ex);
+                    }
+
+
                     SqlCon.Close();
 
                     userMapping_DatabaseName.DataSource = tableList;
@@ -1479,12 +1600,20 @@ namespace WindowsApplication1
                 {
                     sqlComm = new SqlCommand("SELECT name from SYSOBJECTS where TYPE = 'V' order by NAME", sqlConn);
                 }
-                SqlDataReader r = sqlComm.ExecuteReader();
-                while (r.Read())
+                try
                 {
-                    tableList.Add((string)r[0].ToString().Trim());
+                    SqlDataReader r = sqlComm.ExecuteReader();
+                    while (r.Read())
+                    {
+                        tableList.Add((string)r[0].ToString().Trim());
+                    }
+                    r.Close();
                 }
-                r.Close();
+                catch (Exception ex)
+                {
+                    log.errors.Add("Failed SQL command " + sqlComm.ToString() + " error " + ex);
+                }
+
                 sqlConn.Close();
 
                 guserconfig.User_table_view = mail_user_Table_View.Text.ToString();
@@ -1506,12 +1635,20 @@ namespace WindowsApplication1
                 sqlConn.Open();
                 // create the command object
                 SqlCommand sqlComm = new SqlCommand("SELECT column_name FROM information_schema.columns WHERE table_name = '" + mail_user_source.Text.ToString() + "'", sqlConn);
-                SqlDataReader r = sqlComm.ExecuteReader();
-                while (r.Read())
+                try
                 {
-                    columnList.Add((string)r[0].ToString().Trim());
+                    SqlDataReader r = sqlComm.ExecuteReader();
+                    while (r.Read())
+                    {
+                        columnList.Add((string)r[0].ToString().Trim());
+                    }
+                    r.Close();
                 }
-                r.Close();
+                catch (Exception ex)
+                {
+                    log.errors.Add("Failed SQL command " + sqlComm.ToString() + " error " + ex);
+                } 
+
                 sqlConn.Close();
 
                 guserconfig.User_dbTable = mail_user_source.Text.ToString();
@@ -1545,13 +1682,15 @@ namespace WindowsApplication1
 		}
         private void mail_fields_generate_password_CheckedChanged(object sender, EventArgs e)
         {
-            if (mail_fields_generate_password == true)
+            if (mail_fields_generate_password.Checked == true)
             {
                 mail_fields_password.Enabled = false;
+                guserconfig.User_password_transfer_checkbox = true;
             }
             else
             {
                 mail_fields_password.Enabled = true;
+                guserconfig.User_password_transfer_checkbox = false;
             }
         }
 		private void mail_fields_Fname_SelectedIndexChanged(object sender, EventArgs e)
@@ -1595,12 +1734,20 @@ namespace WindowsApplication1
 					sqlConn.Open();
 					// create the command object
 					sqlComm = new SqlCommand("SELECT name FROM sysobjects where TYPE = 'U' order by NAME", sqlConn);
-					SqlDataReader r = sqlComm.ExecuteReader();
-					while (r.Read())
-					{
-						tableList.Add((string)r[0].ToString().Trim());
-					}
-					r.Close();
+                    try
+                    {
+                        SqlDataReader r = sqlComm.ExecuteReader();
+                        while (r.Read())
+                        {
+                            tableList.Add((string)r[0].ToString().Trim());
+                        }
+                        r.Close();
+                    }
+                    catch (Exception ex)
+                    {
+                        log.errors.Add("Failed SQL command " + sqlComm.ToString() + " error " + ex);
+                    }
+
 					sqlConn.Close();
 
 					guserconfig.Writeback_DB_checkbox = true;
@@ -1657,12 +1804,20 @@ namespace WindowsApplication1
 				sqlConn.Open();
 				// create the command object
 				SqlCommand sqlComm = new SqlCommand("SELECT column_name FROM information_schema.columns WHERE table_name = '" + mail_writeback_table.Text.ToString() + "'", sqlConn);
-				SqlDataReader r = sqlComm.ExecuteReader();
-				while (r.Read())
-				{
-					columnList.Add((string)r[0].ToString().Trim());
-				}
-				r.Close();
+                try
+                {
+                    SqlDataReader r = sqlComm.ExecuteReader();
+                    while (r.Read())
+                    {
+                        columnList.Add((string)r[0].ToString().Trim());
+                    }
+                    r.Close();
+                }
+                catch (Exception ex)
+                {
+                    log.errors.Add("Failed SQL command " + sqlComm.ToString() + " error " + ex);
+                }
+	
 				sqlConn.Close();
 
 				guserconfig.Writeback_table = mail_writeback_table.Text.ToString();
@@ -1818,6 +1973,8 @@ namespace WindowsApplication1
             guserconfig.load(properties);
             mail_fields_Mname.Text = guserconfig.User_Mname;
             guserconfig.load(properties);
+            mail_fields_generate_password.Checked = guserconfig.User_password_transfer_checkbox;
+            guserconfig.load(properties);
             mail_fields_password.Text = guserconfig.User_password;
             guserconfig.load(properties);
             mail_fields_userID.Text = guserconfig.User_StuID;
@@ -1848,9 +2005,42 @@ namespace WindowsApplication1
 			gmailSyncr.EmailUsersSync(guserconfig, tools, log);
 		}
 
+        // BUTTONS FOR RESULTS TAB
+        private void execution_transactions_Click(object sender, EventArgs e)
+        {
+            StringBuilder result = new StringBuilder(); 
+            int i = 0;
+            result.Append("***************************\n*                         *\n*        Transactions     *\n*                         *\n***************************\n");
+            for (i = 0; i < log.transactions.Count; i++)
+            {
+                result.Append(log.transactions[i].ToString() + "\n");
+            }
+            execution_transactions_warnings_textbox.Text = result.ToString();
+        }
+        private void execution_warnings_Click(object sender, EventArgs e)
+        {
+            StringBuilder result = new StringBuilder();  
+            int i = 0;
+            result.Append("***************************\n*                         *\n*        Warnings         *\n*                         *\n***************************\n");
 
-
-
-        // custom AD fields 
+            for (i = 0; i < log.warnings.Count; i++)
+            {
+                result.Append(log.warnings[i].ToString() + "\n");
+            }     
+            execution_transactions_warnings_textbox.Text = result.ToString();
+        } 
+        private void execution_errors_Click(object sender, EventArgs e)
+        {
+            StringBuilder result = new StringBuilder(); 
+            int i = 0;
+            result.Append("***************************\n*                         *\n*        Errors           *\n*                         *\n***************************\n");
+            for (i = 0; i < log.errors.Count; i++)
+            {
+                result.Append(log.errors[i].ToString() + "\n");
+            }
+            execution_errors_textbox.Text = result.ToString();            
+        }
+                                                                             
+        // EOF 
     }
 }

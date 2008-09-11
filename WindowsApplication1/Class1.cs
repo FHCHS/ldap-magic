@@ -90,7 +90,7 @@ namespace WindowsApplication1
                     
                      smtpcMessage.Send(mmMsg);
                 }
-                catch (Exception ex)
+                catch 
                 {
                     // Do nothing if there was an error as there is nothing we can do. 
                     return;
