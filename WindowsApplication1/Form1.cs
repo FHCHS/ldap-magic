@@ -2040,6 +2040,11 @@ namespace WindowsApplication1
             }
             execution_errors_textbox.Text = result.ToString();            
         }
+
+		private void outlook_magic_Click(object sender, EventArgs e)
+		{
+
+		}
                                                                              
         // EOF 
     }
