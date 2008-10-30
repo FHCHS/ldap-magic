@@ -10,11 +10,14 @@ using System.DirectoryServices.ActiveDirectory;
 using System.Data.SqlClient;
 using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Windows.Forms;
+using Outlook = Microsoft.Office.Interop.Outlook;
 using Google.GData.Apps;
 using Google.GData.Client;
 using WindowsApplication1.utils;
@@ -32,12 +35,13 @@ using WindowsApplication1.utils;
 // This program has a logfile which will tell which function failed when an exception is thrown and will attempt to add useful data ( timestamp, funciton failed, passed variables)
 // This program requires the SQL server to have access to AD this ADSI stored procedure links the two
 // This program must be run with a user with sufficient rights to read and write to AD users and groups
+// Requires outlook 2007 for working with public folrders
 //
 // CLASSES
 // Each of the classes below
 // hold the data that represents the fields the corresponding tab
 // has a to dictionary method for making a text file savable set of strings
-// has a load funciton which takes a dicitonary
+// has a load funciton which takes a dictionary
 // groupSynch
 // userSynch
 // userStateChange
@@ -1693,6 +1697,17 @@ namespace WindowsApplication1
                 guserconfig.User_password_transfer_checkbox = false;
             }
         }
+        private void mail_fields_short_password_CheckedChanged(object sender, EventArgs e)
+        {
+            if (mail_fields_short_password.Checked == true)
+            {
+                guserconfig.User_password_short_fix_checkbox = true;
+            }
+            else
+            {
+                guserconfig.User_password_short_fix_checkbox = false;
+            }
+        }
 		private void mail_fields_Fname_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			guserconfig.User_Fname = mail_fields_Fname.Text.ToString();
@@ -1975,6 +1990,8 @@ namespace WindowsApplication1
             guserconfig.load(properties);
             mail_fields_generate_password.Checked = guserconfig.User_password_transfer_checkbox;
             guserconfig.load(properties);
+            mail_fields_short_password.Checked = guserconfig.User_password_short_fix_checkbox;
+            guserconfig.load(properties);
             mail_fields_password.Text = guserconfig.User_password;
             guserconfig.load(properties);
             mail_fields_userID.Text = guserconfig.User_StuID;
@@ -2043,9 +2060,223 @@ namespace WindowsApplication1
 
 		private void outlook_magic_Click(object sender, EventArgs e)
 		{
+            //bool bloop;
+            //Outlook.Application objOutlook = new Outlook.Application();
+            //Outlook.NameSpace outlookNameSpace = objOutlook.GetNamespace("MAPI");
+            //Outlook.MAPIFolder contactsFolder = outlookNameSpace.GetDefaultFolder(Outlook.OlDefaultFolders.olFolderContacts);
+            //Outlook.Items contactItems = contactsFolder.Items;
+            //outlookNameSpace.
+            //string owner = outlookNameSpace.CurrentUser.AddressEntry.Name;
 
-		}
-                                                                             
+            //try
+            //{
+            //    do
+            //    {
+            //        Outlook.ContactItem contact = (Outlook.ContactItem)contactItems.GetNext();
+            //        if (contact != null)
+            //        {
+            //            execution_errors_textbox.AppendText(contact.FirstName.ToString());
+            //            bloop = true;
+            //        }
+            //        else
+            //        {
+            //            bloop = false;
+            //        }
+            //    } while (bloop == true);
+            //}
+            //catch (Exception ex)
+            //{
+            //    throw ex;
+            //} 
+
+
+
+
+            /// This Code is adopted from Microsoft Knowlegdebase Article:  <http://support.microsoft.com/?kbid=220600>
+
+ 
+
+
+            // The Outlook Application Object
+            Outlook.ApplicationClass myOutlookApplication = null;
+
+            // Create the Application Object
+            myOutlookApplication = new Outlook.ApplicationClass ();
+            //myOutlookApplication.Session.ExchangeMailboxServerName = "fhosxchmb009.ADVENTISTCORP.NET";
+
+            // Get the Namespace Object
+            Outlook.NameSpace myNameSpace = myOutlookApplication.GetNamespace("MAPI");
+
+            // Define a missing Object for COM interop
+           // object myMissing = System.Reflection.Missing.Value ;  
+
+            DemoTableColumns();
+            // Logon to Namespace
+           // myNameSpace.ExchangeMailboxServerName = "fhosxchmb009.ADVENTISTCORP.NET";
+            string folder = "blank";
+            string last = myNameSpace.Folders.GetLast().FullFolderPath.ToString();
+            folder = myNameSpace.Folders.GetFirst().FullFolderPath.ToString();
+
+            while (folder != last)
+            {
+                MessageBox.Show(folder);   
+                folder = myNameSpace.Folders.GetNext().FullFolderPath.ToString();
+
+            }
+
+            MessageBox.Show(folder);
+            
+            myNameSpace.Logon("mne4d7", "passwd", false, true);
+
+            //// Create a new Contact
+            //Outlook.ContactItem myNewContact = (Outlook.ContactItem) myOutlookApplication.CreateItem (Outlook.OlItemType.olContactItem );
+
+            //// Setup Contact information...
+            //myNewContact.FullName = "Helmut Obertanner";
+            //System.DateTime myBirthDate = DateTime.Parse ("1.6.1968");
+            //myNewContact.Birthday = myBirthDate;
+            //myNewContact.CompanyName = "DATALOG Software AG";
+            //myNewContact.HomeTelephoneNumber = "49-89-888888888";
+            //myNewContact.Email1Address = "someone@datalog.de";
+            //myNewContact.JobTitle = "Developer";
+            //myNewContact.HomeAddress = "Frundsbergstr. 60\n80637 Munich";
+
+            //// Save Contact
+            //myNewContact.Save();
+
+            //// CleanUp
+            //Marshal.ReleaseComObject (myNewContact);
+
+            //// Create a new Appointment
+            //Outlook.AppointmentItemClass myNewAppointment = (Outlook.AppointmentItemClass) myOutlookApplication.CreateItem (Outlook.OlItemType.olAppointmentItem );
+
+            //// Schedule it for two minutes from now...
+            //DateTime myAppointmentDate = DateTime.Now.AddMinutes (2.0);
+            //myNewAppointment.Start = myAppointmentDate;
+
+            //// Set other appointment info...
+            //myNewAppointment.Duration = 60;
+            //myNewAppointment.Subject = "Meeting to discuss plans...";
+
+            //myNewAppointment.Body = "Meeting with Helmut to discuss plans.";
+            //myNewAppointment.Location = "Home Office";
+            //myNewAppointment.ReminderMinutesBeforeStart = 1;
+            //myNewAppointment.ReminderSet = true;
+
+            //// Save Appointment
+            //myNewAppointment.Save();
+
+            //// CleanUp
+            //Marshal.ReleaseComObject (myNewAppointment);
+
+            //// Create a Mail Object
+            //Outlook.MailItemClass myNewMail = (Outlook.MailItemClass) myOutlookApplication.CreateItem (Outlook.OlItemType.olMailItem  ); 
+
+            //myNewMail.To = "someone@datalog.de";
+            //myNewMail.Subject = "About our meeting...";
+            //myNewMail.Body = "Hi James,\n\n" +
+            //                "\tI'll see you in two minutes for our meeting!\n\n" +
+            //                "Btw: I've added you to my contact list!";
+
+            //// Send the message!
+            //    myNewMail.Send();
+
+            //// CleanUp
+            //Marshal.ReleaseComObject (myNewMail);
+
+            //myNameSpace.Logoff ();
+            //Marshal.ReleaseComObject (myNameSpace);
+            //Marshal.ReleaseComObject (myOutlookApplication);
+
+
+
+
+
+            // TODO: Add code here to start the application.
+            //Outlook._Application olApp = new Outlook.ApplicationClass();
+            //Outlook._NameSpace olNS = olApp.GetNamespace("MAPI");Outlook._Folders oFolders;
+            //olNS.Logon("mne4d7", "passwd", false, true);
+            //oFolders = olNS.Folders;
+            //Outlook.MAPIFolder oPublicFolder = oFolders.Item("Public Folders");
+            //oFolders = oPublicFolder.Folders;
+            //Outlook.MAPIFolder oAllPFolder = oFolders.Item("All Public Folders");
+            //oFolders = oAllPFolder.Folders;
+            //Outlook.MAPIFolder oMyFolder  = oFolders.Item("My Public Folder");
+            //Console.Write(oMyFolder.Name);
+
+
+        }
+        
+        private void recursive_folders(Outlook.Folder folder, string basefolder)
+        {
+
+        }
+
+        private void DemoTableColumns()
+        {
+        //    const string PR_HAS_ATTACH =
+        //        "http://schemas.microsoft.com/mapi/proptag/0x0E1B000B";
+        //    // Obtain Inbox
+        //    Outlook.Folder folder = Application.Session.GetDefaultFolder(Outlook.OlDefaultFolders.olFolderInbox) as Outlook.Folder;
+        //    // Create filter
+        //    string filter = "@SQL=" + "\""
+        //        + PR_HAS_ATTACH + "\"" + " = 1";
+        //    Outlook.Table table =
+        //        folder.GetTable(filter,
+        //        Outlook.OlTableContents.olUserItems);
+        //    // Remove default columns
+        //    table.Columns.RemoveAll();
+        //    // Add using built-in name
+        //    table.Columns.Add("EntryID");
+        //    table.Columns.Add("Subject");
+        //    table.Columns.Add("ReceivedTime");
+        //    table.Sort("ReceivedTime", Outlook.OlSortOrder.olDescending);
+        //    // Add using namespace
+        //    // Date received
+        //    table.Columns.Add(
+        //        "urn:schemas:httpmail:datereceived");
+        //    while (!table.EndOfTable)
+        //    {
+        //        Outlook.Row nextRow = table.GetNextRow();
+        //        StringBuilder sb = new StringBuilder();
+        //        sb.AppendLine(nextRow["Subject"].ToString());
+        //        // Reference column by name
+        //        sb.AppendLine("Received (Local): "
+        //            + nextRow["ReceivedTime"]);
+        //        // Reference column by index
+        //        sb.AppendLine("Received (UTC): " + nextRow[4]);
+        //        sb.AppendLine();
+        //        MessageBox.Show(sb.ToString());
+        //    }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            decodr.Text = System.Web.HttpUtility.UrlEncode(encodr.Text.ToString()).Replace("+", " ").Replace("*", "%2A").Replace("!", "%21").Replace("(", "%28").Replace(")", "%29").Replace("'", "%27").Replace("_", "%5f").Replace(" ", "%20").Replace("%", "_");
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            encodr.Text = System.Web.HttpUtility.UrlDecode(decodr.Text.ToString().Replace("_", "%"));
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            decodr.Text = Regex.Replace(Regex.Replace(encodr.Text.ToString(), @"[^a-z|^A-Z|^0-9|^\.|_|-]|[\^|\|]|", ""), @"\.+", ".");
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            decodr.Text = encodr.Text.ToString().Replace("<", "%3c").Replace(">", "%3e").Replace("=", "%3d").Replace("%", "%25");
+        }
+
+
+
+
+
+
+
+                 
         // EOF 
     }
 }
