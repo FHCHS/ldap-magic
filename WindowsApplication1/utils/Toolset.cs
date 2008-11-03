@@ -2521,7 +2521,7 @@ namespace WindowsApplication1.utils
             // create the command object
             try
             {
-                sqlComm.ExecuteReader();
+                sqlComm.ExecuteNonQuery();
             }
             catch (Exception ex)
             {
@@ -2543,9 +2543,10 @@ namespace WindowsApplication1.utils
             //| 4             d             | 4              e          | NOT RETURNED      | 
 
             SqlCommand sqlComm = new SqlCommand("SELECT " + table1 + ".* FROM " + table1 + " INNER JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2, sqlConn);
+            SqlDataReader r;
             try
             {
-                SqlDataReader r = sqlComm.ExecuteReader();
+                r = sqlComm.ExecuteReader();
                 return r;
             }
             catch (Exception ex)
@@ -2569,7 +2570,7 @@ namespace WindowsApplication1.utils
             SqlCommand sqlComm = new SqlCommand("SELECT " + table1 + ".* INTO " + newTable + " FROM " + table1 + " INNER JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2, sqlConn);
             try
             {
-                sqlComm.ExecuteReader();
+                sqlComm.ExecuteNonQuery();
             }
             catch (Exception ex)
             {
@@ -4390,19 +4391,19 @@ namespace WindowsApplication1.utils
                 if (gusersyn.User_where == "")
                 {
                     sqlComm = new SqlCommand("SELECT DISTINCT RTRIM(" + gusersyn.User_StuID + ")" +
-                        ", RTRIM(" + gusersyn.User_Fname + ")" +
-                        ", RTRIM(" + gusersyn.User_Lname + ")" +
-                        ", RTRIM(" + gusersyn.User_Mname + ")" +
-                        ", RTRIM(" + gusersyn.User_password + ")" +
+                        ", RTRIM(" + gusersyn.User_Fname + ") AS " + gusersyn.User_Fname +
+                        ", RTRIM(" + gusersyn.User_Lname + ") AS " + gusersyn.User_Lname + 
+                        ", RTRIM(" + gusersyn.User_Mname + ") AS " + gusersyn.User_Mname +
+                        ", RTRIM(" + gusersyn.User_password + ") AS " + gusersyn.User_password +
                         " INTO " + sqlUsersTable + " FROM " + gusersyn.User_dbTable, sqlConn);
                 }
                 else
                 {
                     sqlComm = new SqlCommand("SELECT DISTINCT RTRIM(" + gusersyn.User_StuID +
-                        ", RTRIM(" + gusersyn.User_Fname + ")" +
-                        ", RTRIM(" + gusersyn.User_Lname + ")" +
-                        ", RTRIM(" + gusersyn.User_Mname + ")" +
-                        ", RTRIM(" + gusersyn.User_password + ")" +
+                        ", RTRIM(" + gusersyn.User_Fname + ")" + gusersyn.User_Fname +
+                        ", RTRIM(" + gusersyn.User_Lname + ")" + gusersyn.User_Lname +
+                        ", RTRIM(" + gusersyn.User_Mname + ")" + gusersyn.User_Mname +
+                        ", RTRIM(" + gusersyn.User_password + ")" + gusersyn.User_password + 
                         " INTO " + sqlUsersTable + " FROM " + gusersyn.User_dbTable +
                         " WHERE " + gusersyn.User_where, sqlConn);
                 }
@@ -4502,10 +4503,11 @@ namespace WindowsApplication1.utils
 
             string nicknamesFromGmailTable = "#gmailNicknamesTable";
             string loginWithoutNicknamesTable = "#loginsWONicknamesTable";
-            string adNicknamesTable = "#adNickenamesTable";
+            string adNicknamesTable = "#adNicknamesTable";
             string sqlNicknamesTable = "#sqlNicknamesTable";
             SqlDataReader nicknamesToAddToDatabase;
             SqlDataReader nicknamesToAddToAD;
+            SqlDataReader lostNicknames;
             ArrayList nicknameKeys = new ArrayList();
             ArrayList sqlkeys = new ArrayList();
             ArrayList adPullKeys = new ArrayList();
@@ -4520,14 +4522,14 @@ namespace WindowsApplication1.utils
             {
                 if (gusersyn.Writeback_where_clause == "")
                 {
-                    sqlComm = new SqlCommand("SELECT DISTINCT RTRIM(" + gusersyn.Writeback_primary_key + ")" +
-                        ", RTRIM(" + gusersyn.Writeback_email_field + ")" +
+                    sqlComm = new SqlCommand("SELECT DISTINCT RTRIM(" + gusersyn.Writeback_primary_key + ") AS " + gusersyn.Writeback_primary_key +
+                        ", RTRIM(" + gusersyn.Writeback_email_field + ") AS " + gusersyn.Writeback_email_field + 
                         " INTO " + sqlNicknamesTable + " FROM " + gusersyn.Writeback_table, sqlConn);
                 }
                 else
                 {
-                    sqlComm = new SqlCommand("SELECT DISTINCT RTRIM(" + gusersyn.Writeback_primary_key + ")" +
-                        ", RTRIM(" + gusersyn.Writeback_email_field + ")" +
+                    sqlComm = new SqlCommand("SELECT DISTINCT RTRIM(" + gusersyn.Writeback_primary_key + ") AS " + gusersyn.Writeback_primary_key + 
+                        ", RTRIM(" + gusersyn.Writeback_email_field + ") AS " + gusersyn.Writeback_email_field + 
                         " INTO " + sqlNicknamesTable + " FROM " + gusersyn.Writeback_table +
                         " WHERE " + gusersyn.Writeback_where_clause, sqlConn);
                 }
@@ -4541,7 +4543,55 @@ namespace WindowsApplication1.utils
                 }
             }
 
+            // TABLE
+            // sqlNicknamesTable::  #sqlNicknamesTable
+            //---------------------------------------------
+            // gusersyn.writebackPrimaryKey::  soc_sec           xx111111
+            // gusersyn.writebackEmailField::  gmail             first.last@domain
+
+            // TABLE
+            // adNicknamesTable::  #adNicknamesTable
+            //---------------------------------------------
+            // sAMAccountName                                    xx111111
+            // givenName                                         first
+            // middleName                                        middle
+            // sn                                                last
+            // mail                                              first.last@domain
+
+            // TABLE
+            // nicknamesFromGmailTable:: #nicknamesFromGmailTable
+            //---------------------------------------------
+            // gusersyn.Writeback_primary_key:: soc_sec          xx111111
+            // nicknames.column[1]:: nickname                    first.last
+            // nicknames.column[2]:: email                       first.last@domain
+
+
+            // TABLE
+            // gmailUsersTable:: #gmailUsersTable
+            //---------------------------------------------
+            // gusersyn.User_StuID:: soc_sec                     xx111111
+            // gusersyn.Fname:: givenname                        first
+            // gusersyn.Lname:: sn                               last
+
+
+            // TABLE
+            // loginWithoutNicknamesTable:: #loginWithoutNicknamesTable
+            //---------------------------------------------
+            // gusersyn.User_StuID:: soc_sec                     xx111111
+            // gusersyn.Fname:: givenname                        first
+            // gusersyn.Lname:: sn                               last
+
+
+            // TABLE
+            // sqlUsersTable:: #sqlUsersTable
+            //---------------------------------------------
+            // gusersyn.User_StuID:: SQL or AD                   xx111111
+            // gusersyn.User_Fname:: SQL or AD                   first
+            // gusersyn.User_Lname:: SQL or AD                   middle
+            // gusersyn.User_Mname:: SQL or AD                   last
+            // gusersyn.User_password:: SQL or AD                *******
             
+
 
             // were adding the mail field to the pull fields not so we need to repull
             // keys to pull from database pull are most likely wrong need to hard code appropriate keys
@@ -4552,14 +4602,13 @@ namespace WindowsApplication1.utils
             adPullKeys.Add("mail");
 
             // clear our previous data
-            adUsers.Clear();
-
-            
+            adUsers.Clear();           
             adUsers = tools.EnumerateUsersInOUDataTable(gusersyn.User_ad_OU, adPullKeys, adNicknamesTable, SearchScope.OneLevel, log);
             tools.Create_Table(adUsers, adNicknamesTable, sqlConn, log);
             
 
             // get list of nicknames from gmail
+            nicknames.Clear();
             nicknames = tools.Get_Gmail_Nicknames(service, gusersyn, nicknamesFromGmailTable, log);
             tools.Create_Table(nicknames, nicknamesFromGmailTable, sqlConn, log);
 
@@ -4573,9 +4622,8 @@ namespace WindowsApplication1.utils
             // cross reference for null userID's in nickname service.RetrieveAllNicknames table with list of all userlogin userID's from gmail service.RetrieveAllUsers
             tools.QueryNotExistsIntoNewTable(gmailUsersTable, nicknamesFromGmailTable, loginWithoutNicknamesTable, sqlConn, gusersyn.User_StuID, nicknames.Columns[0].ColumnName, log);
 
-            // use retrieved list of users without nickname and check for updates against list of users in main datasource
-            SqlDataReader lostNicknames;
 
+            // use retrieved list of users without nicknames and check for updates against list of users in main datasource
             // use the datatable from the view/table as the primary data source
             // this table is generated above during the user account addition and update section
             // sqlUsersTable will have AD or SQL no matter which we checked, there was only on variable used
@@ -4634,8 +4682,8 @@ namespace WindowsApplication1.utils
             tools.DropTable(loginWithoutNicknamesTable, sqlConn, log);
             tools.DropTable(adNicknamesTable, sqlConn, log);
             tools.DropTable(sqlNicknamesTable, sqlConn, log);
-            nicknamesToAddToDatabase.Close();
-            nicknamesToAddToAD.Close();
+            //nicknamesToAddToDatabase.Close();
+            //nicknamesToAddToAD.Close();
 			sqlConn.Close();
 		}
     }
