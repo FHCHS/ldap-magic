@@ -20,6 +20,7 @@ using System.Windows.Forms;
 using Outlook = Microsoft.Office.Interop.Outlook;
 using Google.GData.Apps;
 using Google.GData.Client;
+using Google.GData.Apps.GoogleMailSettings;
 using WindowsApplication1.utils;
 
 
@@ -101,11 +102,11 @@ namespace WindowsApplication1
                 // create the command object
                 if (users_user_Table_View.Text.ToLower() == "table")
                 {
-                    sqlComm = new SqlCommand("SELECT name FROM sysobjects where TYPE = 'U' order by NAME", sqlConn);
+                    sqlComm = new SqlCommand("SELECT name FROM sysobjects WHERE TYPE = 'U' order by NAME", sqlConn);
                 }
                 else
                 {
-                    sqlComm = new SqlCommand("select name from SYSOBJECTS where TYPE = 'V' order by NAME", sqlConn);
+                    sqlComm = new SqlCommand("select name FROM SYSOBJECTS WHERE TYPE = 'V' order by NAME", sqlConn);
                 }
                 try
                 {
@@ -118,7 +119,7 @@ namespace WindowsApplication1
                 }
                 catch (Exception ex)
                 {
-                    log.errors.Add("Failed SQL command " + sqlComm.ToString() + " error " + ex);
+                    log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
                 } 
 
                 sqlConn.Close();
@@ -153,7 +154,7 @@ namespace WindowsApplication1
                 }
                 catch (Exception ex)
                 {
-                    log.errors.Add("Failed SQL command " + sqlComm.ToString() + " error " + ex);
+                    log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
                 }
 
                 sqlConn.Close();
@@ -201,11 +202,11 @@ namespace WindowsApplication1
                 // create the command object
                 if (users_user_Table_View.Text.ToLower() == "table")
                 {
-                    sqlComm = new SqlCommand("SELECT name FROM sysobjects where TYPE = 'U' order by NAME", sqlConn);
+                    sqlComm = new SqlCommand("SELECT name FROM sysobjects WHERE TYPE = 'U' order by NAME", sqlConn);
                 }
                 else
                 {
-                    sqlComm = new SqlCommand("select name from SYSOBJECTS where TYPE = 'V' order by NAME", sqlConn);
+                    sqlComm = new SqlCommand("select name FROM SYSOBJECTS WHERE TYPE = 'V' order by NAME", sqlConn);
                 }
                 try
                 {
@@ -218,7 +219,7 @@ namespace WindowsApplication1
                 }
                 catch (Exception ex)
                 {
-                    log.errors.Add("Failed SQL command " + sqlComm.ToString() + " error " + ex);
+                    log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
                 } 
 
                 sqlConn.Close();
@@ -253,7 +254,7 @@ namespace WindowsApplication1
                 }
                 catch (Exception ex)
                 {
-                    log.errors.Add("Failed SQL command " + sqlComm.ToString() + " error " + ex);
+                    log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
                 } 
 
                 sqlConn.Close();
@@ -623,11 +624,11 @@ namespace WindowsApplication1
                 // create the command object
                 if (group_group_Table_View.Text.ToLower() == "table")
                 {
-                    sqlComm = new SqlCommand("SELECT name FROM sysobjects where TYPE = 'U' order by NAME", sqlConn);
+                    sqlComm = new SqlCommand("SELECT name FROM sysobjects WHERE TYPE = 'U' order by NAME", sqlConn);
                 }
                 else
                 {
-                    sqlComm = new SqlCommand("SELECT name from SYSOBJECTS where TYPE = 'V' order by NAME", sqlConn);
+                    sqlComm = new SqlCommand("SELECT name FROM SYSOBJECTS WHERE TYPE = 'V' order by NAME", sqlConn);
                 }
                 try
                 {
@@ -640,7 +641,7 @@ namespace WindowsApplication1
                 }
                 catch (Exception ex)
                 {
-                    log.errors.Add("Failed SQL command " + sqlComm.ToString() + " error " + ex);
+                    log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
                 } 
 
                 sqlConn.Close();
@@ -675,7 +676,7 @@ namespace WindowsApplication1
                 }
                 catch (Exception ex)
                 {
-                    log.errors.Add("Failed SQL command " + sqlComm.ToString() + " error " + ex);
+                    log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
                 } 
 
                 sqlConn.Close();
@@ -720,11 +721,11 @@ namespace WindowsApplication1
                 // create the command object
                 if (group_user_Table_View.Text.ToLower() == "table")
                 {
-                    sqlComm = new SqlCommand("SELECT name FROM sysobjects where TYPE = 'U' order by NAME", sqlConn);
+                    sqlComm = new SqlCommand("SELECT name FROM sysobjects WHERE TYPE = 'U' order by NAME", sqlConn);
                 }
                 else
                 {
-                    sqlComm = new SqlCommand("select name from SYSOBJECTS where TYPE = 'V' order by NAME", sqlConn);
+                    sqlComm = new SqlCommand("SELECT name FROM SYSOBJECTS WHERE TYPE = 'V' order by NAME", sqlConn);
                 }
                 try
                 {
@@ -737,7 +738,7 @@ namespace WindowsApplication1
                 }
                 catch (Exception ex)
                 {
-                    log.errors.Add("Failed SQL command " + sqlComm.ToString() + " error " + ex);
+                    log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
                 } 
 
                 sqlConn.Close();
@@ -772,7 +773,7 @@ namespace WindowsApplication1
                 }
                 catch (Exception ex)
                 {
-                    log.errors.Add("Failed SQL command " + sqlComm.ToString() + " error " + ex);
+                    log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
                 } 
 
                 sqlConn.Close();
@@ -1150,7 +1151,7 @@ namespace WindowsApplication1
                 }
                 catch (Exception ex)
                 {
-                    log.errors.Add("Failed SQL command " + sqlComm.ToString() + " error " + ex);
+                    log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
                 } 
 
                 sqlConn.Close();
@@ -1180,11 +1181,11 @@ namespace WindowsApplication1
                 // create the command object
                 if (usermapping_user_table_view.Text.ToLower() == "table")
                 {
-                    sqlComm = new SqlCommand("SELECT name FROM sysobjects where TYPE = 'U' order by NAME", sqlConn);
+                    sqlComm = new SqlCommand("SELECT name FROM sysobjects WHERE TYPE = 'U' order by NAME", sqlConn);
                 }
                 else
                 {
-                    sqlComm = new SqlCommand("SELECT name from SYSOBJECTS where TYPE = 'V' order by NAME", sqlConn);
+                    sqlComm = new SqlCommand("SELECT name FROM SYSOBJECTS WHERE TYPE = 'V' order by NAME", sqlConn);
                 }
                 try
                 {
@@ -1197,7 +1198,7 @@ namespace WindowsApplication1
                 }
                 catch (Exception ex)
                 {
-                    log.errors.Add("Failed SQL command " + sqlComm.ToString() + " error " + ex);
+                    log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
                 }
 
                 sqlConn.Close();
@@ -1411,7 +1412,7 @@ namespace WindowsApplication1
                     }
                     catch (Exception ex)
                     {
-                        log.errors.Add("Failed SQL command " + sqlComm.ToString() + " error " + ex);
+                        log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
                     }
 
 
@@ -1598,11 +1599,11 @@ namespace WindowsApplication1
                 // create the command object
                 if (mail_user_Table_View.Text.ToLower() == "table")
                 {
-                    sqlComm = new SqlCommand("SELECT name FROM sysobjects where TYPE = 'U' order by NAME", sqlConn);
+                    sqlComm = new SqlCommand("SELECT name FROM sysobjects WHERE TYPE = 'U' order by NAME", sqlConn);
                 }
                 else
                 {
-                    sqlComm = new SqlCommand("SELECT name from SYSOBJECTS where TYPE = 'V' order by NAME", sqlConn);
+                    sqlComm = new SqlCommand("SELECT name FROM SYSOBJECTS WHERE TYPE = 'V' order by NAME", sqlConn);
                 }
                 try
                 {
@@ -1615,7 +1616,7 @@ namespace WindowsApplication1
                 }
                 catch (Exception ex)
                 {
-                    log.errors.Add("Failed SQL command " + sqlComm.ToString() + " error " + ex);
+                    log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
                 }
 
                 sqlConn.Close();
@@ -1650,7 +1651,7 @@ namespace WindowsApplication1
                 }
                 catch (Exception ex)
                 {
-                    log.errors.Add("Failed SQL command " + sqlComm.ToString() + " error " + ex);
+                    log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
                 } 
 
                 sqlConn.Close();
@@ -1748,7 +1749,7 @@ namespace WindowsApplication1
 					SqlCommand sqlComm;
 					sqlConn.Open();
 					// create the command object
-					sqlComm = new SqlCommand("SELECT name FROM sysobjects where TYPE = 'U' order by NAME", sqlConn);
+					sqlComm = new SqlCommand("SELECT name FROM sysobjects WHERE TYPE = 'U' ORDER BY NAME", sqlConn);
                     try
                     {
                         SqlDataReader r = sqlComm.ExecuteReader();
@@ -1760,7 +1761,7 @@ namespace WindowsApplication1
                     }
                     catch (Exception ex)
                     {
-                        log.errors.Add("Failed SQL command " + sqlComm.ToString() + " error " + ex);
+                        log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
                     }
 
 					sqlConn.Close();
@@ -1830,7 +1831,7 @@ namespace WindowsApplication1
                 }
                 catch (Exception ex)
                 {
-                    log.errors.Add("Failed SQL command " + sqlComm.ToString() + " error " + ex);
+                    log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
                 }
 	
 				sqlConn.Close();
@@ -2252,22 +2253,107 @@ namespace WindowsApplication1
 
         private void button1_Click(object sender, EventArgs e)
         {
-            decodr.Text = System.Web.HttpUtility.UrlEncode(encodr.Text.ToString()).Replace("+", " ").Replace("*", "%2A").Replace("!", "%21").Replace("(", "%28").Replace(")", "%29").Replace("'", "%27").Replace("_", "%5f").Replace(" ", "%20").Replace("%", "_");
+            //decodr.Text = System.Web.HttpUtility.UrlEncode(encodr.Text.ToString()).Replace("+", " ").Replace("*", "%2A").Replace("!", "%21").Replace("(", "%28").Replace(")", "%29").Replace("'", "%27").Replace("_", "%5f").Replace(" ", "%20").Replace("%", "_");
+            AppsService service = new AppsService("students.fhchs.edu", "mne4d7@students.fhchs.edu", "abc123");
+            UserEntry gmailUser = service.RetrieveUser(encodr.Text.ToString());
+            gmailUser.Dirty = true;
+            decodr.Text += gmailUser.Dirty.ToString();
+            decodr.Text += gmailUser.IsDirty();
+            gmailUser.Update();
+            decodr.Text += gmailUser.Dirty.ToString();
+            decodr.Text += gmailUser.IsDirty();
+            service.UpdateUser(gmailUser);
+            decodr.Text += gmailUser.Dirty.ToString();
+            decodr.Text += gmailUser.IsDirty();
+            gmailUser.Dirty = true;
+
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            encodr.Text = System.Web.HttpUtility.UrlDecode(decodr.Text.ToString().Replace("_", "%"));
+          //  encodr.Text = System.Web.HttpUtility.UrlDecode(decodr.Text.ToString().Replace("_", "%"));\
+            AppsService service = new AppsService("students.fhchs.edu", "admin@students.fhchs.edu", "password");
+            UserEntry gmailUser = service.RetrieveUser(encodr.Text.ToString());
+            gmailUser.Dirty = true;
+            decodr.Text = gmailUser.Dirty.ToString();
+            decodr.Text += gmailUser.IsDirty();
+            gmailUser.Update();
+            service.UpdateUser(gmailUser);
+            decodr.Text = gmailUser.Dirty.ToString();
+            decodr.Text += gmailUser.IsDirty();
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            decodr.Text = Regex.Replace(Regex.Replace(encodr.Text.ToString(), @"[^a-z|^A-Z|^0-9|^\.|_|-]|[\^|\|]|", ""), @"\.+", ".");
+           // decodr.Text = Regex.Replace(Regex.Replace(encodr.Text.ToString(), @"[^a-z|^A-Z|^0-9|^\.|_|-]|[\^|\|]|", ""), @"\.+", ".");
+
+            AppsService service = new AppsService("students.fhchs.edu", "mne4d7@students.fhchs.edu", "abc123");
+            UserEntry gmailUser = service.RetrieveUser(encodr.Text.ToString());
+            //decodr.Text = gmailUser.Dirty.ToString();
+            //decodr.Text += gmailUser.IsDirty();
+            
+            //gmailUser.Content.Dirty = true;
+            SortedList list = gmailUser.Name.Attributes;
+            string attribs = "Name attibutes \n" ;
+            foreach (DictionaryEntry de in list)
+            {
+                attribs += de.Key + " " + de.Value + "\n";
+            }
+            MessageBox.Show(attribs);
+            list = gmailUser.Login.Attributes;
+            attribs = "login attributes \n";
+            foreach (DictionaryEntry de in list)
+            {
+                attribs += de.Key + " " + de.Value + "\n";
+            }
+            MessageBox.Show(attribs);
+
+            list = gmailUser.Quota.Attributes;
+            attribs = "quota attributes \n";
+            foreach (DictionaryEntry de in list)
+            {
+                attribs += de.Key + " " + de.Value + "\n";
+            }
+            MessageBox.Show(attribs);
+
+  //          AtomCategory dirty = new AtomCategory();
+//            gmailUser.ToggleCategory(dirty, true);
+
+            gmailUser.Name.GivenName = "Mike";
+
+            MessageBox.Show("base check dirt after content set dirty " + gmailUser.Login.AgreedToTerms.ToString() + " " + gmailUser.Login.UserName + " " + gmailUser.Name.GivenName);
+            gmailUser.Login.AgreedToTerms = (bool)false;
+            MessageBox.Show("base check dirt after content set dirty " + gmailUser.Login.AgreedToTerms.ToString() + " " + gmailUser.Login.UserName + " " + gmailUser.Name.GivenName);
+            service.UpdateUser(gmailUser);
+            gmailUser.Name.GivenName = "Michael";
+            MessageBox.Show("base check dirt after content set dirty  and update performed " + gmailUser.Login.AgreedToTerms.ToString() + " " + gmailUser.Login.UserName + " " + gmailUser.Name.GivenName);
+            service.UpdateUser(gmailUser);
+            MessageBox.Show("base check dirt after content set dirty  and update performed " + gmailUser.Login.AgreedToTerms.ToString() + " " + gmailUser.Login.UserName + " " + gmailUser.Name.GivenName);
+
+
+            //GoogleMailSettingsService gmailSettings = new GoogleMailSettingsService("students.fhchs.edu", "FHCHS");
+            //gmailSettings.setUserCredentials("admin@students.fhchs.edu", "password");
+            //try
+            //{
+            //    gmailSettings.CreateSendAs(encodr.Text.ToString(), "Nigeria rocks", "a.nice.nigerian.scammer@students.fhchs.edu", "a.nice.nigerian.scammer@students.fhchs.edu", "true");
+            //}
+            //catch (GDataRequestException ex)
+            //{
+            //    MessageBox.Show(" \\-Data-/ " + ex.Data + " \\-Message-/ " + ex.Message + " \\-Response-/ " + ex.Response + " \\-Response String-/ " + ex.ResponseString);
+            //}
+
+            
         }
 
         private void button5_Click(object sender, EventArgs e)
         {
-            decodr.Text = encodr.Text.ToString().Replace("<", "%3c").Replace(">", "%3e").Replace("=", "%3d").Replace("%", "%25");
+            //decodr.Text = encodr.Text.ToString().Replace("<", "%3c").Replace(">", "%3e").Replace("=", "%3d").Replace("%", "%25");
+            AppsService service = new AppsService("students.fhchs.edu", "mne4d7@students.fhchs.edu", "abc123");
+            UserEntry gmailUser = service.RetrieveUser(encodr.Text.ToString());
+            MessageBox.Show("base check dirt after content set dirty " + gmailUser.Login.AgreedToTerms.ToString() + " " + gmailUser.Login.UserName);
+            gmailUser.Login.AgreedToTerms = true;
+            service.UpdateUser(gmailUser);
+            MessageBox.Show("base check dirt after content set dirty  and update performed " + gmailUser.Login.AgreedToTerms.ToString() + " " + gmailUser.Login.UserName);
         }
 
 

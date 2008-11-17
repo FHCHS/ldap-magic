@@ -40,3 +40,7 @@ C:\Documents and Settings\mne4d7\My Documents\Visual Studio 2005\Projects\SQL_AD
 C:\Documents and Settings\mne4d7\My Documents\Visual Studio 2005\Projects\SQL_AD_mapper\WindowsApplication1\bin\Release\WindowsApplication1.pdb
 C:\Documents and Settings\mne4d7\My Documents\Visual Studio 2005\Projects\SQL_AD_mapper\WindowsApplication1\bin\Release\Interop.ActiveDs.dll
 C:\Documents and Settings\mne4d7\My Documents\Visual Studio 2005\Projects\SQL_AD_mapper\WindowsApplication1\obj\Release\WindowsApplication1.pdb
+C:\Documents and Settings\mne4d7\My Documents\Visual Studio 2005\Projects\SQL_AD_mapper\WindowsApplication1\bin\Release\Google.GData.Apps.dll
+C:\Documents and Settings\mne4d7\My Documents\Visual Studio 2005\Projects\SQL_AD_mapper\WindowsApplication1\bin\Release\Google.GData.Client.dll
+C:\Documents and Settings\mne4d7\My Documents\Visual Studio 2005\Projects\SQL_AD_mapper\WindowsApplication1\bin\Release\Google.GData.Extensions.dll
+C:\Documents and Settings\mne4d7\My Documents\Visual Studio 2005\Projects\SQL_AD_mapper\WindowsApplication1\bin\Release\Google.GData.GoogleBase.dll
