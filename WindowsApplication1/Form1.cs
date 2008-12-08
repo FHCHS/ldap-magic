@@ -1690,12 +1690,12 @@ namespace WindowsApplication1
             if (mail_fields_generate_password.Checked == true)
             {
                 mail_fields_password.Enabled = false;
-                guserconfig.User_password_transfer_checkbox = true;
+                guserconfig.User_password_generate_checkbox = true;
             }
             else
             {
                 mail_fields_password.Enabled = true;
-                guserconfig.User_password_transfer_checkbox = false;
+                guserconfig.User_password_generate_checkbox = false;
             }
         }
         private void mail_fields_short_password_CheckedChanged(object sender, EventArgs e)
@@ -1735,7 +1735,7 @@ namespace WindowsApplication1
                 label156.Enabled = true;
                 mail_writeback_table.Enabled = true;
                 mail_writeback_key.Enabled = true;
-                mail_writeback_use_secondary_email.Enabled = true;
+                mail_writeback_use_secondary_email_checkbox.Enabled = true;
                 mail_writeback_secondary_email.Enabled = true;
                 mail_writeback_where.Enabled = true;
                 mail_writeback_email.Enabled = true;
@@ -1786,7 +1786,7 @@ namespace WindowsApplication1
                 label156.Enabled = false;
                 mail_writeback_table.Enabled = false;
                 mail_writeback_key.Enabled = false;
-                mail_writeback_use_secondary_email.Enabled = false;
+                mail_writeback_use_secondary_email_checkbox.Enabled = false;
                 mail_writeback_secondary_email.Enabled = false;
                 mail_writeback_where.Enabled = false;
                 mail_writeback_email.Enabled = false;
@@ -1848,7 +1848,7 @@ namespace WindowsApplication1
         }
         private void mail_writeback_use_secondary_email_CheckedChanged(object sender, EventArgs e)
         {
-            if (mail_writeback_use_secondary_email.Checked == true)
+            if (mail_writeback_use_secondary_email_checkbox.Checked == true)
             {
                 mail_writeback_secondary_email.Visible = true;
                 label154.Visible = true;
@@ -1989,7 +1989,7 @@ namespace WindowsApplication1
             guserconfig.load(properties);
             mail_fields_Mname.Text = guserconfig.User_Mname;
             guserconfig.load(properties);
-            mail_fields_generate_password.Checked = guserconfig.User_password_transfer_checkbox;
+            mail_fields_generate_password.Checked = guserconfig.User_password_generate_checkbox;
             guserconfig.load(properties);
             mail_fields_short_password.Checked = guserconfig.User_password_short_fix_checkbox;
             guserconfig.load(properties);
@@ -2006,7 +2006,7 @@ namespace WindowsApplication1
             guserconfig.load(properties);
             mail_writeback_key.Text = guserconfig.Writeback_primary_key;
             guserconfig.load(properties);
-            mail_writeback_use_secondary_email.Checked = guserconfig.Writeback_transfer_email_checkbox;
+            mail_writeback_use_secondary_email_checkbox.Checked = guserconfig.Writeback_transfer_email_checkbox;
             guserconfig.load(properties);
             mail_writeback_where.Text = guserconfig.Writeback_where_clause;
             guserconfig.load(properties);
@@ -2349,11 +2349,49 @@ namespace WindowsApplication1
         {
             //decodr.Text = encodr.Text.ToString().Replace("<", "%3c").Replace(">", "%3e").Replace("=", "%3d").Replace("%", "%25");
             AppsService service = new AppsService("students.fhchs.edu", "mne4d7@students.fhchs.edu", "abc123");
-            UserEntry gmailUser = service.RetrieveUser(encodr.Text.ToString());
-            MessageBox.Show("base check dirt after content set dirty " + gmailUser.Login.AgreedToTerms.ToString() + " " + gmailUser.Login.UserName);
-            gmailUser.Login.AgreedToTerms = true;
-            service.UpdateUser(gmailUser);
-            MessageBox.Show("base check dirt after content set dirty  and update performed " + gmailUser.Login.AgreedToTerms.ToString() + " " + gmailUser.Login.UserName);
+            //UserEntry gmailUser = service.RetrieveUser(encodr.Text.ToString());
+            //MessageBox.Show("base check dirt after content set dirty " + gmailUser.Login.AgreedToTerms.ToString() + " " + gmailUser.Login.UserName);
+            //gmailUser.Login.AgreedToTerms = true;
+            //service.UpdateUser(gmailUser);
+            //MessageBox.Show("base check dirt after content set dirty  and update performed " + gmailUser.Login.AgreedToTerms.ToString() + " " + gmailUser.Login.UserName);
+
+            SqlConnection sqlConn = new SqlConnection("Data Source=" + DBserver.Text + ";Initial Catalog=" + Catalog.Text + ";Integrated Security=SSPI;");
+            string user = "";
+            SqlCommand sqlComm = new SqlCommand("select FHC_test2_gmailnicknamestable.nickname, FHC_test2_gmailnicknamestable.soc_sec from FHC_test2_gmailnicknamestable where FHC_test2_gmailnicknamestable.nickname like '%.__.%'", sqlConn);
+            // create the command object
+            SqlDataReader r;
+            sqlConn.Open();
+            try
+            {
+                r = sqlComm.ExecuteReader();
+                while(r.Read())
+                {    
+                    user = (string)r[0];
+                    try
+                    {
+                        user = user.Remove(user.IndexOf("@students"));
+                    }
+                    catch
+                    { }
+                    try
+                    {
+                        service.DeleteNickname(user);
+                    }
+                    catch
+                    {
+                        log.transactions.Add("deletiing failed " + user);
+                    }
+                    log.transactions.Add("deleted nickname " + user);
+                }
+            }
+            catch (Exception ex)
+            {
+                log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+            }
+
+
+
+
         }
 
 

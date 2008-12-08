@@ -22,6 +22,17 @@ using Google.GData.Client;
 using WindowsApplication1;
 using WindowsApplication1.utils;
 
+
+// outstanding issues
+// send as use fix from google forums\
+// update gmail failing to use middle name properly
+// ensure nicknames are genereated properly
+// allow for nulls in blank fields to be matching
+// send as aliasing failing due to blank sqldata reader
+
+
+
+
 namespace WindowsApplication1.utils
 {
     public enum objectClass
@@ -821,7 +832,7 @@ namespace WindowsApplication1.utils
         private String configUser_Fname;
         private String configUser_MiddleName;
         private String configUser_StuID;
-        private Boolean configUser_password_transfer_checkbox;
+        private Boolean configUser_password_generate_checkbox;
         private Boolean configUser_password_short_fix_checkbox;
         private String configUser_password;
 
@@ -857,7 +868,7 @@ namespace WindowsApplication1.utils
             configUser_Fname = "";
             configUser_MiddleName = "";
             configUser_StuID = "";
-            configUser_password_transfer_checkbox = false;
+            configUser_password_generate_checkbox = false;
             configUser_password_short_fix_checkbox = false;
             configUser_password = "";
 
@@ -1027,15 +1038,15 @@ namespace WindowsApplication1.utils
                 configUser_StuID = value;
             }
         }
-        public Boolean User_password_transfer_checkbox
+        public Boolean User_password_generate_checkbox
         {
             get
             {
-                return configUser_writeback_transfer_email_checkbox;
+                return configUser_password_generate_checkbox;
             }
             set
             {
-                configUser_writeback_transfer_email_checkbox = value;
+                configUser_password_generate_checkbox = value;
             }
         }
         public Boolean User_password_short_fix_checkbox
@@ -1182,14 +1193,14 @@ namespace WindowsApplication1.utils
             dictionary.TryGetValue("configUser_Fname", out configUser_Fname);
             dictionary.TryGetValue("configUser_MiddleName", out configUser_MiddleName);
             dictionary.TryGetValue("configUser_StuID", out configUser_StuID);
-            dictionary.TryGetValue("configUser_password_transfer_checkbox", out boolconv);
+            dictionary.TryGetValue("configUser_password_generate_checkbox", out boolconv);
             if (boolconv == "True")
             {
-                configUser_password_transfer_checkbox = true;
+                configUser_password_generate_checkbox = true;
             }
             else
             {
-                configUser_password_transfer_checkbox = false;
+                configUser_password_generate_checkbox = false;
             }
             dictionary.TryGetValue("configUser_password_short_fix_checkbox", out boolconv);
             if (boolconv == "True")
@@ -1258,7 +1269,7 @@ namespace WindowsApplication1.utils
             returnvalue.Add("configUser_Fname", configUser_Fname);
             returnvalue.Add("configUser_MiddleName", configUser_MiddleName);
             returnvalue.Add("configUser_StuID", configUser_StuID);
-            returnvalue.Add("configUser_password_transfer_checkbox", configUser_password_transfer_checkbox.ToString());
+            returnvalue.Add("configUser_password_generate_checkbox", configUser_password_generate_checkbox.ToString());
             returnvalue.Add("configUser_password_short_fix_checkbox", configUser_password_short_fix_checkbox.ToString());
             returnvalue.Add("configUser_password", configUser_password);
 
@@ -2518,7 +2529,7 @@ namespace WindowsApplication1.utils
             //| 4             d             | 4              e          | NOT RETURNED      |
             //
             // SqlCommand sqlComm = new SqlCommand("Select Table1.* Into #Table3ADTransfer From " + Table1 + " AS Table1, " + Table2 + " AS Table2 Where Table1." + pkey1 + " = Table2." + pkey2 + " And Table2." + pkey2 + " is null", sqlConn);
-            SqlCommand sqlComm = new SqlCommand("SELECT uptoDate.* FROM " + table1 + " uptoDate LEFT OUTER JOIN " + table2 + " outofDate ON outofDate." + pkey2 + " = uptoDate." + pkey1 + " WHERE outofDate." + pkey2 + " IS NULL;", sqlConn);
+            SqlCommand sqlComm = new SqlCommand("SELECT DISTINCT uptoDate.* FROM " + table1 + " uptoDate LEFT OUTER JOIN " + table2 + " outofDate ON outofDate." + pkey2 + " = uptoDate." + pkey1 + " WHERE outofDate." + pkey2 + " IS NULL;", sqlConn);
             // create the command object
             SqlDataReader r;
             try
@@ -2544,7 +2555,7 @@ namespace WindowsApplication1.utils
             //| 3             c             | 2              null       | NOT RETURNED      |
             //| 4             d             | 4              e          | NOT RETURNED      |
             // SqlCommand sqlComm = new SqlCommand("Select Table1.* Into #Table3ADTransfer From " + Table1 + " AS Table1, " + Table2 + " AS Table2 Where Table1." + pkey1 + " = Table2." + pkey2 + " And Table2." + pkey2 + " is null", sqlConn);
-            SqlCommand sqlComm = new SqlCommand("SELECT uptoDate.* INTO " + newTable + " FROM " + table1 + " uptoDate LEFT OUTER JOIN " + table2 + " outofDate ON outofDate." + pkey2 + " = uptoDate." + pkey1 + " WHERE outofDate." + pkey2 + " IS NULL;", sqlConn);
+            SqlCommand sqlComm = new SqlCommand("SELECT DISTINCT uptoDate.* INTO " + newTable + " FROM " + table1 + " uptoDate LEFT OUTER JOIN " + table2 + " outofDate ON outofDate." + pkey2 + " = uptoDate." + pkey1 + " WHERE outofDate." + pkey2 + " IS NULL", sqlConn);
             // create the command object
             try
             {
@@ -2569,7 +2580,7 @@ namespace WindowsApplication1.utils
             //| 3             c             | 3              null       | RETURNED          | 3             c
             //| 4             d             | 4              e          | NOT RETURNED      | 
 
-            SqlCommand sqlComm = new SqlCommand("SELECT " + table1 + ".* FROM " + table1 + " INNER JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2, sqlConn);
+            SqlCommand sqlComm = new SqlCommand("SELECT DISTINCT " + table1 + ".* FROM " + table1 + " INNER JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2, sqlConn);
             SqlDataReader r;
             try
             {
@@ -2606,11 +2617,11 @@ namespace WindowsApplication1.utils
             additionalfields = additionalfields.Remove(additionalfields.Length - 2);
             if (additionalFields.Count > 0)
             {
-                sqlComm = new SqlCommand("SELECT " + table1 + ".*, " + additionalfields + " FROM " + table1 + " INNER JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2, sqlConn);
+                sqlComm = new SqlCommand("SELECT DISTINCT " + table1 + ".*, " + additionalfields + " FROM " + table1 + " INNER JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2, sqlConn);
             }
             else
             {
-                sqlComm = new SqlCommand("SELECT " + table1 + ".* FROM " + table1 + " INNER JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2, sqlConn);
+                sqlComm = new SqlCommand("SELECT DISTINCT " + table1 + ".* FROM " + table1 + " INNER JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2, sqlConn);
             }
 
             try
@@ -2636,7 +2647,7 @@ namespace WindowsApplication1.utils
             //| 3             c             | 3              null       | RETURNED          | 3             c
             //| 4             d             | 4              e          | NOT RETURNED      | 
 
-            SqlCommand sqlComm = new SqlCommand("SELECT " + table1 + ".* INTO " + newTable + " FROM " + table1 + " INNER JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2, sqlConn);
+            SqlCommand sqlComm = new SqlCommand("SELECT DISTINCT " + table1 + ".* INTO " + newTable + " FROM " + table1 + " INNER JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2, sqlConn);
             try
             {
                 sqlComm.ExecuteNonQuery();
@@ -2648,6 +2659,7 @@ namespace WindowsApplication1.utils
         }
         public SqlDataReader CheckUpdate(string table1, string table2, string pkey1, string pkey2, ArrayList compareFields1, ArrayList compareFields2, SqlConnection sqlConn, LogFile log)
         {
+            // NULL not handeled as blanks
             // Assumes table1 holds the correct data and returns a data reader with the update fields columns from table1
             // returns the rows which table2's concatenated update fields differ from table1's concatenated update fields
             // eliminates rows which do not have a matching key in both tables
@@ -2678,7 +2690,7 @@ namespace WindowsApplication1.utils
             compare2 = compare2.Remove(compare2.Length - 2);
             compare1 = compare1.Remove(compare1.Length - 2);
             fields = fields.Remove(fields.Length - 2);
-            SqlCommand sqlComm = new SqlCommand("SELECT " + fields + " FROM " + table1 + " INNER JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2 + " WHERE (" + compare2 + ") <> (" + compare1 + ")", sqlConn);
+            SqlCommand sqlComm = new SqlCommand("SELECT DISTINCT " + fields + " FROM " + table1 + " INNER JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2 + " WHERE (" + compare2 + ") <> (" + compare1 + ")", sqlConn);
             //AND " + table2 + "." + pkey2 + " != NULL
             try
             {
@@ -2693,6 +2705,7 @@ namespace WindowsApplication1.utils
         }
         public SqlDataReader CheckUpdate(string table1, string table2, string pkey1, string pkey2, ArrayList compareFields1, ArrayList compareFields2, ArrayList additionalFields, SqlConnection sqlConn, LogFile log)
         {
+            // NULL not handeled as blanks
             // additionalFields takes the field names " table.field,"
             // Assumes table1 holds the correct data and returns a data reader with the update fields columns from table1
             // compare fields 1 & 2 should have the same number of items or it is likely that all rows will be found needing updating
@@ -2775,11 +2788,11 @@ namespace WindowsApplication1.utils
             SqlCommand sqlComm;
             if (additionalFields.Count > 0)
             {
-                sqlComm = new SqlCommand("SELECT " /*+ compare2 + "," + compare1 + "," + table1 + "." + pkey1 + "," + table2 + "." + pkey2 + ","*/ + fields + ", " + additionalfields + " FROM " + table1 + " INNER JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2 + " AND (" + compare2 + ") <> (" + compare1 + ") WHERE " + notnull, sqlConn);
+                sqlComm = new SqlCommand("SELECT DISTINCT " /*+ compare2 + "," + compare1 + "," + table1 + "." + pkey1 + "," + table2 + "." + pkey2 + ","*/ + fields + ", " + additionalfields + " FROM " + table1 + " INNER JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2 + " AND (" + compare2 + ") <> (" + compare1 + ") WHERE " + notnull, sqlConn);
             }
             else
             {
-                sqlComm = new SqlCommand("SELECT " + fields + " FROM " + table1 + " INNER JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2 + " AND (" + compare2 + ") <> (" + compare1 + ") WHERE " + notnull, sqlConn);
+                sqlComm = new SqlCommand("SELECT DISTINCT " + fields + " FROM " + table1 + " INNER JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2 + " AND (" + compare2 + ") <> (" + compare1 + ") WHERE " + notnull, sqlConn);
             }
             //AND " + table2 + "." + pkey2 + " != NULL
             try
@@ -2825,7 +2838,7 @@ namespace WindowsApplication1.utils
             compare2 = compare2.Remove(compare2.Length - 2);
             compare1 = compare1.Remove(compare1.Length - 2);
             fields = fields.Remove(fields.Length - 2);
-            SqlCommand sqlComm = new SqlCommand("SELECT " + fields + " INTO " + newTable + " FROM " + table1 + " INNER JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2 + " WHERE (" + compare2 + ") <> (" + compare1 + ")", sqlConn);
+            SqlCommand sqlComm = new SqlCommand("SELECT DISTINCT " + fields + " INTO " + newTable + " FROM " + table1 + " INNER JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2 + " WHERE (" + compare2 + ") <> (" + compare1 + ")", sqlConn);
             //AND " + table2 + "." + pkey2 + " != NULL
             try
             {
@@ -2836,6 +2849,132 @@ namespace WindowsApplication1.utils
                 log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
             }
         }
+        public void SelectNicknamesClosestToActualNameIntoNewTable(string table1, string table2, string pkey1, string pkey2, string newTable, ArrayList selectFields, string targetField, ArrayList valueFields, SqlConnection sqlConn, LogFile log)
+        {
+            //select distinct soc_sec, 
+            //(Select top 1 nickname
+            //    from FHC_TEST_gmailNicknamesTable left join FHC_TEST_sqlusersTable on FHC_TEST_gmailNicknamesTable.soc_sec = FHC_TEST_sqlusersTable.sAMAccountName
+            //    where soc_sec = a.soc_sec 
+            //    order by soc_sec, 
+            //        CHARINDEX(FHC_TEST_sqlusersTable.sn, FHC_TEST_gmailNicknamesTable.nickname) DESC,
+            //        CHARINDEX(FHC_TEST_sqlusersTable.givenName, FHC_TEST_gmailNicknamesTable.nickname) DESC,
+            //        CHARINDEX(FHC_TEST_sqlusersTable.middleName, FHC_TEST_gmailNicknamesTable.nickname) DESC
+            //)
+            //as nickname,
+            //    (Select top 1 email
+            //    from FHC_TEST_gmailNicknamesTable left join FHC_TEST_sqlusersTable on FHC_TEST_gmailNicknamesTable.soc_sec = FHC_TEST_sqlusersTable.sAMAccountName
+            //    where soc_sec = a.soc_sec 
+            //    order by soc_sec, CHARINDEX(FHC_TEST_sqlusersTable.sn, FHC_TEST_gmailNicknamesTable.nickname) DESC, CHARINDEX(FHC_TEST_sqlusersTable.givenName, FHC_TEST_gmailNicknamesTable.nickname) DESC, CHARINDEX(FHC_TEST_sqlusersTable.middleName, FHC_TEST_gmailNicknamesTable.nickname) DESC) as email
+            //FROM FHC_TEST_gmailNicknamesTable as a
+            //ORDER BY soc_sec;
+
+            // Assumes table1 holds the correct data and returns a data reader with the update fields columns from table1
+            // returns the rows which table2's concatenated update fields differ from table1's concatenated update fields
+            // eliminates rows which do not have a matching key in both tables
+            // adds convluted logic to deal with duplicates and select the one closest to the matching data from the table 2 assumed to be the correct first middle last name etc
+            //*************************************************************************************************
+            //| Table1                      | Table2                    | Returned result
+            //*************************************************************************************************
+            //| ID            Data          | ID             Data       |                   | Table1.ID     Table1.DATA
+            //| 1             a             | 1              a          | NOT RETURNED      |
+            //| 2             b             | null           null       | NOT RETURNED      |              
+            //| 3             c             | 3              null       | RETURNED          | 3             c
+            //| 4             d             | 4              e          | RETURNED          | 4             e
+
+            //string table1 the table with the new nicknames
+            //string table2 the table with the original names 
+            //string pkey1
+            //string pkey2
+            //string newTable = ; the name of the new Table We want To return
+            //ArrayList selectFields = new ArrayList( [ email] )List of fields we want returned fields should Be in table1
+            //string targetField = "nickname"; name of the field we want to be close to ie like a google search result validity must be in table1
+            //ArrayList valueFields = new ArrayList( [sn, givenName, middleName ] ); lift of fields which are being compared to the targetField to see how close it gets    
+
+
+            string complexField = "";
+
+            foreach (string key in selectFields)
+            {
+                complexField += "(SELECT TOP 1 " + table1 + "." + key;
+                complexField += " FROM " + table1 + " LEFT JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2;
+                complexField += " WHERE " + table1 + "." + pkey1 + " = extTable." + pkey1;
+                complexField += " ORDER BY " + table2 + "." + pkey2 + ",";
+                foreach (string value in valueFields)
+                {
+                    // should have first middle last as the arraylist for valueFields1
+                    complexField += " CHARINDEX(" + table2 + "." + value + ", " + table1 + "." + targetField + ") DESC,";
+                }
+                // comma remove
+                complexField = complexField.Remove(complexField.Length - 1);
+
+                complexField += ") AS " + key + ",";
+            }
+            // comma remove
+            complexField = complexField.Remove(complexField.Length - 1);
+
+            SqlCommand sqlComm = new SqlCommand("SELECT DISTINCT extTable." + pkey1 + ", " + complexField + " INTO " + newTable + " FROM " + table1 + " AS extTable ORDER BY extTable." + pkey1, sqlConn);
+
+            try
+            {
+                sqlComm.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+            }
+        }
+
+        public void CheckEmailUpdateIntoNewTable(string email1, string email2, string table1, string table2, string pkey1, string pkey2, string newTable, ArrayList compareFields1, ArrayList compareFields2, SqlConnection sqlConn, LogFile log)
+        {
+
+            //select FHC_test2_gmailNicknamesTable.soc_sec, FHC_test2_gmailNicknamesTable.Email
+            //FROM FHC_test2_gmailNicknamesTable INNER JOIN FHC_test2_sqlNicknamesTable 
+            //ON FHC_test2_gmailNicknamesTable.soc_sec = FHC_test2_sqlNicknamesTable.soc_sec 
+            //where FHC_test2_gmailNicknamesTable.Email not in (select FHC_test2_gmailnicknamestable.email from FHC_test2_gmailnicknamestable)
+
+            // Assumes table1 holds the correct data and returns a data reader with the update fields columns from table1
+            // returns the rows which table2's concatenated update fields differ from table1's concatenated update fields
+            // eliminates rows which do not have a matching key in both tables
+            //*************************************************************************************************
+            //| Table1                      | Table2                    | Returned result
+            //*************************************************************************************************
+            //| ID            Data          | ID             Data       |                   | Table1.ID     Table1.DATA
+            //| 1             a             | 1              a          | NOT RETURNED      |
+            //| 2             b             | null           null       | NOT RETURNED      |              
+            //| 3             c             | 3              null       | RETURNED          | 3             c
+            //| 4             d             | 4              e          | RETURNED          | 4             e
+
+            string compare1 = "";
+            string compare2 = "";
+            string fields = "";
+            // need a comand builder and research on the best way to compare all fields in a row
+            // this basically will just issue a concatenation sql query to the DB for each field to compare
+            foreach (string key in compareFields1)
+            {
+                compare1 = compare1 + table1 + "." + key + " + ";
+                fields += table1 + "." + key + ", ";
+            }
+            foreach (string key in compareFields2)
+            {
+                compare2 = compare2 + table2 + "." + key + " + ";
+            }
+            // remove trailing comma and + 
+            compare2 = compare2.Remove(compare2.Length - 2);
+            compare1 = compare1.Remove(compare1.Length - 2);
+            fields = fields.Remove(fields.Length - 2);
+            SqlCommand sqlComm = new SqlCommand("SELECT DISTINCT " + fields + " INTO " + newTable + " FROM " + table1 + " INNER JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2 + " WHERE " + table1 + "." + email1 + " NOT IN ( SELECT " + table2 + "." + email2 + " FROM " + table2 + " )", sqlConn);
+            //AND " + table2 + "." + pkey2 + " != NULL
+            try
+            {
+                sqlComm.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+            }
+        }
+
+
         public ArrayList SqlColumns(UserSynch userconfig)
         {
             ArrayList columnList = new ArrayList();
@@ -3029,6 +3168,55 @@ namespace WindowsApplication1.utils
                 log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
             }
         }
+        public void Mass_Email_Shift(GmailUsers gusersyn, string sourceTable, string targetTable, string sourcePimaryKey, string targetPrimaryKey, ArrayList sourceColumnsAndTable, ArrayList targetColumnsAndTable, string whereClause, SqlConnection sqlConn, LogFile log)
+        {
+            // sourceColumnsAndTable and targetColumnsAndTable must have the same number of columns (its a one to one transfer)
+            // updates the targetColumnsAndTable with the data from the sourceColumnsAndTable
+            // does not overwrite secondary fields which contain the email domain from the gusersyn
+            //
+            // sourceColumnsAndTable expects   "table.column"
+            // targetColumnsAndTable expects   "table.column"
+
+            // massUpdateSameTable  truely a useless flag to overload the function
+            //
+            //UPDATE table1
+            //        SET table1.col = table2.col1
+            //FROM table1 INNER JOIN table2 ON table1.Pkey = table2.Pkey
+            //WHERE variable clause
+
+            //UPDATE a1 
+            //SET a1.e_mail2 = a1.e_mail 
+            //FROM address as a1 INNER JOIN (select * from address as a2 where rtrim(a2.gmail) <> '') as a2 ON a1.soc_sec = a2.soc_sec 
+
+
+            string columnValues = "";
+            int sourceCount = sourceColumnsAndTable.Count;
+            int i = 0;
+            for (i = 0; i < sourceCount; i++)
+            {
+                columnValues += targetColumnsAndTable[i].ToString() + " = " + sourceColumnsAndTable[i].ToString() + ", ";
+            }
+
+            columnValues = columnValues.Remove(columnValues.Length - 2);
+            SqlCommand sqlComm;
+            if (whereClause.Length == 0)
+            {
+                sqlComm = new SqlCommand("UPDATE " + targetTable + " SET " + columnValues + " FROM " + targetTable + " INNER JOIN " + sourceTable + " ON " + targetTable + "." + targetPrimaryKey + " = " + sourceTable + "." + sourcePimaryKey + " WHERE " + sourceColumnsAndTable[0] + " not like '%" + gusersyn.Admin_domain + "%' AND " + sourceColumnsAndTable[0] + " <> '' AND " + sourceColumnsAndTable[0] + " <> '?' AND " + sourceColumnsAndTable[0] + " IS NOT NULL ", sqlConn);
+            }
+            else
+            {
+                sqlComm = new SqlCommand("UPDATE " + targetTable + " SET " + columnValues + " FROM " + targetTable + " INNER JOIN " + sourceTable + " ON " + targetTable + "." + targetPrimaryKey + " = " + sourceTable + "." + sourcePimaryKey + " WHERE " + sourceColumnsAndTable[0] + " not like '%" + gusersyn.Admin_domain + "%' AND " + sourceColumnsAndTable[0] + " <> '' AND " + sourceColumnsAndTable[0] + " <> '?' AND " + sourceColumnsAndTable[0] + " IS NOT NULL AND " + whereClause, sqlConn);
+            }
+            try
+            {
+                sqlComm.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+            }
+        }
+        
 
 
         // Gmail tools
@@ -3042,7 +3230,8 @@ namespace WindowsApplication1.utils
             midName = midName.Replace(".", "");
             while (complete == false)
             {
-                int r = midName.Length;
+                int r = midName.Length + 1;
+
                 if (i == 0)
                 {
                     returnvalue = firstName + "." + lastName;
@@ -3053,16 +3242,20 @@ namespace WindowsApplication1.utils
                     {
                         returnvalue = firstName + "." + midName.Substring(0, i) + "." + lastName;
                     }
-                    else if (i < (r + firstName.Length))
+                    else
                     {
-                        returnvalue = firstName.Substring(0, (i - r)) + "." + midName + "." + lastName;
+                        if (i < (r + firstName.Length))
+                        {
+                            returnvalue = firstName.Substring(0, (i - r)) + "." + midName + "." + lastName;
+                        }
                     }
-                    else if (i > (r + firstName.Length))
-                    {
-                        returnvalue = "failure";
-                        complete = true;
-                    }
+                } 
+                if (i > (r + firstName.Length))
+                {
+                    returnvalue = "failure";
+                    complete = true;
                 }
+
 
                 try
                 {
@@ -3073,8 +3266,19 @@ namespace WindowsApplication1.utils
                         complete = true;
                     }
                 }
-                catch
+                catch (AppsException apex)
                 {
+                    MessageBox.Show("Nickname apps exception " + apex.ErrorCode.ToString() + "  +++  \n" + apex.Data.ToString() + "  +++  \n" + apex.Message.ToString() + "  +++  \n" + apex.Reason.ToString() + "  +++  \n" + apex.Source.ToString());
+                    if (apex.ErrorCode == "1301")
+                    {
+                        // this error about a non existent entiry seems to indicate the nickname is already created
+                        complete = true;                        
+                    }
+                    i++;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Nickname issue " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
                     i++;
                     complete = false;
                 }
@@ -3116,7 +3320,7 @@ namespace WindowsApplication1.utils
                         first_name = users[gusersyn.User_Fname].ToString().Replace("<", "%3c").Replace(">", "%3e").Replace("=", "%3d").Replace("%", "%25");
                         middle_name = users[gusersyn.User_Mname].ToString().Replace("<", "%3c").Replace(">", "%3e").Replace("=", "%3d").Replace("%", "%25");
                         last_name = users[gusersyn.User_Lname].ToString().Replace("<", "%3c").Replace(">", "%3e").Replace("=", "%3d").Replace("%", "%25");
-                        if (gusersyn.User_password_transfer_checkbox == false)
+                        if (gusersyn.User_password_generate_checkbox == false)
                         {
                             // password needs to bea able to handle special characters
                             password = users[gusersyn.User_password].ToString();
@@ -3172,30 +3376,48 @@ namespace WindowsApplication1.utils
         }
         public void DeleteGmailUserAccount(AppsService service, string userID, LogFile log)
         {
-            service.DeleteUser(userID);
+            try
+            {
+                service.DeleteUser(userID);
+            }
+            catch (Exception ex)
+            {
+                log.errors.Add("Failed Delete gmail account " + userID + " exception " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+            }
+
+
         }
         public void UpdateGmailUser(AppsService service, GmailUsers gusersyn, SqlDataReader usersToUpdate, LogFile log)
         {
             string userNickName = "";
-            while (usersToUpdate.Read())
+            string middlename = "";
+            try
             {
-                try
+                while (usersToUpdate.Read())
                 {
-                    UserEntry gmailUser = service.RetrieveUser((string)usersToUpdate[gusersyn.User_StuID]);
-                    //special gmail username replace string only allows -_. special character thru
-                    gmailUser.Login.UserName = System.Web.HttpUtility.UrlEncode(usersToUpdate[gusersyn.User_StuID].ToString()).Replace("+", " ").Replace("*", "%2A").Replace("!", "%21").Replace("(", "%28").Replace(")", "%29").Replace("'", "%27").Replace("_", "%5f").Replace(" ", "%20").Replace("%", "_");
-                    gmailUser.Name.FamilyName = usersToUpdate[gusersyn.User_Lname].ToString().Replace("<", "%3c").Replace(">", "%3e").Replace("=", "%3d").Replace("%", "%25");
-                    gmailUser.Name.GivenName = usersToUpdate[gusersyn.User_Fname].ToString().Replace("<", "%3c").Replace(">", "%3e").Replace("=", "%3d").Replace("%", "%25");
-                    service.UpdateUser(gmailUser);
-                    log.transactions.Add("Updated " + System.Web.HttpUtility.UrlEncode(usersToUpdate[gusersyn.User_StuID].ToString()).Replace("+", " ").Replace("*", "%2A") + " because of name change. New Name is " + gmailUser.Name.FamilyName.ToString() + ", " + gmailUser.Name.GivenName.ToString());
-                    userNickName = GetNewUserNickname(service, gmailUser.Login.UserName, gmailUser.Name.GivenName, usersToUpdate[gusersyn.User_Mname].ToString().Replace("<", "%3c").Replace(">", "%3e").Replace("=", "%3d").Replace("%", "%25"), gmailUser.Name.FamilyName, 0, false);
-                    log.transactions.Add("Added New Alias for " + gmailUser.Login.UserName + "@" + gusersyn.Admin_domain + " Aliased as " + userNickName + "@" + gusersyn.Admin_domain);
-                }
-                catch (Exception ex)
-                {
-                    log.errors.Add("Failed update gmail account " + System.Web.HttpUtility.UrlEncode(usersToUpdate[gusersyn.User_StuID].ToString()).Replace("+", " ").Replace("*", "%2A").Replace("!", "%21").Replace("(", "%28").Replace(")", "%29").Replace("'", "%27").Replace("_", "%5f").Replace(" ", "%20").Replace("%", "_") + " exception " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
-                }
+                    try
+                    {
+                        UserEntry gmailUser = service.RetrieveUser((string)usersToUpdate[gusersyn.User_StuID]);
+                        //special gmail username replace string only allows -_. special character thru
+                        gmailUser.Login.UserName = System.Web.HttpUtility.UrlEncode(usersToUpdate[gusersyn.User_StuID].ToString()).Replace("+", " ").Replace("*", "%2A").Replace("!", "%21").Replace("(", "%28").Replace(")", "%29").Replace("'", "%27").Replace("_", "%5f").Replace(" ", "%20").Replace("%", "_");
+                        gmailUser.Name.FamilyName = usersToUpdate[gusersyn.User_Lname].ToString().Replace("<", "%3c").Replace(">", "%3e").Replace("=", "%3d").Replace("%", "%25");
+                        gmailUser.Name.GivenName = usersToUpdate[gusersyn.User_Fname].ToString().Replace("<", "%3c").Replace(">", "%3e").Replace("=", "%3d").Replace("%", "%25");
+                        middlename = usersToUpdate[gusersyn.User_Mname].ToString().Replace("<", "%3c").Replace(">", "%3e").Replace("=", "%3d").Replace("%", "%25");
+                        service.UpdateUser(gmailUser);
+                        log.transactions.Add("Updated " + System.Web.HttpUtility.UrlEncode(usersToUpdate[gusersyn.User_StuID].ToString()).Replace("+", " ").Replace("*", "%2A") + " because of name change. New Name is " + gmailUser.Name.FamilyName.ToString() + ", " + gmailUser.Name.GivenName.ToString());
+                        userNickName = GetNewUserNickname(service, gmailUser.Login.UserName, gmailUser.Name.GivenName, middlename, gmailUser.Name.FamilyName, 0, false);
+                        log.transactions.Add("Added New Alias for " + gmailUser.Login.UserName + "@" + gusersyn.Admin_domain + " Aliased as " + userNickName + "@" + gusersyn.Admin_domain);
+                    }
+                    catch (Exception ex)
+                    {
+                        log.errors.Add("Failed update gmail account " + System.Web.HttpUtility.UrlEncode(usersToUpdate[gusersyn.User_StuID].ToString()).Replace("+", " ").Replace("*", "%2A").Replace("!", "%21").Replace("(", "%28").Replace(")", "%29").Replace("'", "%27").Replace("_", "%5f").Replace(" ", "%20").Replace("%", "_") + " exception " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                    }
 
+                }
+            }
+            catch (Exception ex)
+            {
+                log.errors.Add("Issue updating gmail users datareader is null " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
             }
         }
         public void CreateSendAs(GmailUsers gusersyn, SqlDataReader userNicknames, string sendASFieldName, string replyToFieldName, LogFile log)
@@ -3203,17 +3425,24 @@ namespace WindowsApplication1.utils
             //AppsService service = new AppsService(gusersyn.Admin_domain, gusersyn.Admin_user + "@" + gusersyn.Admin_domain, gusersyn.Admin_password);
             GoogleMailSettingsService gmailSettings = new GoogleMailSettingsService(gusersyn.Admin_domain, gusersyn.Admin_domain);
             gmailSettings.setUserCredentials(gusersyn.Admin_user + "@" + gusersyn.Admin_domain, gusersyn.Admin_password);
-            while (userNicknames.Read())
+            try
             {
-                try
+                while (userNicknames.Read())
                 {
-                    gmailSettings.CreateSendAs((string)userNicknames[gusersyn.User_StuID], (string)userNicknames[gusersyn.User_Fname] + " " + (string)userNicknames[gusersyn.User_Lname], (string)userNicknames[sendASFieldName], (string)userNicknames[replyToFieldName], "true");
-                    log.transactions.Add("Created send as alias " + (string)userNicknames[sendASFieldName] + " for userlogin " + (string)userNicknames[gusersyn.User_StuID]);
+                    try
+                    {
+                        gmailSettings.CreateSendAs((string)userNicknames[gusersyn.User_StuID], (string)userNicknames[gusersyn.User_Fname] + " " + (string)userNicknames[gusersyn.User_Lname], (string)userNicknames[sendASFieldName], (string)userNicknames[replyToFieldName], "true");
+                        log.transactions.Add("Created send as alias " + (string)userNicknames[sendASFieldName] + " for userlogin " + (string)userNicknames[gusersyn.User_StuID]);
+                    }
+                    catch (Exception ex)
+                    {
+                        log.errors.Add("Failed user send as creation " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                    }
                 }
-                catch (Exception ex)
-                {
-                    log.errors.Add("Failed user send as creation " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
-                }
+            }
+            catch (Exception ex)
+            {
+                log.errors.Add("Issue creating send as datareader is null " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
             }
         }
   
@@ -3767,7 +3996,7 @@ namespace WindowsApplication1.utils
             ArrayList fields = new ArrayList();
             DataTable groupsDataTable = new DataTable();
             Dictionary<string, string> groupObject = new Dictionary<string, string>();
-            SqlConnection sqlConn = new SqlConnection("Data Source=" + groupsyn.DataServer + ";Initial Catalog=" + groupsyn.DBCatalog + ";Integrated Security=SSPI;");
+            SqlConnection sqlConn = new SqlConnection("Data Source=" + groupsyn.DataServer + ";Initial Catalog=" + groupsyn.DBCatalog + ";Integrated Security=SSPI;Connect Timeout=360");
 
 
 
@@ -3794,6 +4023,7 @@ namespace WindowsApplication1.utils
             catch (Exception ex)
             {
                 log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                throw;
             }
 
 
@@ -4174,17 +4404,25 @@ namespace WindowsApplication1.utils
                 log.errors.Add("Issue adding group datareader is null " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
             }
             add.Close();
+            SqlCommand sqlComm2 = new SqlCommand();
+            string recordCount = "";
+            sqlComm2 = new SqlCommand("select count(" + groupsyn.Group_sAMAccount + ") FROM " + sqlgroupMembersTable, sqlConn);
+            recordCount =  sqlComm2.ExecuteScalar().ToString();
+            sqlComm2.Dispose();
 
-            delete = tools.QueryNotExists(ADgroupMembersTable, sqlgroupMembersTable, sqlConn, ADusers.Columns[1].ColumnName, groupsyn.User_Group_Reference, log);
-            // delete groups in AD
-            while (delete.Read())
+            if (recordCount != "0")
             {
+                delete = tools.QueryNotExists(ADgroupMembersTable, sqlgroupMembersTable, sqlConn, ADusers.Columns[1].ColumnName, groupsyn.User_Group_Reference, log);
+                // delete groups in AD
+                while (delete.Read())
+                {
 
-                tools.RemoveUserFromGroup((string)delete[0], (string)delete[1], log);
-                // log.transactions.Add("User removed ;" + (string)delete[adUpdateKeys[1].ToString()].ToString().Trim() + ",OU=" + groupapp + groupOU);
+                    tools.RemoveUserFromGroup((string)delete[0], (string)delete[1], log);
+                    // log.transactions.Add("User removed ;" + (string)delete[adUpdateKeys[1].ToString()].ToString().Trim() + ",OU=" + groupapp + groupOU);
 
+                }
+                delete.Close();
             }
-            delete.Close();
             sqlConn.Close();
         }
         public void ExecuteUserSync(UserSynch usersyn, ToolSet tools, LogFile log)
@@ -4215,14 +4453,17 @@ namespace WindowsApplication1.utils
             ArrayList extraFieldsToReturn = new ArrayList();
             ArrayList fields = new ArrayList();
             Dictionary<string, string> userObject = new Dictionary<string, string>();
-            SqlConnection sqlConn = new SqlConnection("Data Source=" + usersyn.DataServer + ";Initial Catalog=" + usersyn.DBCatalog + ";Integrated Security=SSPI;");
+            SqlConnection sqlConn = new SqlConnection("Data Source=" + usersyn.DataServer + ";Initial Catalog=" + usersyn.DBCatalog + ";Integrated Security=SSPI;Connect Timeout=360");
 
 
             string sqlUsersTable = "#sqlusersTable";
             string adUsersTable = "#ADusersTable";
             //SqlDataReader sqlusers;
             SqlCommand sqlComm;
+            SqlCommand sqlComm2;
+            string recordCount = "";
             DataTable adUsers = new DataTable();
+
 
 
             sqlConn.Open();
@@ -4349,6 +4590,7 @@ namespace WindowsApplication1.utils
             catch (Exception ex)
             {
                 log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                throw;
             }
 
             // go grab all the users from AD
@@ -4449,44 +4691,53 @@ namespace WindowsApplication1.utils
                 tools.CreateUserAccount(usersyn.UserHoldingTank, add, usersyn.UniversalGroup, usersyn, log);
                 add.Close();
 
-                delete = tools.QueryNotExists(adUsersTable, sqlUsersTable, sqlConn, usersyn.User_sAMAccount, completeADKeys[0].ToString(), log);
+      
+                sqlComm2 = new SqlCommand("select count(sAMAccountName) FROM " + sqlUsersTable, sqlConn);
+                recordCount =  sqlComm2.ExecuteScalar().ToString();
+                sqlComm2.Dispose();
 
-                //debug = "Gunna delete stuff \n field names are \n";
-                //debugFieldCount = delete.FieldCount;
-                //for (i = 0; i < debugFieldCount; i++)
-                //{
-                //    debug += delete.GetName(i) + ", ";
-                //}
-                //debug += "\n data \n";
-                ////int j = 0;
-                //j = 0;
-                //while (delete.Read() && j < 20)
-                //{
-                //    for (i = 0; i < debugFieldCount; i++)
-                //    {
-                //        debug += (string)delete[i] + ", ";
-                //    }
-                //    debug += "\n";
-                //    j++;
-                //}
-
-                //MessageBox.Show(debug);
-
-                // delete users in AD
-                try
+                if (recordCount != "0")
                 {
-                    while (delete.Read())
+                    delete = tools.QueryNotExists(adUsersTable, sqlUsersTable, sqlConn, usersyn.User_sAMAccount, completeADKeys[0].ToString(), log);
+
+                    //debug = "Gunna delete stuff \n field names are \n";
+                    //debugFieldCount = delete.FieldCount;
+                    //for (i = 0; i < debugFieldCount; i++)
+                    //{
+                    //    debug += delete.GetName(i) + ", ";
+                    //}
+                    //debug += "\n data \n";
+                    ////int j = 0;
+                    //j = 0;
+                    //while (delete.Read() && j < 20)
+                    //{
+                    //    for (i = 0; i < debugFieldCount; i++)
+                    //    {
+                    //        debug += (string)delete[i] + ", ";
+                    //    }
+                    //    debug += "\n";
+                    //    j++;
+                    //}
+
+                    //MessageBox.Show(debug);
+
+                    // delete users in AD
+                    try
                     {
+                        while (delete.Read())
+                        {
 
-                        tools.DeleteUserAccount((string)delete["distinguishedname"], log);
-                        // log.transactions.Add("User removed ;" + (string)delete[adUpdateKeys[1].ToString()].ToString().Trim()); 
+                            tools.DeleteUserAccount((string)delete["distinguishedname"], log);
+                            // log.transactions.Add("User removed ;" + (string)delete[adUpdateKeys[1].ToString()].ToString().Trim()); 
+                        }
                     }
+                    catch (Exception ex)
+                    {
+                        log.errors.Add("Issue deleting AD users datareader is null " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                    }
+                    delete.Close();
                 }
-                catch (Exception ex)
-                {
-                    log.errors.Add("Issue deleting AD users datareader is null " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
-                }
-                delete.Close();
+
 
                 // add the extra fields in form ".field ,"
                 extraFieldsToReturn.Add(adUsersTable + ".distinguishedname ,");
@@ -4551,7 +4802,7 @@ namespace WindowsApplication1.utils
     {
         public void EmailUsersSync(GmailUsers gusersyn, ToolSet tools, LogFile log)
 		{
-            MessageBox.Show("gmail " + gusersyn.Admin_password + " " + gusersyn.Admin_domain + " " + gusersyn.Admin_user + " " + gusersyn.DataServer + " " + gusersyn.DBCatalog + " " + gusersyn.User_ad_OU + " " + gusersyn.User_Datasource + " " + gusersyn.User_dbTable + " " + gusersyn.User_Fname + " " + gusersyn.User_Lname + " " + gusersyn.User_Mname + " " + gusersyn.User_password + " " + gusersyn.User_password_short_fix_checkbox.ToString() + " " + gusersyn.User_password_transfer_checkbox.ToString() + " " + gusersyn.User_StuID + " " + gusersyn.User_table_view + " " + gusersyn.User_where + " " + gusersyn.Writeback_AD_checkbox.ToString() + " " + gusersyn.Writeback_ad_OU + " " + gusersyn.Writeback_DB_checkbox.ToString() + " " + gusersyn.Writeback_email_field + " " + gusersyn.Writeback_primary_key + " " + gusersyn.Writeback_secondary_email_field + " " + gusersyn.Writeback_table + " " + gusersyn.Writeback_transfer_email_checkbox.ToString() + " " + gusersyn.Writeback_where_clause);
+            // MessageBox.Show("gmail " + gusersyn.Admin_password + " " + gusersyn.Admin_domain + " " + gusersyn.Admin_user + " " + gusersyn.DataServer + " " + gusersyn.DBCatalog + " " + gusersyn.User_ad_OU + " " + gusersyn.User_Datasource + " " + gusersyn.User_dbTable + " " + gusersyn.User_Fname + " " + gusersyn.User_Lname + " " + gusersyn.User_Mname + " " + gusersyn.User_password + " " + gusersyn.User_password_short_fix_checkbox.ToString() + " " + gusersyn.User_password_generate_checkbox.ToString() + " " + gusersyn.User_StuID + " " + gusersyn.User_table_view + " " + gusersyn.User_where + " " + gusersyn.Writeback_AD_checkbox.ToString() + " " + gusersyn.Writeback_ad_OU + " " + gusersyn.Writeback_DB_checkbox.ToString() + " " + gusersyn.Writeback_email_field + " " + gusersyn.Writeback_primary_key + " " + gusersyn.Writeback_secondary_email_field + " " + gusersyn.Writeback_table + " " + gusersyn.Writeback_transfer_email_checkbox.ToString() + " " + gusersyn.Writeback_where_clause);
 			// Email addresses are static so only the names can be updated. passwords will be ignored
 			// appservice variables will come from a config designed ot hold its data (sql and Gmail login)
             int i = 0;
@@ -4568,16 +4819,20 @@ namespace WindowsApplication1.utils
 			SqlDataReader add;
 			//SqlDataReader delete;
 			SqlDataReader update;
-			SqlConnection sqlConn = new SqlConnection("Data Source=" + gusersyn.DataServer + ";Initial Catalog=" + gusersyn.DBCatalog + ";Integrated Security=SSPI;");
+            SqlConnection sqlConn = new SqlConnection("Data Source=" + gusersyn.DataServer + ";Initial Catalog=" + gusersyn.DBCatalog + ";Integrated Security=SSPI;Connect Timeout=360;");
 
 
-			string sqlUsersTable = "#sqlusersTable";
-			string gmailUsersTable = "#gmailusersTable";
+            //string sqlUsersTable = "#sqlusersTable";
+            //string gmailUsersTable = "#gmailusersTable";
+            string sqlUsersTable = "FHC_TEST_sqlusersTable";
+            string gmailUsersTable = "FHC_TEST_gmailusersTable";
 			//SqlDataReader sqlusers;
 			SqlCommand sqlComm;
 			DataTable gmailUsers = new DataTable();
             DataTable adUsers = new DataTable();
             DataTable writeback = new DataTable();
+  
+
 
 
             // set up fields to pull back from SQL or AD if the flag is checked both must contain the same data
@@ -4610,6 +4865,10 @@ namespace WindowsApplication1.utils
 
             sqlConn.Open();
 
+            //housecleaning
+            tools.DropTable(sqlUsersTable, sqlConn, log);
+            tools.DropTable(gmailUsersTable, sqlConn, log);
+
             // this statement picks the datasource SQL vs AD and sets up the temp table
             if (gusersyn.User_Datasource == "database")
             {
@@ -4640,6 +4899,8 @@ namespace WindowsApplication1.utils
                 catch (Exception ex)
                 {
                     log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                    // If we add deletion we need to fail out if this is blank
+                    //throw;
                 }
             }
             else
@@ -4744,11 +5005,18 @@ namespace WindowsApplication1.utils
             // ***********************************
 
 
-            string nicknamesFromGmailTable = "#gmailNicknamesTable";
-            string loginWithoutNicknamesTable = "#loginsWONicknamesTable";
-            string adNicknamesTable = "#adNicknamesTable";
-            string sqlNicknamesTable = "#sqlNicknamesTable";
-            string nicknamesToUpdateDBTable = "#nicknamesToUpdateDB";
+            //string nicknamesFromGmailTable = "#gmailNicknamesTable";
+            //string loginWithoutNicknamesTable = "#loginsWONicknamesTable";
+            //string adNicknamesTable = "#adNicknamesTable";
+            //string sqlNicknamesTable = "#sqlNicknamesTable";
+            //string nicknamesToUpdateDBTable = "#nicknamesToUpdateDB";
+            string nicknamesFromGmailTable = "FHC_TEST_gmailNicknamesTable";
+            string loginWithoutNicknamesTable = "FHC_TEST_loginsWONicknamesTable";
+            string adNicknamesTable = "FHC_TEST_adNicknamesTable";
+            string sqlNicknamesTable = "FHC_TEST_sqlNicknamesTable";
+            string nicknamesToUpdateDBTable = "FHC_TEST_nicknamesToUpdateDB";
+            string nicknamesFilteredForDuplicatesTable = "FHC_TEST_nicknamesFilteredDuplicates";
+            string dc = gusersyn.Writeback_ad_OU.Substring(gusersyn.Writeback_ad_OU.IndexOf("DC"));
             string userNickName = "";
             SqlDataReader nicknamesToAddToDatabase;
             SqlDataReader nicknamesToAddToAD;
@@ -4757,8 +5025,21 @@ namespace WindowsApplication1.utils
             ArrayList sqlkeys = new ArrayList();
             ArrayList adPullKeys = new ArrayList();
             ArrayList adMailUpdateKeys = new ArrayList();
+            ArrayList nicknameKeysAndTable = new ArrayList();
+            ArrayList sqlkeysAndTable = new ArrayList();
+            ArrayList keywordFields = new ArrayList(); //fields fror checking against nickname to see how close it is to the real data
+            ArrayList selectFields = new ArrayList(); //fields from nicknamesFromGmailTable to bring back
             DataTable nicknames = new DataTable();
+            SqlDataReader sendAsAliases;
 
+
+            // housecleaning
+            tools.DropTable(nicknamesFromGmailTable, sqlConn, log);
+            tools.DropTable(loginWithoutNicknamesTable, sqlConn, log);
+            tools.DropTable(adNicknamesTable, sqlConn, log);
+            tools.DropTable(sqlNicknamesTable, sqlConn, log);
+            tools.DropTable(nicknamesToUpdateDBTable, sqlConn, log);
+            tools.DropTable(nicknamesFilteredForDuplicatesTable, sqlConn, log);
 
             if (gusersyn.Writeback_AD_checkbox == true || gusersyn.Writeback_DB_checkbox == true)
             {
@@ -4842,6 +5123,14 @@ namespace WindowsApplication1.utils
                 // gusersyn.User_password:: SQL or AD                *******
 
 
+                
+                // TABLE created by query to database
+                // nicknamesToUpdateDBTable:: #nicknamesToUpdateDBTable 
+                //---------------------------------------------
+                //nicknames.Columns[0].ColumnName:: gusersyn.Writeback_primary_key :: soc_sec           xx111111
+                //nicknames.Columns[2].ColumnName:: email                                               first.last@domain
+
+
 
                 // were adding the mail field to the pull fields not so we need to repull
                 // keys to pull from database pull are most likely wrong need to hard code appropriate keys
@@ -4850,6 +5139,8 @@ namespace WindowsApplication1.utils
                 adPullKeys.Add("middleName");
                 adPullKeys.Add("sn");
                 adPullKeys.Add("mail");
+
+
 
                 // clear our previous data
                 adUsers.Clear();
@@ -4881,12 +5172,12 @@ namespace WindowsApplication1.utils
                 //************************************************************
 
 
-                SqlDataReader debugReader;
-                string debug = "";
-                SqlCommand sqlDebugComm;
-                string firstfield = "";
-                string debugRecordCount = "";
-                int debugFieldCount = 0;
+                //SqlDataReader debugReader;
+                //string debug = "";
+                //SqlCommand sqlDebugComm;
+                //string firstfield = "";
+                //string debugRecordCount = "";
+                //int debugFieldCount = 0;
 
                // try
                // {
@@ -5114,8 +5405,30 @@ namespace WindowsApplication1.utils
                 if (gusersyn.Writeback_DB_checkbox == true)
                 {
 
-                    // check the table to see if the nicknames match the ones we have there can be more than one nickname per user                
-                    tools.CheckUpdateIntoNewTable(nicknamesFromGmailTable, sqlNicknamesTable, nicknames.Columns[0].ColumnName, gusersyn.Writeback_primary_key, nicknamesToUpdateDBTable, nicknameKeys, sqlkeys, sqlConn, log);
+                    // check the table to see if the nicknames match the ones we have there can be more than one nickname per user  
+
+                    //select FHC_test2_gmailNicknamesTable.soc_sec, FHC_test2_gmailNicknamesTable.Email
+                    //FROM FHC_test2_gmailNicknamesTable INNER JOIN FHC_test2_sqlNicknamesTable 
+                    //ON FHC_test2_gmailNicknamesTable.soc_sec = FHC_test2_sqlNicknamesTable.soc_sec 
+                    //where email not in (select email from FHC_test2_gmailnicknamestable)
+
+                    //Filter out the good nicknames
+
+
+                    // gusersyn.User_Fname:: SQL or AD                   first
+                    // gusersyn.User_Lname:: SQL or AD                   middle
+                    // gusersyn.User_Mname:: SQL or AD                   last
+                    keywordFields.Add(gusersyn.User_Lname);
+                    keywordFields.Add(gusersyn.User_Fname);
+                    keywordFields.Add(gusersyn.User_Mname);
+                    
+                    selectFields.Add(nicknames.Columns[2].ColumnName);
+
+
+                    // Filter nicknames for duplicates into new table 
+                    tools.SelectNicknamesClosestToActualNameIntoNewTable(nicknamesFromGmailTable, sqlUsersTable, nicknames.Columns[0].ColumnName, gusersyn.User_StuID, nicknamesFilteredForDuplicatesTable, selectFields, nicknames.Columns[1].ColumnName, keywordFields, sqlConn, log);
+                    // Check filtered nicknames against the sql data to see which emails need updating and put into a table for the next operation
+                    tools.CheckEmailUpdateIntoNewTable(nicknames.Columns[2].ColumnName, gusersyn.Writeback_email_field, nicknamesFilteredForDuplicatesTable, sqlNicknamesTable, nicknames.Columns[0].ColumnName, gusersyn.Writeback_primary_key, nicknamesToUpdateDBTable, nicknameKeys, sqlkeys, sqlConn, log);
 
 
 
@@ -5161,6 +5474,18 @@ namespace WindowsApplication1.utils
                     sqlkeys.Add(gusersyn.Writeback_email_field);
 
                     adMailUpdateKeys.Add("mail");
+                    if (gusersyn.Writeback_transfer_email_checkbox == true)
+                    {
+                  
+                        
+                        //UPDATE a1 SET a1.e_mail = a2.gmail FROM address as a1 INNER JOIN address as a2 ON a1.soc_sec = a2.soc_sec where a2.gmail <> ' '
+
+                        nicknameKeysAndTable.Add(gusersyn.Writeback_table + "." + gusersyn.Writeback_email_field); // source table and column
+                        sqlkeysAndTable.Add(gusersyn.Writeback_table + "." + gusersyn.Writeback_secondary_email_field); // target table and column
+
+                        //UNTESTED WILL MOST LIKELY FAIL
+                        tools.Mass_Email_Shift(gusersyn, nicknamesToUpdateDBTable, gusersyn.Writeback_table, nicknames.Columns[0].ColumnName, gusersyn.Writeback_primary_key, nicknameKeysAndTable, sqlkeysAndTable, gusersyn.Writeback_where_clause, sqlConn, log); 
+                    }
                     tools.Mass_Table_update(nicknamesToUpdateDBTable, gusersyn.Writeback_table, nicknames.Columns[0].ColumnName, gusersyn.Writeback_primary_key, nicknameKeys, sqlkeys, gusersyn.Writeback_where_clause, sqlConn, log); 
                 }
 
@@ -5169,6 +5494,7 @@ namespace WindowsApplication1.utils
                 nicknameKeys.Add(nicknames.Columns[0].ColumnName);
                 nicknameKeys.Add(nicknames.Columns[2].ColumnName);
                 // AD fields hard code due to not giving options in interface
+                adMailUpdateKeys.Clear();
                 adMailUpdateKeys.Add("sAMAccountName");
                 adMailUpdateKeys.Add("mail");
 
@@ -5176,10 +5502,10 @@ namespace WindowsApplication1.utils
                 if (gusersyn.Writeback_AD_checkbox == true)
                 {
                     // find nicknames missing in AD
-                    nicknamesToAddToAD = tools.CheckUpdate(nicknamesFromGmailTable, adNicknamesTable, nicknames.Columns[0].ColumnName, adPullKeys[0].ToString(), nicknameKeys, adMailUpdateKeys, sqlConn, log);
+                    nicknamesToAddToAD = tools.CheckUpdate(nicknamesFilteredForDuplicatesTable, adNicknamesTable, nicknames.Columns[0].ColumnName, adPullKeys[0].ToString(), nicknameKeys, adMailUpdateKeys, sqlConn, log);
                     //nicknamesToAddToAD = tools.QueryNotExists(nicknamesFromGmailTable, adNicknamesTable, sqlConn, nicknames.Columns[0].ColumnName, adPullKeys[0].ToString(), log);
                     // interate and update mail fields
-                    string dc = gusersyn.Writeback_ad_OU.Substring(gusersyn.Writeback_ad_OU.IndexOf("DC"));
+
                     try
                     {
                         while (nicknamesToAddToAD.Read())
@@ -5197,20 +5523,21 @@ namespace WindowsApplication1.utils
             
 
                 // create send as aliases need to get data for users 
-                SqlDataReader sendAsAliases;
+
                 additionalKeys.Clear();
-                additionalKeys.Add(nicknamesFromGmailTable + "." + nicknames.Columns[2].ColumnName);
-                sendAsAliases = tools.QueryInnerJoin(sqlUsersTable, nicknamesFromGmailTable, gusersyn.User_StuID, nicknames.Columns[0].ColumnName, additionalKeys, sqlConn, log);
+                additionalKeys.Add(nicknamesFilteredForDuplicatesTable + "." + nicknames.Columns[2].ColumnName + ", ");
+                sendAsAliases = tools.QueryInnerJoin(sqlUsersTable, nicknamesFilteredForDuplicatesTable, gusersyn.User_StuID, nicknames.Columns[0].ColumnName, additionalKeys, sqlConn, log);
                 tools.CreateSendAs(gusersyn, sendAsAliases, nicknames.Columns[2].ColumnName, nicknames.Columns[2].ColumnName, log);
                 
 
-                tools.DropTable(nicknamesFromGmailTable, sqlConn, log);
-                tools.DropTable(loginWithoutNicknamesTable, sqlConn, log);
-                tools.DropTable(adNicknamesTable, sqlConn, log);
-                tools.DropTable(sqlNicknamesTable, sqlConn, log);
+                //tools.DropTable(nicknamesFromGmailTable, sqlConn, log);
+                //tools.DropTable(loginWithoutNicknamesTable, sqlConn, log);
+                //tools.DropTable(adNicknamesTable, sqlConn, log);
+                //tools.DropTable(sqlNicknamesTable, sqlConn, log);
+                //tools.DropTable(nicknamesToUpdateDBTable, sqlConn, log);
             }                      
-            tools.DropTable(sqlUsersTable, sqlConn, log);
-            tools.DropTable(gmailUsersTable, sqlConn, log);
+            //tools.DropTable(sqlUsersTable, sqlConn, log);
+            //tools.DropTable(gmailUsersTable, sqlConn, log);
             //nicknamesToAddToDatabase.Close();
             //nicknamesToAddToAD.Close();
 			sqlConn.Close();

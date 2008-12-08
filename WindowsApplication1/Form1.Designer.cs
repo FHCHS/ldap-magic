@@ -399,7 +399,7 @@ namespace WindowsApplication1
             this.label157 = new System.Windows.Forms.Label();
             this.label156 = new System.Windows.Forms.Label();
             this.label155 = new System.Windows.Forms.Label();
-            this.mail_writeback_use_secondary_email = new System.Windows.Forms.CheckBox();
+            this.mail_writeback_use_secondary_email_checkbox = new System.Windows.Forms.CheckBox();
             this.label154 = new System.Windows.Forms.Label();
             this.mail_writeback_secondary_email = new System.Windows.Forms.ComboBox();
             this.label153 = new System.Windows.Forms.Label();
@@ -4160,7 +4160,7 @@ namespace WindowsApplication1
             this.groupBox19.Controls.Add(this.label157);
             this.groupBox19.Controls.Add(this.label156);
             this.groupBox19.Controls.Add(this.label155);
-            this.groupBox19.Controls.Add(this.mail_writeback_use_secondary_email);
+            this.groupBox19.Controls.Add(this.mail_writeback_use_secondary_email_checkbox);
             this.groupBox19.Controls.Add(this.label154);
             this.groupBox19.Controls.Add(this.mail_writeback_secondary_email);
             this.groupBox19.Controls.Add(this.label153);
@@ -4223,18 +4223,18 @@ namespace WindowsApplication1
             this.label155.TabIndex = 117;
             this.label155.Text = "DEFAULT BEHAVIOR:";
             // 
-            // mail_writeback_use_secondary_email
+            // mail_writeback_use_secondary_email_checkbox
             // 
-            this.mail_writeback_use_secondary_email.AutoSize = true;
-            this.mail_writeback_use_secondary_email.Enabled = false;
-            this.mail_writeback_use_secondary_email.Location = new System.Drawing.Point(6, 83);
-            this.mail_writeback_use_secondary_email.Name = "mail_writeback_use_secondary_email";
-            this.mail_writeback_use_secondary_email.Size = new System.Drawing.Size(487, 30);
-            this.mail_writeback_use_secondary_email.TabIndex = 3;
-            this.mail_writeback_use_secondary_email.Text = " Copy the primary E-mail field to the secondary E-mail. Then update the primary E" +
-                "-mail field with the\r\n newly created G-mail account. ";
-            this.mail_writeback_use_secondary_email.UseVisualStyleBackColor = true;
-            this.mail_writeback_use_secondary_email.CheckedChanged += new System.EventHandler(this.mail_writeback_use_secondary_email_CheckedChanged);
+            this.mail_writeback_use_secondary_email_checkbox.AutoSize = true;
+            this.mail_writeback_use_secondary_email_checkbox.Enabled = false;
+            this.mail_writeback_use_secondary_email_checkbox.Location = new System.Drawing.Point(6, 83);
+            this.mail_writeback_use_secondary_email_checkbox.Name = "mail_writeback_use_secondary_email_checkbox";
+            this.mail_writeback_use_secondary_email_checkbox.Size = new System.Drawing.Size(487, 30);
+            this.mail_writeback_use_secondary_email_checkbox.TabIndex = 3;
+            this.mail_writeback_use_secondary_email_checkbox.Text = " Copy the primary E-mail field to the secondary E-mail. Then update the primary E" +
+                "-mail field with the\r\n newly created G-mail account. UNTESTED";
+            this.mail_writeback_use_secondary_email_checkbox.UseVisualStyleBackColor = true;
+            this.mail_writeback_use_secondary_email_checkbox.CheckedChanged += new System.EventHandler(this.mail_writeback_use_secondary_email_CheckedChanged);
             // 
             // label154
             // 
@@ -4271,10 +4271,10 @@ namespace WindowsApplication1
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(121, 20);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(454, 13);
+            this.label1.Size = new System.Drawing.Size(454, 26);
             this.label1.TabIndex = 112;
             this.label1.Text = "All records matching in the query will be updated. Try to use the where clause to" +
-                " get a 1:1 ratio.";
+                " get a 1:1 ratio.\r\nNULL values in the database will cause issues.";
             // 
             // mail_writeback_database
             // 
@@ -4789,19 +4789,19 @@ namespace WindowsApplication1
             // 
             this.button5.Location = new System.Drawing.Point(186, 425);
             this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(75, 23);
+            this.button5.Size = new System.Drawing.Size(75, 48);
             this.button5.TabIndex = 13;
-            this.button5.Text = "unregex";
+            this.button5.Text = "unregex\r\nB5";
             this.button5.UseVisualStyleBackColor = true;
             this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(186, 392);
+            this.button3.Location = new System.Drawing.Point(186, 363);
             this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(75, 23);
+            this.button3.Size = new System.Drawing.Size(75, 52);
             this.button3.TabIndex = 12;
-            this.button3.Text = "retrieve dirt";
+            this.button3.Text = "retrieve dirt\r\nb3";
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
@@ -4811,7 +4811,7 @@ namespace WindowsApplication1
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(80, 59);
             this.button2.TabIndex = 11;
-            this.button2.Text = "set clean";
+            this.button2.Text = "set clean\r\nB2";
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
@@ -4835,7 +4835,7 @@ namespace WindowsApplication1
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(69, 57);
             this.button1.TabIndex = 8;
-            this.button1.Text = "set dirty";
+            this.button1.Text = "set dirty\r\nB1";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
@@ -5401,7 +5401,7 @@ namespace WindowsApplication1
         private System.Windows.Forms.ComboBox mail_writeback_key;
         private System.Windows.Forms.Label label154;
         private System.Windows.Forms.ComboBox mail_writeback_secondary_email;
-        private System.Windows.Forms.CheckBox mail_writeback_use_secondary_email;
+        private System.Windows.Forms.CheckBox mail_writeback_use_secondary_email_checkbox;
         private System.Windows.Forms.Label label156;
         private System.Windows.Forms.Label label155;
         private System.Windows.Forms.Label label157;
