@@ -190,6 +190,83 @@ Note:  These "facts" are expected to return a list of User IDs matching the stud
   <metadata name="StaticValue.UserAddedColumn" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
+  <data name="label161.Text" xml:space="preserve">
+    <value>To start a new LDAP synchronization, first fill out the configuration tab.
+     Second select another tab and fill out its information.
+     The synchronization can be executed directly or save for later use.
+
+To load a LDAP synchronization
+     Select the LDAP configuration tab and click open
+     The synchronization can now be executed directly
+
+To run from the command line
+     Operation  type -O=users -O=groups -O=OUmap -O=gmail
+     File, full path needed -F=c:\xxx\yyy\zzz\file.ldap warning there is no sanity check on the path
+
+     Example
+     LDAPMagic.exe -O=users -F=c:\ldapConfig\usersync.ldap
+</value>
+  </data>
+  <data name="pictureBox2.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        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
+        aPWDIQAAAABJRU5ErkJggg==
+</value>
+  </data>
+  <data name="pictureBox1.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        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
+        aPWDIQAAAABJRU5ErkJggg==
+</value>
+  </data>
   <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>232</value>
   </metadata>

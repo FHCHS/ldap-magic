@@ -24,7 +24,7 @@ namespace WindowsApplication1
             {
                 file = CommandLine["F"];
             }
-            else Console.WriteLine("File not defined full path needed -F=c:\\xxx\\yyy\\zzz\\file.sav warning there is no sanity check on the path");
+            else Console.WriteLine("File not defined full path needed -F=c:\\xxx\\yyy\\zzz\\file.ldap warning there is no sanity check on the path");
 
             operation = CommandLine["O"];
             if (CommandLine["O"] != null)
@@ -56,28 +56,51 @@ namespace WindowsApplication1
                 GmailUsers guserconfig = new GmailUsers();
                 executionOrder execution = new executionOrder();
                 UserStateChange usermapping = new UserStateChange();
+                ConfigSettings settingsconfig = new ConfigSettings();
                 utils.ToolSet tools = new ToolSet();
                 LogFile log = new LogFile();
                 ObjectADSqlsyncGroup groupSyncr = new ObjectADSqlsyncGroup();
                 ObjectADGoogleSync gmailSyncr = new ObjectADGoogleSync();
+                StopWatch timer = new StopWatch();
 
                 // perform operations based on the data input from the user fro groups users, OU's and gmail
                 if (operation == "group")
                 {
                     Dictionary<string, string> properties = new Dictionary<string, string>();
-
-                    StreamReader re = File.OpenText(file);
-                    string input = null;
-                    while ((input = re.ReadLine()) != null)
+                    try
                     {
-                        string[] parts = input.Split('|');
-                        properties.Add(parts[0].Trim(), parts[1].Trim());
+                        StreamReader re = File.OpenText(file);
+                        string input = null;
+                        while ((input = re.ReadLine()) != null && input != "<config>")
+                        {
+                            string[] parts = input.Split('|');
+                            properties.Add(parts[0].Trim(), parts[1].Trim());
+                        }
+                        // Load values into text boxes
+                        // reload properties each time as they are overwritten with the combo object trigger events
+                        groupconfig.Load(properties);
+
+
+                        //load config settings
+                        properties.Clear();
+                        while ((input = re.ReadLine()) != null)
+                        {
+                            string[] parts = input.Split('|');
+                            properties.Add(parts[0].Trim(), parts[1].Trim());
+                        }
+                        re.Close();
+                        settingsconfig.Load(properties);
+
+
+                        timer.Start();
+                        groupSyncr.ExecuteGroupSync(groupconfig, settingsconfig, tools, log);
+                        timer.Stop();
+                        log.transactions.Add("Groups " + groupconfig.Group_Append + " Setup Completion time :" + timer.GetElapsedTimeSecs().ToString());
                     }
-                    re.Close();
-                    // Load values into text boxes
-                    // reload properties each time as they are overwritten with the combo object trigger events
-                    groupconfig.Load(properties);
-                    groupSyncr.ExecuteGroupSync(groupconfig, tools, log);
+                    catch
+                    {
+                        log.errors.Add("Failed to load save file");
+                    }
 
 
                     //// save log to disk
@@ -125,24 +148,37 @@ namespace WindowsApplication1
                         StreamReader re = File.OpenText(file);
 
                         string input = null;
+                        while ((input = re.ReadLine()) != null && input != "<config>")
+                        {
+                            string[] parts = input.Split('|');
+                            properties.Add(parts[0].Trim(), parts[1].Trim());
+                        }
+                        userconfig.Load(properties);
+
+                        //load config settings
+                        properties.Clear();
                         while ((input = re.ReadLine()) != null)
                         {
                             string[] parts = input.Split('|');
                             properties.Add(parts[0].Trim(), parts[1].Trim());
                         }
                         re.Close();
+                        settingsconfig.Load(properties);
+
+                        timer.Start();
+                        groupSyncr.ExecuteUserSync(userconfig, settingsconfig, tools, log);
+                        timer.Stop();
+                        log.transactions.Add("Users " + userconfig.BaseUserOU + " Setup Completion time :" + timer.GetElapsedTimeSecs().ToString());
                     }
                     catch
                     {
-                        Console.Write("failed file load");
+                        Console.Write("Failed to load save file");
                     }
                     //}
 
                     // Load values into text boxes
                     // reload properties each time as they are overwritten with the combo object trigger events
-                    userconfig.load(properties);
-                    //MessageBox.Show("executing");
-                    groupSyncr.ExecuteUserSync(userconfig, tools, log);
+
                     //MessageBox.Show("complete");
                     //StringBuilder result = new StringBuilder();
                     //int i = 0;
@@ -199,19 +235,33 @@ namespace WindowsApplication1
                         StreamReader re = File.OpenText(file);
 
                         string input = null;
+                        while ((input = re.ReadLine()) != null && input != "<config>")
+                        {
+                            string[] parts = input.Split('|');
+                            properties.Add(parts[0].Trim(), parts[1].Trim());
+                        }
+                        
+                        guserconfig.Load(properties);
+                        //load config settings
+                        properties.Clear();
                         while ((input = re.ReadLine()) != null)
                         {
                             string[] parts = input.Split('|');
                             properties.Add(parts[0].Trim(), parts[1].Trim());
                         }
                         re.Close();
+                        settingsconfig.Load(properties);
+
+                        timer.Start();
+                        gmailSyncr.EmailUsersSync(guserconfig, settingsconfig, tools, log);
+                        timer.Stop();
+                        log.transactions.Add("Gmail " + guserconfig.Admin_domain + " Setup Completion time :" + timer.GetElapsedTimeSecs().ToString());
                     }
                     catch
                     {
-                        Console.Write("failed file load");
+                        Console.Write("Failed to load save file");
                     }
-                    guserconfig.load(properties);
-                    gmailSyncr.EmailUsersSync(guserconfig, tools, log);
+
                 }
 
             }

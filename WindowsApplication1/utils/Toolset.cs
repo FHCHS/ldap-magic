@@ -8,6 +8,7 @@ using System.Drawing;
 using System.DirectoryServices;
 using System.DirectoryServices.ActiveDirectory;
 using System.Data.SqlClient;
+using System.Data.SqlTypes;
 using System.IO;
 using System.Reflection;
 using System.Runtime.Serialization;
@@ -24,11 +25,14 @@ using WindowsApplication1.utils;
 
 
 // outstanding issues
-// send as use fix from google forums\
+// send as use fix from google forums
 // update gmail failing to use middle name properly
 // ensure nicknames are genereated properly
 // allow for nulls in blank fields to be matching
 // send as aliasing failing due to blank sqldata reader
+// unique table naming for multiple instances running at once
+// additional fields from usersynch not getting checked in update
+// logging not working yet in some non activated state
 
 
 
@@ -490,7 +494,7 @@ namespace WindowsApplication1.utils
             configCustoms.Columns.Add("sql");
             configCustoms.Columns.Add("static");
         }
-        public void load(Dictionary<string, string> dictionary)
+        public void Load(Dictionary<string, string> dictionary)
         {
             dictionary.TryGetValue("configBaseUserOU", out configBaseUserOU);
             dictionary.TryGetValue("configUniversalGroup", out configUniversalGroup);
@@ -1174,7 +1178,7 @@ namespace WindowsApplication1.utils
 
 
 
-        public void load(Dictionary<string, string> dictionary)
+        public void Load(Dictionary<string, string> dictionary)
         {
             dictionary.TryGetValue("configDataServer", out configDataServer);
             dictionary.TryGetValue("configDBCatalog", out configDBCatalog);
@@ -1286,6 +1290,121 @@ namespace WindowsApplication1.utils
             return returnvalue;
         }
     }
+    public class ConfigSettings
+    {
+        private Boolean configTempTables_checkbox;
+        private String configLogType;
+        private String configLogDB;
+        private String configLogCatalog;
+        private String configLogDirectory;
+        private string boolconv = "";
+
+        public ConfigSettings()
+        {
+            configTempTables_checkbox = true;
+            configLogType = "";
+            configLogDB = "";
+            configLogCatalog = "";
+            configLogDirectory = "";
+        }
+
+        // accessor to properties
+        //public String progress
+        //{
+        //    get
+        //    {
+        //        return configprogress;
+        //    }
+        //    set
+        //    {
+        //        configprogress = value;
+        //    }
+        //}
+        public Boolean TempTables
+        {
+            get
+            {
+                return configTempTables_checkbox;
+            }
+            set
+            {
+                configTempTables_checkbox = value;
+            }
+        }
+        public String LogType
+        {
+            get
+            {
+                return configLogType;
+            }
+            set
+            {
+                configLogType = value;
+            }
+        }
+        public String LogDB
+        {
+            get
+            {
+                return configLogDB;
+            }
+            set
+            {
+                configLogDB = value;
+            }
+        }
+        public String LogCatalog
+        {
+            get
+            {
+                return configLogCatalog;
+            }
+            set
+            {
+                configLogCatalog = value;
+            }
+        }
+        public String LogDirectory
+        {
+            get
+            {
+                return configLogDirectory;
+            }
+            set
+            {
+                configLogDirectory = value;
+            }
+        }
+
+        // creates a dictionay of values
+        public Dictionary<string, string> ToDictionary()
+        {
+            Dictionary<string, string> returnvalue = new Dictionary<string, string>();
+            returnvalue.Add("configTempTables", configTempTables_checkbox.ToString());
+            returnvalue.Add("configLogType", configLogType.ToString());
+            returnvalue.Add("configLogDB", configLogDB.ToString());
+            returnvalue.Add("configLogCatalog", configLogCatalog.ToString());
+            returnvalue.Add("configLogDirectory", configLogDirectory.ToString());
+            return returnvalue;
+        }
+        public void Load(Dictionary<string, string> dictionary)
+        {
+            dictionary.TryGetValue("configTempTables", out boolconv);
+            if (boolconv == "True")
+            {
+                configTempTables_checkbox = true;
+            }
+            else
+            {
+                configTempTables_checkbox = false;
+            }
+            dictionary.TryGetValue("configLogType", out configLogType);
+            dictionary.TryGetValue("configLogDB", out configLogDB);
+            dictionary.TryGetValue("configLogCatalog", out configLogCatalog);
+            dictionary.TryGetValue("configLogDirectory", out configLogDirectory);
+        }
+    }
+
 
     public class UserStateChange
     {
@@ -2113,61 +2232,77 @@ namespace WindowsApplication1.utils
             {
                 while (users.Read())
                 {
-
-                    if (users[usersyn.User_password].ToString() != "")
+                    try
                     {
-                        if (!DirectoryEntry.Exists("LDAP://CN=" + System.Web.HttpUtility.UrlEncode(users[usersyn.User_sAMAccount].ToString()).Replace("+", " ").Replace("*", "%2A") + "," + ouPath))
+
+                        if (users[usersyn.User_password].ToString() != "")
                         {
-
-                            DirectoryEntry entry = new DirectoryEntry("LDAP://" + ouPath);
-                            DirectoryEntry newUser = entry.Children.Add("CN=" + System.Web.HttpUtility.UrlEncode(users[usersyn.User_sAMAccount].ToString()).Replace("+", " ").Replace("*", "%2A"), "user");
-                            // generated
-                            newUser.Properties["samAccountName"].Value = System.Web.HttpUtility.UrlEncode(users[usersyn.User_sAMAccount].ToString()).Replace("+", " ").Replace("*", "%2A");
-                            //newUser.Properties["mail"].Value = System.Web.HttpUtility.UrlEncode(users[usersyn.User_mail].ToString()).Replace("+", " ").Replace("*", "%2A") + "@" + System.Web.HttpUtility.UrlEncode(users[usersyn.UserEmailDomain].ToString()).Replace("+", " ").Replace("*", "%2A");
-                            newUser.Properties["UserPrincipalName"].Value = System.Web.HttpUtility.UrlEncode(users[usersyn.User_sAMAccount].ToString()).Replace("+", " ").Replace("*", "%2A");
-                            newUser.Properties["displayName"].Value = System.Web.HttpUtility.UrlEncode((string)users[usersyn.User_Lname]).Replace("+", " ").Replace("*", "%2A") + ", " + System.Web.HttpUtility.UrlEncode((string)users[usersyn.User_Fname]).Replace("+", " ").Replace("*", "%2A");
-                            newUser.Properties["description"].Value = System.Web.HttpUtility.UrlEncode((string)users[usersyn.User_Lname]).Replace("+", " ").Replace("*", "%2A") + ", " + System.Web.HttpUtility.UrlEncode((string)users[usersyn.User_Fname]).Replace("+", " ").Replace("*", "%2A");
-
-                            newUser.CommitChanges();
-
-                            // SQL query generated ensures matching field names between the SQL form fields and AD
-                            for (i = 0; i < fieldcount; i++)
+                            if (!DirectoryEntry.Exists("LDAP://CN=" + System.Web.HttpUtility.UrlEncode(users[usersyn.User_sAMAccount].ToString()).Replace("+", " ").Replace("*", "%2A") + "," + ouPath))
                             {
-                                name = users.GetName(i);
-                                if (name != "password" && name != "CN")
+
+                                DirectoryEntry entry = new DirectoryEntry("LDAP://" + ouPath);
+                                DirectoryEntry newUser = entry.Children.Add("CN=" + System.Web.HttpUtility.UrlEncode(users[usersyn.User_sAMAccount].ToString()).Replace("+", " ").Replace("*", "%2A"), "user");
+                                // generated
+                                newUser.Properties["samAccountName"].Value = System.Web.HttpUtility.UrlEncode(users[usersyn.User_sAMAccount].ToString()).Replace("+", " ").Replace("*", "%2A");
+                                //newUser.Properties["mail"].Value = System.Web.HttpUtility.UrlEncode(users[usersyn.User_mail].ToString()).Replace("+", " ").Replace("*", "%2A") + "@" + System.Web.HttpUtility.UrlEncode(users[usersyn.UserEmailDomain].ToString()).Replace("+", " ").Replace("*", "%2A");
+                                newUser.Properties["UserPrincipalName"].Value = System.Web.HttpUtility.UrlEncode(users[usersyn.User_sAMAccount].ToString()).Replace("+", " ").Replace("*", "%2A");
+                                newUser.Properties["displayName"].Value = System.Web.HttpUtility.UrlEncode((string)users[usersyn.User_Lname]).Replace("+", " ").Replace("*", "%2A") + ", " + System.Web.HttpUtility.UrlEncode((string)users[usersyn.User_Fname]).Replace("+", " ").Replace("*", "%2A");
+                                newUser.Properties["description"].Value = System.Web.HttpUtility.UrlEncode((string)users[usersyn.User_Lname]).Replace("+", " ").Replace("*", "%2A") + ", " + System.Web.HttpUtility.UrlEncode((string)users[usersyn.User_Fname]).Replace("+", " ").Replace("*", "%2A");
+
+                                newUser.CommitChanges();
+
+                                // SQL query generated ensures matching field names between the SQL form fields and AD
+                                for (i = 0; i < fieldcount; i++)
                                 {
-                                    if ((string)users[i] != "")
+                                    name = users.GetName(i);
+                                    if (name != "password" && name != "CN")
                                     {
-                                        newUser.Properties[users.GetName(i)].Value = System.Web.HttpUtility.UrlEncode((string)users[i]).Replace("+", " ").Replace("*", "%2A");
+                                        if ((string)users[i] != "")
+                                        {
+                                            newUser.Properties[users.GetName(i)].Value = System.Web.HttpUtility.UrlEncode((string)users[i]).Replace("+", " ").Replace("*", "%2A");
+                                        }
                                     }
                                 }
+
+
+                                AddUserToGroup("CN=" + System.Web.HttpUtility.UrlEncode(users[usersyn.User_sAMAccount].ToString()).Replace("+", " ").Replace("*", "%2A") + "," + usersyn.UserHoldingTank, groupDn, log);
+                                newUser.Invoke("SetPassword", new object[] { System.Web.HttpUtility.UrlEncode((string)users[usersyn.User_password]).Replace("+", " ").Replace("*", "%2A") });
+                                newUser.CommitChanges();
+
+                                val = (int)newUser.Properties["userAccountControl"].Value;
+                                // set to normal user
+                                newUser.Properties["userAccountControl"].Value = val | (int)accountFlags.ADS_UF_NORMAL_ACCOUNT;
+                                // set to enabled account val & ~0c0002 creates a bitmask which reverses the disabled bit
+                                newUser.Properties["userAccountControl"].Value = val & ~(int)accountFlags.ADS_UF_ACCOUNTDISABLE;
+                                newUser.CommitChanges();
+                                newUser.Close();
+                                newUser.Dispose();
+                                entry.Close();
+                                entry.Dispose();
+                                log.transactions.Add("User added |" + (string)users[usersyn.User_sAMAccount] + " " + usersyn.UserHoldingTank);
                             }
-
-
-                            AddUserToGroup("CN=" + System.Web.HttpUtility.UrlEncode(users[usersyn.User_sAMAccount].ToString()).Replace("+", " ").Replace("*", "%2A") + "," + usersyn.UserHoldingTank, groupDn, log);
-                            newUser.Invoke("SetPassword", new object[] { System.Web.HttpUtility.UrlEncode((string)users[usersyn.User_password]).Replace("+", " ").Replace("*", "%2A") });
-                            newUser.CommitChanges();
-
-                            val = (int)newUser.Properties["userAccountControl"].Value;
-                            // set to normal user
-                            newUser.Properties["userAccountControl"].Value = val | (int)accountFlags.ADS_UF_NORMAL_ACCOUNT;
-                            // set to enabled account val & ~0c0002 creates a bitmask which reverses the disabled bit
-                            newUser.Properties["userAccountControl"].Value = val & ~(int)accountFlags.ADS_UF_ACCOUNTDISABLE;
-                            newUser.CommitChanges();
-                            newUser.Close();
-                            newUser.Dispose();
-                            entry.Close();
-                            entry.Dispose();
-                            log.transactions.Add("User added |" + (string)users[usersyn.User_sAMAccount] + " " + usersyn.UserHoldingTank);
+                            else
+                            {
+                                log.errors.Add("CN=" + System.Web.HttpUtility.UrlEncode((string)users[usersyn.User_sAMAccount]).Replace("+", " ").Replace("*", "%2A") + "," + ouPath + " user already exists from adding");
+                                //MessageBox.Show("CN=" + System.Web.HttpUtility.UrlEncode((string)users["CN"]).Replace("+", " ").Replace("*", "%2A") + "," + ouPath + " user already exists from adding");
+                            }
                         }
-                        else
-                        {
-                            log.errors.Add("CN=" + System.Web.HttpUtility.UrlEncode((string)users[usersyn.User_sAMAccount]).Replace("+", " ").Replace("*", "%2A") + "," + ouPath + " user already exists from adding");
-                            //MessageBox.Show("CN=" + System.Web.HttpUtility.UrlEncode((string)users["CN"]).Replace("+", " ").Replace("*", "%2A") + "," + ouPath + " user already exists from adding");
-                        }
+
                     }
+                    catch (Exception ex)
+                    {
+                        string debugdata = "";
+                        for (i = 0; i < fieldcount; i++)
+                        {
 
+                            debugdata += users.GetName(i) + "=" + System.Web.HttpUtility.UrlEncode((string)users[i]).Replace("+", " ").Replace("*", "%2A") + ", ";
+
+                        }
+                        log.errors.Add("issue create user LDAP://CN=" + System.Web.HttpUtility.UrlEncode((string)users["CN"]).Replace("+", " ").Replace("*", "%2A") + "," + ouPath + "\n" + debugdata + " User create failed, commit error" + name + " | " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                        // MessageBox.Show(e.Message.ToString() + "issue create user LDAP://CN=" + System.Web.HttpUtility.UrlEncode((string)users["CN"]).Replace("+", " ").Replace("*", "%2A") + "," + ouPath + "\n" + debugdata);
+                    }
                 }
+
             }
             catch (Exception ex)
             {
@@ -2460,6 +2595,7 @@ namespace WindowsApplication1.utils
             sqlComm = new SqlCommand(sqlstring.ToString(), sqlConn);
             try
             {
+                sqlComm.CommandTimeout = 360;
                 sqlComm.ExecuteNonQuery();
                 log.transactions.Add("table created " + table);
             }
@@ -2507,6 +2643,7 @@ namespace WindowsApplication1.utils
             sqlComm = new SqlCommand(sqlstring.ToString(), sqlConn);
             try
             {
+                sqlComm.CommandTimeout = 360;
                 sqlComm.ExecuteNonQuery();
                 log.transactions.Add("table dropped " + table);
             }
@@ -2534,6 +2671,7 @@ namespace WindowsApplication1.utils
             SqlDataReader r;
             try
             {
+                sqlComm.CommandTimeout = 360;
                 r = sqlComm.ExecuteReader();
                 return r;
             }
@@ -2559,6 +2697,7 @@ namespace WindowsApplication1.utils
             // create the command object
             try
             {
+                sqlComm.CommandTimeout = 360;
                 sqlComm.ExecuteNonQuery();
             }
             catch (Exception ex)
@@ -2584,6 +2723,7 @@ namespace WindowsApplication1.utils
             SqlDataReader r;
             try
             {
+                sqlComm.CommandTimeout = 360;
                 r = sqlComm.ExecuteReader();
                 return r;
             }
@@ -2626,6 +2766,7 @@ namespace WindowsApplication1.utils
 
             try
             {
+                sqlComm.CommandTimeout = 360;
                 r = sqlComm.ExecuteReader();
                 return r;
             }
@@ -2650,6 +2791,7 @@ namespace WindowsApplication1.utils
             SqlCommand sqlComm = new SqlCommand("SELECT DISTINCT " + table1 + ".* INTO " + newTable + " FROM " + table1 + " INNER JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2, sqlConn);
             try
             {
+                sqlComm.CommandTimeout = 360;
                 sqlComm.ExecuteNonQuery();
             }
             catch (Exception ex)
@@ -2694,6 +2836,7 @@ namespace WindowsApplication1.utils
             //AND " + table2 + "." + pkey2 + " != NULL
             try
             {
+                sqlComm.CommandTimeout = 360;
                 SqlDataReader r = sqlComm.ExecuteReader();
                 return r;
             }
@@ -2797,6 +2940,7 @@ namespace WindowsApplication1.utils
             //AND " + table2 + "." + pkey2 + " != NULL
             try
             {
+                sqlComm.CommandTimeout = 360;
                 SqlDataReader r = sqlComm.ExecuteReader();
                 return r;
             }
@@ -2842,6 +2986,7 @@ namespace WindowsApplication1.utils
             //AND " + table2 + "." + pkey2 + " != NULL
             try
             {
+                sqlComm.CommandTimeout = 360;
                 sqlComm.ExecuteNonQuery();
             }
             catch (Exception ex)
@@ -2916,6 +3061,7 @@ namespace WindowsApplication1.utils
 
             try
             {
+                sqlComm.CommandTimeout = 360;
                 sqlComm.ExecuteNonQuery();
             }
             catch (Exception ex)
@@ -2966,6 +3112,7 @@ namespace WindowsApplication1.utils
             //AND " + table2 + "." + pkey2 + " != NULL
             try
             {
+                sqlComm.CommandTimeout = 360;
                 sqlComm.ExecuteNonQuery();
             }
             catch (Exception ex)
@@ -2988,6 +3135,7 @@ namespace WindowsApplication1.utils
                     sqlConn.Open();
                     // create the command object
                     SqlCommand sqlComm = new SqlCommand("SELECT column_name FROM information_schema.columns WHERE table_name = '" + userconfig.User_dbTable + "'", sqlConn);
+                    sqlComm.CommandTimeout = 360;
                     SqlDataReader r = sqlComm.ExecuteReader();
                     while (r.Read())
                     {
@@ -3051,6 +3199,7 @@ namespace WindowsApplication1.utils
                 // MessageBox.Show(sqlstring.Length.ToString());
                 try
                 {
+                    sqlComm.CommandTimeout = 360;
                     sqlComm.ExecuteNonQuery();
                     log.transactions.Add("DB email writeback, user " + users.Rows[i][gusersyn.Writeback_primary_key].ToString().Replace("'", "''") + ", email " + users.Rows[i][gusersyn.Writeback_email_field].ToString().Replace("'", "''"));
                 }
@@ -3108,6 +3257,7 @@ namespace WindowsApplication1.utils
                     // MessageBox.Show(sqlstring.Length.ToString());
                     try
                     {
+                        sqlComm.CommandTimeout = 360;
                         sqlComm.ExecuteNonQuery();
                         log.transactions.Add("DB email writeback, user " + users[gusersyn.Writeback_primary_key].ToString().Replace("'", "''") + ", email " + users[gusersyn.Writeback_email_field].ToString().Replace("'", "''"));
                     }
@@ -3161,6 +3311,7 @@ namespace WindowsApplication1.utils
             }
             try
             {
+                sqlComm.CommandTimeout = 360;
                 sqlComm.ExecuteNonQuery();
             }
             catch (Exception ex)
@@ -3209,6 +3360,7 @@ namespace WindowsApplication1.utils
             }
             try
             {
+                sqlComm.CommandTimeout = 360;
                 sqlComm.ExecuteNonQuery();
             }
             catch (Exception ex)
@@ -3268,17 +3420,17 @@ namespace WindowsApplication1.utils
                 }
                 catch (AppsException apex)
                 {
-                    MessageBox.Show("Nickname apps exception " + apex.ErrorCode.ToString() + "  +++  \n" + apex.Data.ToString() + "  +++  \n" + apex.Message.ToString() + "  +++  \n" + apex.Reason.ToString() + "  +++  \n" + apex.Source.ToString());
+                    //MessageBox.Show("Nickname apps exception " + apex.ErrorCode.ToString() + "  +++  \n" + apex.Data.ToString() + "  +++  \n" + apex.Message.ToString() + "  +++  \n" + apex.Reason.ToString() + "  +++  \n" + apex.Source.ToString());
                     if (apex.ErrorCode == "1301")
                     {
-                        // this error about a non existent entiry seems to indicate the nickname is already created
+                        // this error about a non existent entry seems to indicate the nickname is already created
                         complete = true;                        
                     }
                     i++;
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Nickname issue " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                    //MessageBox.Show("Nickname issue " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
                     i++;
                     complete = false;
                 }
@@ -3592,6 +3744,123 @@ namespace WindowsApplication1.utils
             return returnvalue;
         }
 
+        // Log file utilities
+        public void savelog(LogFile log, ConfigSettings settingsConfig)
+        {
+            // create a file stream, where "c:\\testing.txt" is the file path
+            if (settingsConfig.LogType == "Text File")
+            {
+                string datetimeappend = DateTime.Today.Date.ToString() + DateTime.Today.TimeOfDay.ToString();
+                System.IO.FileStream fs = new System.IO.FileStream(settingsConfig.LogDirectory + datetimeappend, System.IO.FileMode.OpenOrCreate, System.IO.FileAccess.Write, System.IO.FileShare.ReadWrite);
+
+                // create a stream writer
+                System.IO.StreamWriter sw = new System.IO.StreamWriter(fs, System.Text.Encoding.ASCII);
+
+
+                StringBuilder result = new StringBuilder();
+                int i = 0;
+                result.Append("\n" + DateTime.Now.ToString() + "\n");
+                result.Append("\n***************************\n*                         *\n*        Transactions     *\n*                         *\n***************************\n");
+                for (i = 0; i < log.transactions.Count; i++)
+                {
+                    result.Append(log.transactions[i].ToString() + "\n");
+                }
+                result.Append("\n***************************\n*                         *\n*        Warnings         *\n*                         *\n***************************\n");
+
+                for (i = 0; i < log.warnings.Count; i++)
+                {
+                    result.Append(log.warnings[i].ToString() + "\n");
+                }
+                result.Append("\n***************************\n*                         *\n*        Errors           *\n*                         *\n***************************\n");
+                for (i = 0; i < log.errors.Count; i++)
+                {
+                    result.Append(log.errors[i].ToString() + "\n");
+                }
+
+                sw.Write(result.ToString());
+
+                // flush buffer (so the text really goes into the file)
+                sw.Flush();
+
+                // close stream writer and file
+                sw.Close();
+                fs.Close();
+            }
+            if (settingsConfig.LogType == "Database")
+            {
+                //create sql for log file if it does not exist
+                // sqlConn must be an open connection
+                int i;
+                int Count;
+                string table = "FHC_LOG_ldap_magic";
+                DataTable data = new DataTable();
+                DataRow row;
+
+                StringBuilder sqlstring = new StringBuilder();
+                SqlConnection sqlConn = new SqlConnection("Data Source=" + settingsConfig.LogDB + ";Initial Catalog=" + settingsConfig.LogCatalog + ";Integrated Security=SSPI;Connect Timeout=360;");
+                SqlCommand sqlComm;
+                DateTime nowstamp = new DateTime();
+                nowstamp = DateTime.Now;
+                SqlDateTime datetimestamp = new SqlDateTime(nowstamp);
+                data.Columns.Add("Message");
+                data.Columns.Add("Type");
+                data.Columns.Add("Timestamp",System.Type.GetType("System.DateTime"));
+                
+
+                row = data.NewRow();
+                for (i = 0; i < log.transactions.Count; i++)
+                {
+                    row[0] = log.transactions[i].ToString();
+                    row[1] = "Transaction";
+                    row[2] = nowstamp;
+                    data.Rows.Add(row);
+                    row = data.NewRow();
+                }
+
+                // make the temp table
+                //sqlstring.Append("CREATE TABLE Log (");
+                //for (i = 0; i < Count; i++)
+                //{
+                //    sqlstring.Append(data.Columns[i] + " VarChar(350), ");
+                //}
+                //sqlstring.Remove((sqlstring.Length - 2), 2);
+                //sqlstring.Append(")");
+
+                sqlstring.Append("CREATE TABLE [" + table + "]([Message] [varchar](350), [Type] [varchar](50), [Timestamp] [datetime] NULL) ON [PRIMARY]");
+                sqlComm = new SqlCommand(sqlstring.ToString(), sqlConn);
+                try
+                {
+                    sqlComm.CommandTimeout = 360;
+                    sqlComm.ExecuteNonQuery();
+                    log.transactions.Add("table created " + table);
+                }
+                catch (Exception ex)
+                {
+                    log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                }
+
+                // copy data into table
+                try
+                {
+                    SqlBulkCopy sbc = new SqlBulkCopy(sqlConn);
+                    sbc.DestinationTableName = table;
+                    sbc.WriteToServer(data);
+
+                    sbc.Close();
+                }
+                catch (Exception ex)
+                {
+                    log.errors.Add("Failed SQL bulk copy " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                }
+
+                //create datatable with log information
+                //use append table to sql bulk copy to table
+                //optionally create blank table and use copy into/merge to get records into existing table
+            }
+
+        }
+        
+
         // possible not in use
 
         public void MoveADObject(string objectLocation, string newLocation, LogFile log)
@@ -3775,13 +4044,13 @@ namespace WindowsApplication1.utils
                 }
                 else
                 {
-                    MessageBox.Show("CN=" + System.Web.HttpUtility.UrlEncode(properties["CN"].ToString()).Replace("+", " ").Replace("*", "%2A") + "," + ouPath + " group already exists from adding");
+                    //MessageBox.Show("CN=" + System.Web.HttpUtility.UrlEncode(properties["CN"].ToString()).Replace("+", " ").Replace("*", "%2A") + "," + ouPath + " group already exists from adding");
                     return false;
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message.ToString() + "issue create user LDAP://CN=" + System.Web.HttpUtility.UrlEncode(properties["CN"].ToString()).Replace("+", " ").Replace("*", "%2A") + "," + ouPath + "\n" + ex.StackTrace.ToString());
+                //MessageBox.Show(ex.Message.ToString() + "issue create user LDAP://CN=" + System.Web.HttpUtility.UrlEncode(properties["CN"].ToString()).Replace("+", " ").Replace("*", "%2A") + "," + ouPath + "\n" + ex.StackTrace.ToString());
                 return false;
             }
 
@@ -3967,7 +4236,7 @@ namespace WindowsApplication1.utils
     //Logic code for execution of the synchronization
     public class ObjectADSqlsyncGroup
     {
-        public void ExecuteGroupSync(GroupSynch groupsyn, ToolSet tools, LogFile log)
+        public void ExecuteGroupSync(GroupSynch groupsyn, ConfigSettings settingsConfig, ToolSet tools, LogFile log)
         {
             //string debug = "";
             //SqlDataReader debugreader;
@@ -3983,8 +4252,18 @@ namespace WindowsApplication1.utils
             string groupOU = groupsyn.BaseGroupOU;
             string sAMAccountName = "";
             string description = "";
-            string sqlgroupsTable = "#FHC_SQLgroupsTable";
-            string adGroupsTable = "#FHC_ADgroupsTable";
+            string sqlgroupsTable = "#FHC_GROUPS_SQLgroupsTable";
+            string adGroupsTable = "#FHC_GROUPS_ADgroupsTable";
+            if (settingsConfig.TempTables == true)
+            {
+                sqlgroupsTable = "#FHC_GROUPS_SQLgroupsTable";
+                adGroupsTable = "#FHC_GROUPS_ADgroupsTable";
+            }
+            else
+            {
+                sqlgroupsTable = "FHC_GROUPS_SQLgroupsTable";
+                adGroupsTable = "FHC_GROUPS_ADgroupsTable";
+            }
             string dc = groupOU.Substring(groupOU.IndexOf("DC"));
             string groupDN;
             string groupsTable;
@@ -4003,6 +4282,13 @@ namespace WindowsApplication1.utils
             sqlConn.Open();
             // Setup the OU for the program
             tools.CreateOURecursive("OU=" + groupapp + "," + groupOU, log);
+            
+            // A little house cleaning to empty out tables
+            if (settingsConfig.TempTables == false)
+            {
+                tools.DropTable(adGroupsTable, sqlConn, log);
+                tools.DropTable(sqlgroupsTable, sqlConn, log);
+            }
 
             // grab list of groups from SQL insert into a temp table
             SqlCommand sqlComm = new SqlCommand();
@@ -4018,6 +4304,7 @@ namespace WindowsApplication1.utils
 
             try
             {
+                sqlComm.CommandTimeout = 360;
                 sqlComm.ExecuteNonQuery();
             }
             catch (Exception ex)
@@ -4296,10 +4583,28 @@ namespace WindowsApplication1.utils
             }
 
             // users section
-            string sqlgroupMembersTable = "#sqlusersTable";
-            string ADgroupMembersTable = "#ADusersTable";
+            string sqlgroupMembersTable = "#FHC_GROUPS_sqlusersTable";
+            string ADgroupMembersTable = "#FHC_GROUPS_ADusersTable";
+            if (settingsConfig.TempTables == true)
+            {
+                sqlgroupMembersTable = "#FCH_GROUPS_sqlusersTable";
+                ADgroupMembersTable = "#FHC_GROUPS_ADusersTable";
+            }
+            else
+            {
+                sqlgroupMembersTable = "FHC_GROUPS_sqlusersTable";
+                ADgroupMembersTable = "FHC_GROUPS_ADusersTable";
+            }
             SqlDataReader sqlgroups;
             DataTable ADusers = new DataTable();
+
+
+            // A little house cleaning to empty out tables
+            if (settingsConfig.TempTables == false)
+            {
+                tools.DropTable(sqlgroupMembersTable, sqlConn, log);
+                tools.DropTable(ADgroupMembersTable, sqlConn, log);
+            }
 
             // grab users data from sql
             if (groupsyn.User_where == "")
@@ -4406,7 +4711,8 @@ namespace WindowsApplication1.utils
             add.Close();
             SqlCommand sqlComm2 = new SqlCommand();
             string recordCount = "";
-            sqlComm2 = new SqlCommand("select count(" + groupsyn.Group_sAMAccount + ") FROM " + sqlgroupMembersTable, sqlConn);
+            sqlComm2 = new SqlCommand("select count(" + groupsyn.Group_CN + ") FROM " + sqlgroupMembersTable, sqlConn);
+            sqlComm2.CommandTimeout = 360;
             recordCount =  sqlComm2.ExecuteScalar().ToString();
             sqlComm2.Dispose();
 
@@ -4425,14 +4731,14 @@ namespace WindowsApplication1.utils
             }
             sqlConn.Close();
         }
-        public void ExecuteUserSync(UserSynch usersyn, ToolSet tools, LogFile log)
+        public void ExecuteUserSync(UserSynch usersyn, ConfigSettings settingsConfig, ToolSet tools, LogFile log)
         {
-            //string debug = "";
-            //SqlDataReader debugReader;
-            //int debugFieldCount;
-            //string debugRecordCount;
-            //SqlCommand sqlDebugComm;
-            //int j;
+            string debug = "";
+            SqlDataReader debugReader;
+            int debugFieldCount;
+            string debugRecordCount;
+            SqlCommand sqlDebugComm;
+            int j;
             ArrayList debugList = new ArrayList();
             int i;
             StopWatch time = new StopWatch();
@@ -4456,8 +4762,19 @@ namespace WindowsApplication1.utils
             SqlConnection sqlConn = new SqlConnection("Data Source=" + usersyn.DataServer + ";Initial Catalog=" + usersyn.DBCatalog + ";Integrated Security=SSPI;Connect Timeout=360");
 
 
-            string sqlUsersTable = "#sqlusersTable";
-            string adUsersTable = "#ADusersTable";
+            if (settingsConfig.TempTables == true)
+            {
+                string sqlUsersTable = "#FHC_USERS_SQLusersTable";
+                string adUsersTable = "#FHC_USERS_ADusersTable";
+            }
+            else
+            {
+                string sqlUsersTable = "FHC_USERS_SQLusersTable";
+                string adUsersTable = "FHC_USERS_ADusersTable";
+            }
+
+
+
             //SqlDataReader sqlusers;
             SqlCommand sqlComm;
             SqlCommand sqlComm2;
@@ -4585,7 +4902,9 @@ namespace WindowsApplication1.utils
             }
             try
             {
+                sqlComm.CommandTimeout = 360;
                 sqlComm.ExecuteNonQuery();
+
             }
             catch (Exception ex)
             {
@@ -4674,7 +4993,7 @@ namespace WindowsApplication1.utils
                 //    debug += add.GetName(i) + ", ";
                 //}
                 //debug += "\n";
-                //int j = 0;
+                //j = 0;
                 //while (add.Read() && j < 20)
                 //{
                 //    for (i = 0; i < debugFieldCount; i++)
@@ -4690,9 +5009,9 @@ namespace WindowsApplication1.utils
 
                 tools.CreateUserAccount(usersyn.UserHoldingTank, add, usersyn.UniversalGroup, usersyn, log);
                 add.Close();
-
-      
+                
                 sqlComm2 = new SqlCommand("select count(sAMAccountName) FROM " + sqlUsersTable, sqlConn);
+                sqlComm2.CommandTimeout = 360;
                 recordCount =  sqlComm2.ExecuteScalar().ToString();
                 sqlComm2.Dispose();
 
@@ -4800,7 +5119,7 @@ namespace WindowsApplication1.utils
     }
     public class ObjectADGoogleSync
     {
-        public void EmailUsersSync(GmailUsers gusersyn, ToolSet tools, LogFile log)
+        public void EmailUsersSync(GmailUsers gusersyn, ConfigSettings settingsConfig, ToolSet tools, LogFile log)
 		{
             // MessageBox.Show("gmail " + gusersyn.Admin_password + " " + gusersyn.Admin_domain + " " + gusersyn.Admin_user + " " + gusersyn.DataServer + " " + gusersyn.DBCatalog + " " + gusersyn.User_ad_OU + " " + gusersyn.User_Datasource + " " + gusersyn.User_dbTable + " " + gusersyn.User_Fname + " " + gusersyn.User_Lname + " " + gusersyn.User_Mname + " " + gusersyn.User_password + " " + gusersyn.User_password_short_fix_checkbox.ToString() + " " + gusersyn.User_password_generate_checkbox.ToString() + " " + gusersyn.User_StuID + " " + gusersyn.User_table_view + " " + gusersyn.User_where + " " + gusersyn.Writeback_AD_checkbox.ToString() + " " + gusersyn.Writeback_ad_OU + " " + gusersyn.Writeback_DB_checkbox.ToString() + " " + gusersyn.Writeback_email_field + " " + gusersyn.Writeback_primary_key + " " + gusersyn.Writeback_secondary_email_field + " " + gusersyn.Writeback_table + " " + gusersyn.Writeback_transfer_email_checkbox.ToString() + " " + gusersyn.Writeback_where_clause);
 			// Email addresses are static so only the names can be updated. passwords will be ignored
@@ -4824,8 +5143,19 @@ namespace WindowsApplication1.utils
 
             //string sqlUsersTable = "#sqlusersTable";
             //string gmailUsersTable = "#gmailusersTable";
-            string sqlUsersTable = "FHC_TEST_sqlusersTable";
-            string gmailUsersTable = "FHC_TEST_gmailusersTable";
+
+            if (settingsConfig.TempTables == true)
+            {
+                string sqlUsersTable = "#FHC_LDAP_sqlusersTable";
+                string adUsersTable = "#FHC_LDAP_gmailusersTable";
+            }
+            else
+            {
+                string sqlUsersTable = "FHC_LDAP_sqlusersTable";
+                string gmailUsersTable = "FHC_LDAP_gmailusersTable";
+            }
+
+
 			//SqlDataReader sqlusers;
 			SqlCommand sqlComm;
 			DataTable gmailUsers = new DataTable();
@@ -4866,8 +5196,11 @@ namespace WindowsApplication1.utils
             sqlConn.Open();
 
             //housecleaning
-            tools.DropTable(sqlUsersTable, sqlConn, log);
-            tools.DropTable(gmailUsersTable, sqlConn, log);
+            if (settingsConfig.TempTables == false)
+            {
+                tools.DropTable(sqlUsersTable, sqlConn, log);
+                tools.DropTable(gmailUsersTable, sqlConn, log);
+            }
 
             // this statement picks the datasource SQL vs AD and sets up the temp table
             if (gusersyn.User_Datasource == "database")
@@ -4894,6 +5227,7 @@ namespace WindowsApplication1.utils
                 }
                 try
                 {
+                    sqlComm.CommandTimeout = 360;
                     sqlComm.ExecuteNonQuery();
                 }
                 catch (Exception ex)
@@ -4960,37 +5294,37 @@ namespace WindowsApplication1.utils
             update = tools.CheckUpdate(sqlUsersTable, gmailUsersTable, gusersyn.User_StuID, gmailUsers.Columns[0].ColumnName, sqlUpdateKeys, gmailUpdateKeys, additionalKeys, sqlConn, log);
 
 
-            //SqlDataReader debugReader;
-            //string debug = "";
-            //int debugFieldCount = 0;
+            SqlDataReader debugReader;
+            string debug = "";
+            int debugFieldCount = 0;
 
-            //debug = "Gunna update stuff \n";
-            //debugFieldCount = update.FieldCount;
-            //for (i = 0; i < debugFieldCount; i++)
-            //{
-            //    debug += update.GetName(i) + ", ";
-            //}
-            //debug += "\n";
-            //int j = 0;
-            //try
-            //{
-            //    while (update.Read() && j < 20)
-            //    {
-            //        for (i = 0; i < debugFieldCount; i++)
-            //        {
-            //            debug += (string)update[i] + ", ";
-            //        }
-            //        debug += "\n";
-            //        j++;
-            //    }
-            //}
-            //catch (Exception ex)
-            //{
-            //    log.warnings.Add("Issue creating debug data " + ex.Message.ToString());
-            //}
+            debug = "Gunna update stuff \n";
+            debugFieldCount = update.FieldCount;
+            for (i = 0; i < debugFieldCount; i++)
+            {
+                debug += update.GetName(i) + ", ";
+            }
+            debug += "\n";
+            int j = 0;
+            try
+            {
+                while (update.Read() && j < 20)
+                {
+                    for (i = 0; i < debugFieldCount; i++)
+                    {
+                        debug += (string)update[i] + ", ";
+                    }
+                    debug += "\n";
+                    j++;
+                }
+            }
+            catch (Exception ex)
+            {
+                log.warnings.Add("Issue creating debug data " + ex.Message.ToString());
+            }
 
-            ////debugReader.Close();
-            //MessageBox.Show("Gmail users to update \n " + debugFieldCount + " fields \n sample data" + debug);
+            //debugReader.Close();
+            MessageBox.Show("Gmail users to update \n " + debugFieldCount + " fields \n sample data" + debug);
 
 
             tools.UpdateGmailUser(service, gusersyn, update, log);
@@ -5010,12 +5344,27 @@ namespace WindowsApplication1.utils
             //string adNicknamesTable = "#adNicknamesTable";
             //string sqlNicknamesTable = "#sqlNicknamesTable";
             //string nicknamesToUpdateDBTable = "#nicknamesToUpdateDB";
-            string nicknamesFromGmailTable = "FHC_TEST_gmailNicknamesTable";
-            string loginWithoutNicknamesTable = "FHC_TEST_loginsWONicknamesTable";
-            string adNicknamesTable = "FHC_TEST_adNicknamesTable";
-            string sqlNicknamesTable = "FHC_TEST_sqlNicknamesTable";
-            string nicknamesToUpdateDBTable = "FHC_TEST_nicknamesToUpdateDB";
-            string nicknamesFilteredForDuplicatesTable = "FHC_TEST_nicknamesFilteredDuplicates";
+
+
+            if (settingsConfig.TempTables == true)
+            {
+                string nicknamesFromGmailTable = "#FHC_LDAP_gmailNicknamesTable";
+                string loginWithoutNicknamesTable = "#FHC_LDAP_loginsWONicknamesTable";
+                string adNicknamesTable = "#FHC_LDAP_adNicknamesTable";
+                string sqlNicknamesTable = "#FHC_LDAP_sqlNicknamesTable";
+                string nicknamesToUpdateDBTable = "#FHC_LDAP_nicknamesToUpdateDB";
+                string nicknamesFilteredForDuplicatesTable = "#FHC_LDAP_nicknamesFilteredDuplicates";
+            }
+            else
+            {
+                string nicknamesFromGmailTable = "FHC_LDAP_gmailNicknamesTable";
+                string loginWithoutNicknamesTable = "FHC_LDAP_loginsWONicknamesTable";
+                string adNicknamesTable = "FHC_LDAP_adNicknamesTable";
+                string sqlNicknamesTable = "FHC_LDAP_sqlNicknamesTable";
+                string nicknamesToUpdateDBTable = "FHC_LDAP_nicknamesToUpdateDB";
+                string nicknamesFilteredForDuplicatesTable = "FHC_LDAP_nicknamesFilteredDuplicates";
+            }
+
             string dc = gusersyn.Writeback_ad_OU.Substring(gusersyn.Writeback_ad_OU.IndexOf("DC"));
             string userNickName = "";
             SqlDataReader nicknamesToAddToDatabase;
@@ -5034,12 +5383,15 @@ namespace WindowsApplication1.utils
 
 
             // housecleaning
-            tools.DropTable(nicknamesFromGmailTable, sqlConn, log);
-            tools.DropTable(loginWithoutNicknamesTable, sqlConn, log);
-            tools.DropTable(adNicknamesTable, sqlConn, log);
-            tools.DropTable(sqlNicknamesTable, sqlConn, log);
-            tools.DropTable(nicknamesToUpdateDBTable, sqlConn, log);
-            tools.DropTable(nicknamesFilteredForDuplicatesTable, sqlConn, log);
+            if (settingsConfig.TempTables == false)
+            {
+                tools.DropTable(nicknamesFromGmailTable, sqlConn, log);
+                tools.DropTable(loginWithoutNicknamesTable, sqlConn, log);
+                tools.DropTable(adNicknamesTable, sqlConn, log);
+                tools.DropTable(sqlNicknamesTable, sqlConn, log);
+                tools.DropTable(nicknamesToUpdateDBTable, sqlConn, log);
+                tools.DropTable(nicknamesFilteredForDuplicatesTable, sqlConn, log);
+            }
 
             if (gusersyn.Writeback_AD_checkbox == true || gusersyn.Writeback_DB_checkbox == true)
             {
@@ -5535,11 +5887,11 @@ namespace WindowsApplication1.utils
                 //tools.DropTable(adNicknamesTable, sqlConn, log);
                 //tools.DropTable(sqlNicknamesTable, sqlConn, log);
                 //tools.DropTable(nicknamesToUpdateDBTable, sqlConn, log);
+                //tools.DropTable(nicknamesFilteredForDuplicatesTable, sqlConn, log);
             }                      
             //tools.DropTable(sqlUsersTable, sqlConn, log);
             //tools.DropTable(gmailUsersTable, sqlConn, log);
             //nicknamesToAddToDatabase.Close();
-            //nicknamesToAddToAD.Close();
 			sqlConn.Close();
 		}
     }

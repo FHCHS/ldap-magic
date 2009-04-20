@@ -8,6 +8,7 @@ using System.Drawing;
 using System.DirectoryServices;
 using System.DirectoryServices.ActiveDirectory;
 using System.Data.SqlClient;
+using System.Data.SqlTypes;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -77,6 +78,7 @@ namespace WindowsApplication1
         GroupSynch groupconfig = new GroupSynch();
         UserSynch userconfig = new UserSynch();
 		GmailUsers guserconfig = new GmailUsers();
+        ConfigSettings settingsconfig = new ConfigSettings();
         executionOrder execution = new executionOrder();
         UserStateChange usermapping = new UserStateChange();                          
         ToolSet tools = new ToolSet();
@@ -419,11 +421,12 @@ namespace WindowsApplication1
             }
             userconfig.CustomsString = CustomsString.ToString();
             
-
+            
             SaveFileDialog saveFileDialog1 = new SaveFileDialog();
             saveFileDialog1.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
             saveFileDialog1.FilterIndex = 2;
             saveFileDialog1.RestoreDirectory = true;
+            saveFileDialog1.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             if (saveFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 // create a file stream, where "c:\\testing.txt" is the file path
@@ -436,6 +439,17 @@ namespace WindowsApplication1
                 properties = userconfig.ToDictionary();
                 ICollection<string> c = properties.Keys;
 
+                foreach (string str in c)
+                {
+                    sw.WriteLine("{0} | {1:C}", str, properties[str]);
+                }
+                // Save the config portion as well
+                sw.WriteLine("<config>");
+                properties.Clear();
+                properties = settingsconfig.ToDictionary();
+
+                c = properties.Keys;
+                i = c.Count;
                 foreach (string str in c)
                 {
                     sw.WriteLine("{0} | {1:C}", str, properties[str]);
@@ -454,7 +468,7 @@ namespace WindowsApplication1
             //int i;
             //StopWatch timer = new StopWatch();
             //timer.Start();
-			groupSyncr.ExecuteUserSync(userconfig, tools, log);
+            groupSyncr.ExecuteUserSync(userconfig, settingsconfig, tools, log);
             //timer.Stop();
             //MessageBox.Show("bulk " + timer.GetElapsedTimeSecs().ToString());
             //StringBuilder result = new StringBuilder();
@@ -513,61 +527,63 @@ namespace WindowsApplication1
             BindingSource bs = new BindingSource();
 
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
-            openFileDialog1.InitialDirectory = "c:\\";
+
             openFileDialog1.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
             openFileDialog1.FilterIndex = 2;
             openFileDialog1.RestoreDirectory = true;
+            openFileDialog1.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 StreamReader re = File.OpenText(openFileDialog1.FileName);
 
                 string input = null;
-                while ((input = re.ReadLine()) != null)
+                while ((input = re.ReadLine()) != null && input != "<config>")
                 {
                     string[] parts = input.Split('|');
                     properties.Add(parts[0].Trim(), parts[1].Trim());
                 }
-                re.Close();
-            }
+
+
+
 
             // Load values into text boxes
             // reload properties each time as they are overwritten with the combo object trigger events
-            userconfig.load(properties);
+            userconfig.Load(properties);
             DBserver.Text = userconfig.DataServer;
-            userconfig.load(properties);
+            userconfig.Load(properties);
             Catalog.Text = userconfig.DBCatalog;
-            userconfig.load(properties);
+            userconfig.Load(properties);
 
             users_user_Table_View.Text = userconfig.User_table_view;
-            userconfig.load(properties);
+            userconfig.Load(properties);
             users_user_source.Text = userconfig.User_dbTable;
-            userconfig.load(properties);
+            userconfig.Load(properties);
             users_user_sAMAccountName.Text = userconfig.User_sAMAccount;
-            userconfig.load(properties);
+            userconfig.Load(properties);
             users_user_Lname.Text = userconfig.User_Lname;
-            userconfig.load(properties);
+            userconfig.Load(properties);
             users_user_Fname.Text = userconfig.User_Fname;
-            userconfig.load(properties);
+            userconfig.Load(properties);
             users_user_city.Text = userconfig.User_city;
-            userconfig.load(properties);
+            userconfig.Load(properties);
             users_user_Mobile.Text = userconfig.User_Mobile;
-            userconfig.load(properties);
+            userconfig.Load(properties);
             users_user_State.Text = userconfig.User_State;
-            userconfig.load(properties);
+            userconfig.Load(properties);
             users_user_Address.Text = userconfig.User_Address;
-            userconfig.load(properties);
+            userconfig.Load(properties);
             users_user_password.Text = userconfig.User_password;
-            userconfig.load(properties);
+            userconfig.Load(properties);
             users_user_PostalCode.Text = userconfig.User_Zip;
-            userconfig.load(properties);
+            userconfig.Load(properties);
             users_user_where.Text = userconfig.User_where;
-            userconfig.load(properties);
+            userconfig.Load(properties);
             users_holdingTank.Text = userconfig.UserHoldingTank;
-            userconfig.load(properties);
+            userconfig.Load(properties);
             users_mapping_description.Text = userconfig.Notes;
             users_baseUserOU.Text = userconfig.BaseUserOU;
             users_group.Text = userconfig.UniversalGroup;
-            userconfig.load(properties);
+            userconfig.Load(properties);
             //users_user_emailDomain.Text = userconfig.UserEmailDomain;
             //userconfig.load(properties);
 
@@ -605,7 +621,29 @@ namespace WindowsApplication1
             // auto resize must be off to keep data errors from happening
             SQLColumn.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
             ADColumn.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
-               
+                
+            //load config settings
+            properties.Clear();
+            while ((input = re.ReadLine()) != null)
+            {
+                string[] parts = input.Split('|');
+                properties.Add(parts[0].Trim(), parts[1].Trim());
+            }
+            re.Close();
+
+            settingsconfig.Load(properties);
+            Config_LogCatalog.Text = settingsconfig.LogCatalog;
+            settingsconfig.Load(properties);
+            Config_LogDB.Text = settingsconfig.LogDB;
+            settingsconfig.Load(properties);
+            Config_LogFolder.Text = settingsconfig.LogDirectory;
+            settingsconfig.Load(properties);
+            Config_TempTableCheckbox.Checked = settingsconfig.TempTables;
+            settingsconfig.Load(properties);
+            Config_LogType.Text = settingsconfig.LogType;
+            settingsconfig.Load(properties);
+            }
+            Form1.ActiveForm.Text = "LDAP Magic Users : " + openFileDialog1.FileName;
         }
 
 
@@ -821,6 +859,7 @@ namespace WindowsApplication1
             saveFileDialog1.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
             saveFileDialog1.FilterIndex = 2;
             saveFileDialog1.RestoreDirectory = true;
+            saveFileDialog1.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             if (saveFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 // create a file stream, where "c:\\testing.txt" is the file path
@@ -851,22 +890,22 @@ namespace WindowsApplication1
             Dictionary<string, string> properties = new Dictionary<string, string>();
 
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
-            openFileDialog1.InitialDirectory = "c:\\";
+
             openFileDialog1.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
             openFileDialog1.FilterIndex = 2;
             openFileDialog1.RestoreDirectory = true;
+            openFileDialog1.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 StreamReader re = File.OpenText(openFileDialog1.FileName);
 
                 string input = null;
-                while ((input = re.ReadLine()) != null)
-                {
-                    string[] parts = input.Split('|');
-                    properties.Add(parts[0].Trim(), parts[1].Trim());
-                }
-                re.Close();
-            }
+                while ((input = re.ReadLine()) != null && input != "<config>")
+				{
+					string[] parts = input.Split('|');
+					properties.Add(parts[0].Trim(), parts[1].Trim());
+				}
+
             // Load values into text boxes
             // reload properties each time as they are overwritten with the combo object trigger events
             groupconfig.Load(properties);
@@ -898,15 +937,37 @@ namespace WindowsApplication1
             group_baseUserOU.Text = groupconfig.BaseUserOU;
             group_baseGroupOU.Text = groupconfig.BaseGroupOU;
 
+            //load config settings
+            properties.Clear();
+            while ((input = re.ReadLine()) != null)
+            {
+                string[] parts = input.Split('|');
+                properties.Add(parts[0].Trim(), parts[1].Trim());
+            }
+            re.Close();
+
+            settingsconfig.Load(properties);
+            Config_LogCatalog.Text = settingsconfig.LogCatalog;
+            settingsconfig.Load(properties);
+            Config_LogDB.Text = settingsconfig.LogDB;
+            settingsconfig.Load(properties);
+            Config_LogFolder.Text = settingsconfig.LogDirectory;
+            settingsconfig.Load(properties);
+            Config_TempTableCheckbox.Checked = settingsconfig.TempTables;
+            settingsconfig.Load(properties);
+            Config_LogType.Text = settingsconfig.LogType;
+            settingsconfig.Load(properties);
+            }
+            Form1.ActiveForm.Text = "LDAP Magic Groups : " + openFileDialog1.FileName;
         }
         private void group_execute_now_Click(object sender, EventArgs e)
 		{
 			int i;
 			StopWatch timer = new StopWatch();
 			timer.Start();
-			groupSyncr.ExecuteGroupSync(groupconfig, tools, log);
+			groupSyncr.ExecuteGroupSync(groupconfig, settingsconfig, tools, log);
 			timer.Stop();
-			MessageBox.Show("bulk " + timer.GetElapsedTimeSecs().ToString());
+			// MessageBox.Show("bulk " + timer.GetElapsedTimeSecs().ToString());
 
 			//string sqlgroupsTable = "#sqltableADTransfertesttoy";
 			//SqlConnection sqlConn = new SqlConnection("Data Source=" + groupconfig.DataServer + ";Initial Catalog=" + groupconfig.DBCatalog + ";Integrated Security=SSPI;");
@@ -1240,11 +1301,11 @@ namespace WindowsApplication1
         private void execution_add_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
-            openFileDialog1.InitialDirectory = "c:\\";
+
             openFileDialog1.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
             openFileDialog1.FilterIndex = 2;
             openFileDialog1.RestoreDirectory = true;
-
+            openFileDialog1.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 execution.execution_order.Add(openFileDialog1.FileName.ToString().Clone());
@@ -1481,9 +1542,9 @@ namespace WindowsApplication1
         }
         private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (tabControl1.SelectedIndex == 1 && userMapping_factList.Items.Count == 0)
+            if (UserMap.SelectedIndex == 1 && userMapping_factList.Items.Count == 0)
             {
-                tabControl1.SelectedIndex = 0;
+                UserMap.SelectedIndex = 0;
                 MessageBox.Show("You must complete Step 1 before starting Step 2.");
             }
             if (userMapping_factList.Items.Count > 0)
@@ -1909,6 +1970,7 @@ namespace WindowsApplication1
 			saveFileDialog1.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
 			saveFileDialog1.FilterIndex = 2;
 			saveFileDialog1.RestoreDirectory = true;
+            saveFileDialog1.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
 			if (saveFileDialog1.ShowDialog() == DialogResult.OK)
 			{
 				// create a file stream, where "c:\\testing.txt" is the file path
@@ -1919,13 +1981,36 @@ namespace WindowsApplication1
 
 				// write to file (buffer), where textbox1 is your text box
 				properties = guserconfig.ToDictionary();
+
 				ICollection<string> c = properties.Keys;
 				i = c.Count;
 				foreach (string str in c)
 				{
 					sw.WriteLine("{0} | {1:C}", str, properties[str]);
 				}
+                
+                // Save the config portion as well
+                sw.WriteLine("<config>");
+                properties.Clear();
+                properties = settingsconfig.ToDictionary();
 
+                c = properties.Keys;
+                i = c.Count;
+                foreach (string str in c)
+                {
+                    sw.WriteLine("{0} | {1:C}", str, properties[str]);
+                }
+                // Save the config portion as well
+                sw.WriteLine("<config>");
+                properties.Clear();
+                properties = settingsconfig.ToDictionary();
+
+                c = properties.Keys;
+                i = c.Count;
+                foreach (string str in c)
+                {
+                    sw.WriteLine("{0} | {1:C}", str, properties[str]);
+                }
 				// flush buffer (so the text really goes into the file)
 				sw.Flush();
 
@@ -1938,89 +2023,111 @@ namespace WindowsApplication1
 		{
 			Dictionary<string, string> properties = new Dictionary<string, string>();
 			BindingSource bs = new BindingSource();
-
+            string input = null;
 			OpenFileDialog openFileDialog1 = new OpenFileDialog();
-			openFileDialog1.InitialDirectory = "c:\\";
 			openFileDialog1.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
 			openFileDialog1.FilterIndex = 2;
 			openFileDialog1.RestoreDirectory = true;
+            openFileDialog1.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
 			if (openFileDialog1.ShowDialog() == DialogResult.OK)
 			{
 				StreamReader re = File.OpenText(openFileDialog1.FileName);
 
-				string input = null;
-				while ((input = re.ReadLine()) != null)
+
+                while ((input = re.ReadLine()) != null && input != "<config>")
 				{
 					string[] parts = input.Split('|');
 					properties.Add(parts[0].Trim(), parts[1].Trim());
 				}
-				re.Close();
-			}
+
 
 			// Load values into text boxes
 			// reload properties each time as they are overwritten with the combo object trigger events
-			guserconfig.load(properties);
+			guserconfig.Load(properties);
             DBserver.Text = guserconfig.DataServer;
-            guserconfig.load(properties);
+            guserconfig.Load(properties);
             Catalog.Text = guserconfig.DBCatalog;
-            guserconfig.load(properties);
+            guserconfig.Load(properties);
 			//mail = userconfig.DataServer;
             mailDomain.Text = guserconfig.Admin_domain;
-			guserconfig.load(properties);
+			guserconfig.Load(properties);
             mailUser.Text = guserconfig.Admin_user;
-			guserconfig.load(properties);
+			guserconfig.Load(properties);
             mailPassword.Text = guserconfig.Admin_password;
-            guserconfig.load(properties);
+            guserconfig.Load(properties);
             
             mail_user_AD_or_SQL.Text = guserconfig.User_Datasource;
-            guserconfig.load(properties);
+            guserconfig.Load(properties);
             mail_user_Table_View.Text = guserconfig.User_table_view;
-            guserconfig.load(properties);
+            guserconfig.Load(properties);
             mail_user_source.Text = guserconfig.User_dbTable;
-            guserconfig.load(properties);
+            guserconfig.Load(properties);
             mail_user_where.Text = guserconfig.User_where;
-            guserconfig.load(properties);
+            guserconfig.Load(properties);
             mail_user_OU.Text = guserconfig.User_ad_OU;
-            guserconfig.load(properties);
+            guserconfig.Load(properties);
 
             mail_fields_Fname.Text = guserconfig.User_Fname;
-            guserconfig.load(properties);
+            guserconfig.Load(properties);
             mail_fields_Lname.Text = guserconfig.User_Lname;
-            guserconfig.load(properties);
+            guserconfig.Load(properties);
             mail_fields_Mname.Text = guserconfig.User_Mname;
-            guserconfig.load(properties);
+            guserconfig.Load(properties);
             mail_fields_generate_password.Checked = guserconfig.User_password_generate_checkbox;
-            guserconfig.load(properties);
+            guserconfig.Load(properties);
             mail_fields_short_password.Checked = guserconfig.User_password_short_fix_checkbox;
-            guserconfig.load(properties);
+            guserconfig.Load(properties);
             mail_fields_password.Text = guserconfig.User_password;
-            guserconfig.load(properties);
+            guserconfig.Load(properties);
             mail_fields_userID.Text = guserconfig.User_StuID;
-            guserconfig.load(properties);
+            guserconfig.Load(properties);
 
             mail_writeback_Active_directory.Checked = guserconfig.Writeback_AD_checkbox;
-            guserconfig.load(properties);
+            guserconfig.Load(properties);
             mail_writeback_database.Checked = guserconfig.Writeback_DB_checkbox;
-            guserconfig.load(properties);
+            guserconfig.Load(properties);
             mail_writeback_table.Text = guserconfig.Writeback_table;
-            guserconfig.load(properties);
+            guserconfig.Load(properties);
             mail_writeback_key.Text = guserconfig.Writeback_primary_key;
-            guserconfig.load(properties);
+            guserconfig.Load(properties);
             mail_writeback_use_secondary_email_checkbox.Checked = guserconfig.Writeback_transfer_email_checkbox;
-            guserconfig.load(properties);
+            guserconfig.Load(properties);
             mail_writeback_where.Text = guserconfig.Writeback_where_clause;
-            guserconfig.load(properties);
+            guserconfig.Load(properties);
             mail_writeback_email.Text = guserconfig.Writeback_email_field;
-            guserconfig.load(properties);
+            guserconfig.Load(properties);
             mail_writeback_secondary_email.Text = guserconfig.Writeback_secondary_email_field;
-            guserconfig.load(properties);
+            guserconfig.Load(properties);
             mail_writeback_ou.Text = guserconfig.Writeback_ad_OU;
-            guserconfig.load(properties);
-			
+            guserconfig.Load(properties);
+
+            //load config settings
+            properties.Clear();
+            while ((input = re.ReadLine()) != null)
+            {
+                string[] parts = input.Split('|');
+                properties.Add(parts[0].Trim(), parts[1].Trim());
+            }
+            re.Close();
+
+            settingsconfig.Load(properties);
+            Config_LogCatalog.Text = settingsconfig.LogCatalog;
+            settingsconfig.Load(properties);
+            Config_LogDB.Text = settingsconfig.LogDB;
+            settingsconfig.Load(properties);
+            Config_LogFolder.Text = settingsconfig.LogDirectory;
+            settingsconfig.Load(properties);
+            Config_TempTableCheckbox.Checked = settingsconfig.TempTables;
+            settingsconfig.Load(properties);
+            Config_LogType.Text = settingsconfig.LogType;
+            settingsconfig.Load(properties);
+            }
+
+            Form1.ActiveForm.Text = "LDAP Magic Gmail : " + openFileDialog1.FileName;			
 		}
 		private void mail_execute_Click(object sender, EventArgs e)
 		{
-			gmailSyncr.EmailUsersSync(guserconfig, tools, log);
+			gmailSyncr.EmailUsersSync(guserconfig, settingsconfig, tools, log);
 		}
 
         // BUTTONS FOR RESULTS TAB
@@ -2061,158 +2168,191 @@ namespace WindowsApplication1
 
 		private void outlook_magic_Click(object sender, EventArgs e)
 		{
-            //bool bloop;
-            //Outlook.Application objOutlook = new Outlook.Application();
-            //Outlook.NameSpace outlookNameSpace = objOutlook.GetNamespace("MAPI");
-            //Outlook.MAPIFolder contactsFolder = outlookNameSpace.GetDefaultFolder(Outlook.OlDefaultFolders.olFolderContacts);
-            //Outlook.Items contactItems = contactsFolder.Items;
-            //outlookNameSpace.
-            //string owner = outlookNameSpace.CurrentUser.AddressEntry.Name;
+            int i;
+            int Count;
+            string table = "FHC_Test_Log";
+            DataTable data = new DataTable();
+            DataRow row;
 
-            //try
+            StringBuilder sqlstring = new StringBuilder();
+            //SqlConnection sqlConn = new SqlConnection("Data Source=" + settingsConfig.LogDB + ";Initial Catalog=" + settingsConfig.LogCatalog + ";Integrated Security=SSPI;Connect Timeout=360;");
+            SqlCommand sqlComm;
+            DateTime nowstamp = new DateTime();
+            nowstamp = DateTime.Now;
+            SqlDateTime datetimestamp = new SqlDateTime(nowstamp);
+            data.Columns.Add("Message");
+            data.Columns.Add("Type");
+            data.Columns.Add("Timestamp", System.Type.GetType("System.DateTime"));
+
+            row = data.NewRow();
+            //for (i = 0; i < log.transactions.Count; i++)
             //{
-            //    do
-            //    {
-            //        Outlook.ContactItem contact = (Outlook.ContactItem)contactItems.GetNext();
-            //        if (contact != null)
-            //        {
-            //            execution_errors_textbox.AppendText(contact.FirstName.ToString());
-            //            bloop = true;
-            //        }
-            //        else
-            //        {
-            //            bloop = false;
-            //        }
-            //    } while (bloop == true);
+            //    row[0] = log.transactions[i].ToString();
+            //    row[1] = "Transaction";
+            //    row[2] = datetimestamp.ToSqlString();
+            //    data.Rows.Add(row);
+            //    row = data.NewRow();
             //}
-            //catch (Exception ex)
-            //{
-            //    throw ex;
-            //} 
+
+            row[0] = "Im broke";
+            row[1] = "Transaction";
+            row[2] = nowstamp;
+            data.Rows.Add(row);
+            execution_transactions_warnings_textbox.Text = data.Rows[0][2].ToString();         
+
+
+                
+
+           // //bool bloop;
+           // //Outlook.Application objOutlook = new Outlook.Application();
+           // //Outlook.NameSpace outlookNameSpace = objOutlook.GetNamespace("MAPI");
+           // //Outlook.MAPIFolder contactsFolder = outlookNameSpace.GetDefaultFolder(Outlook.OlDefaultFolders.olFolderContacts);
+           // //Outlook.Items contactItems = contactsFolder.Items;
+           // //outlookNameSpace.
+           // //string owner = outlookNameSpace.CurrentUser.AddressEntry.Name;
+
+           // //try
+           // //{
+           // //    do
+           // //    {
+           // //        Outlook.ContactItem contact = (Outlook.ContactItem)contactItems.GetNext();
+           // //        if (contact != null)
+           // //        {
+           // //            execution_errors_textbox.AppendText(contact.FirstName.ToString());
+           // //            bloop = true;
+           // //        }
+           // //        else
+           // //        {
+           // //            bloop = false;
+           // //        }
+           // //    } while (bloop == true);
+           // //}
+           // //catch (Exception ex)
+           // //{
+           // //    throw ex;
+           // //} 
 
 
 
 
-            /// This Code is adopted from Microsoft Knowlegdebase Article:  <http://support.microsoft.com/?kbid=220600>
+           // /// This Code is adopted from Microsoft Knowlegdebase Article:  <http://support.microsoft.com/?kbid=220600>
 
  
 
 
-            // The Outlook Application Object
-            Outlook.ApplicationClass myOutlookApplication = null;
+           // // The Outlook Application Object
+           // Outlook.ApplicationClass myOutlookApplication = null;
 
-            // Create the Application Object
-            myOutlookApplication = new Outlook.ApplicationClass ();
-            //myOutlookApplication.Session.ExchangeMailboxServerName = "fhosxchmb009.ADVENTISTCORP.NET";
+           // // Create the Application Object
+           // myOutlookApplication = new Outlook.ApplicationClass ();
+           // //myOutlookApplication.Session.ExchangeMailboxServerName = "fhosxchmb009.ADVENTISTCORP.NET";
 
-            // Get the Namespace Object
-            Outlook.NameSpace myNameSpace = myOutlookApplication.GetNamespace("MAPI");
+           // // Get the Namespace Object
+           // Outlook.NameSpace myNameSpace = myOutlookApplication.GetNamespace("MAPI");
 
-            // Define a missing Object for COM interop
-           // object myMissing = System.Reflection.Missing.Value ;  
+           // // Define a missing Object for COM interop
+           //// object myMissing = System.Reflection.Missing.Value ;  
 
-            DemoTableColumns();
-            // Logon to Namespace
-           // myNameSpace.ExchangeMailboxServerName = "fhosxchmb009.ADVENTISTCORP.NET";
-            string folder = "blank";
-            string last = myNameSpace.Folders.GetLast().FullFolderPath.ToString();
-            folder = myNameSpace.Folders.GetFirst().FullFolderPath.ToString();
+           // DemoTableColumns();
+           // // Logon to Namespace
+           //// myNameSpace.ExchangeMailboxServerName = "fhosxchmb009.ADVENTISTCORP.NET";
+           // string folder = "blank";
+           // string last = myNameSpace.Folders.GetLast().FullFolderPath.ToString();
+           // folder = myNameSpace.Folders.GetFirst().FullFolderPath.ToString();
 
-            while (folder != last)
-            {
-                MessageBox.Show(folder);   
-                folder = myNameSpace.Folders.GetNext().FullFolderPath.ToString();
+           // while (folder != last)
+           // {
+           //     MessageBox.Show(folder);   
+           //     folder = myNameSpace.Folders.GetNext().FullFolderPath.ToString();
 
-            }
+           // }
 
-            MessageBox.Show(folder);
+           // MessageBox.Show(folder);
             
-            myNameSpace.Logon("mne4d7", "passwd", false, true);
+           // myNameSpace.Logon("mne4d7", "passwd", false, true);
 
-            //// Create a new Contact
-            //Outlook.ContactItem myNewContact = (Outlook.ContactItem) myOutlookApplication.CreateItem (Outlook.OlItemType.olContactItem );
+           // //// Create a new Contact
+           // //Outlook.ContactItem myNewContact = (Outlook.ContactItem) myOutlookApplication.CreateItem (Outlook.OlItemType.olContactItem );
 
-            //// Setup Contact information...
-            //myNewContact.FullName = "Helmut Obertanner";
-            //System.DateTime myBirthDate = DateTime.Parse ("1.6.1968");
-            //myNewContact.Birthday = myBirthDate;
-            //myNewContact.CompanyName = "DATALOG Software AG";
-            //myNewContact.HomeTelephoneNumber = "49-89-888888888";
-            //myNewContact.Email1Address = "someone@datalog.de";
-            //myNewContact.JobTitle = "Developer";
-            //myNewContact.HomeAddress = "Frundsbergstr. 60\n80637 Munich";
+           // //// Setup Contact information...
+           // //myNewContact.FullName = "Helmut Obertanner";
+           // //System.DateTime myBirthDate = DateTime.Parse ("1.6.1968");
+           // //myNewContact.Birthday = myBirthDate;
+           // //myNewContact.CompanyName = "DATALOG Software AG";
+           // //myNewContact.HomeTelephoneNumber = "49-89-888888888";
+           // //myNewContact.Email1Address = "someone@datalog.de";
+           // //myNewContact.JobTitle = "Developer";
+           // //myNewContact.HomeAddress = "Frundsbergstr. 60\n80637 Munich";
 
-            //// Save Contact
-            //myNewContact.Save();
+           // //// Save Contact
+           // //myNewContact.Save();
 
-            //// CleanUp
-            //Marshal.ReleaseComObject (myNewContact);
+           // //// CleanUp
+           // //Marshal.ReleaseComObject (myNewContact);
 
-            //// Create a new Appointment
-            //Outlook.AppointmentItemClass myNewAppointment = (Outlook.AppointmentItemClass) myOutlookApplication.CreateItem (Outlook.OlItemType.olAppointmentItem );
+           // //// Create a new Appointment
+           // //Outlook.AppointmentItemClass myNewAppointment = (Outlook.AppointmentItemClass) myOutlookApplication.CreateItem (Outlook.OlItemType.olAppointmentItem );
 
-            //// Schedule it for two minutes from now...
-            //DateTime myAppointmentDate = DateTime.Now.AddMinutes (2.0);
-            //myNewAppointment.Start = myAppointmentDate;
+           // //// Schedule it for two minutes from now...
+           // //DateTime myAppointmentDate = DateTime.Now.AddMinutes (2.0);
+           // //myNewAppointment.Start = myAppointmentDate;
 
-            //// Set other appointment info...
-            //myNewAppointment.Duration = 60;
-            //myNewAppointment.Subject = "Meeting to discuss plans...";
+           // //// Set other appointment info...
+           // //myNewAppointment.Duration = 60;
+           // //myNewAppointment.Subject = "Meeting to discuss plans...";
 
-            //myNewAppointment.Body = "Meeting with Helmut to discuss plans.";
-            //myNewAppointment.Location = "Home Office";
-            //myNewAppointment.ReminderMinutesBeforeStart = 1;
-            //myNewAppointment.ReminderSet = true;
+           // //myNewAppointment.Body = "Meeting with Helmut to discuss plans.";
+           // //myNewAppointment.Location = "Home Office";
+           // //myNewAppointment.ReminderMinutesBeforeStart = 1;
+           // //myNewAppointment.ReminderSet = true;
 
-            //// Save Appointment
-            //myNewAppointment.Save();
+           // //// Save Appointment
+           // //myNewAppointment.Save();
 
-            //// CleanUp
-            //Marshal.ReleaseComObject (myNewAppointment);
+           // //// CleanUp
+           // //Marshal.ReleaseComObject (myNewAppointment);
 
-            //// Create a Mail Object
-            //Outlook.MailItemClass myNewMail = (Outlook.MailItemClass) myOutlookApplication.CreateItem (Outlook.OlItemType.olMailItem  ); 
+           // //// Create a Mail Object
+           // //Outlook.MailItemClass myNewMail = (Outlook.MailItemClass) myOutlookApplication.CreateItem (Outlook.OlItemType.olMailItem  ); 
 
-            //myNewMail.To = "someone@datalog.de";
-            //myNewMail.Subject = "About our meeting...";
-            //myNewMail.Body = "Hi James,\n\n" +
-            //                "\tI'll see you in two minutes for our meeting!\n\n" +
-            //                "Btw: I've added you to my contact list!";
+           // //myNewMail.To = "someone@datalog.de";
+           // //myNewMail.Subject = "About our meeting...";
+           // //myNewMail.Body = "Hi James,\n\n" +
+           // //                "\tI'll see you in two minutes for our meeting!\n\n" +
+           // //                "Btw: I've added you to my contact list!";
 
-            //// Send the message!
-            //    myNewMail.Send();
+           // //// Send the message!
+           // //    myNewMail.Send();
 
-            //// CleanUp
-            //Marshal.ReleaseComObject (myNewMail);
+           // //// CleanUp
+           // //Marshal.ReleaseComObject (myNewMail);
 
-            //myNameSpace.Logoff ();
-            //Marshal.ReleaseComObject (myNameSpace);
-            //Marshal.ReleaseComObject (myOutlookApplication);
-
-
+           // //myNameSpace.Logoff ();
+           // //Marshal.ReleaseComObject (myNameSpace);
+           // //Marshal.ReleaseComObject (myOutlookApplication);
 
 
 
-            // TODO: Add code here to start the application.
-            //Outlook._Application olApp = new Outlook.ApplicationClass();
-            //Outlook._NameSpace olNS = olApp.GetNamespace("MAPI");Outlook._Folders oFolders;
-            //olNS.Logon("mne4d7", "passwd", false, true);
-            //oFolders = olNS.Folders;
-            //Outlook.MAPIFolder oPublicFolder = oFolders.Item("Public Folders");
-            //oFolders = oPublicFolder.Folders;
-            //Outlook.MAPIFolder oAllPFolder = oFolders.Item("All Public Folders");
-            //oFolders = oAllPFolder.Folders;
-            //Outlook.MAPIFolder oMyFolder  = oFolders.Item("My Public Folder");
-            //Console.Write(oMyFolder.Name);
 
 
-        }
-        
+           // // TODO: Add code here to start the application.
+           // //Outlook._Application olApp = new Outlook.ApplicationClass();
+           // //Outlook._NameSpace olNS = olApp.GetNamespace("MAPI");Outlook._Folders oFolders;
+           // //olNS.Logon("mne4d7", "passwd", false, true);
+           // //oFolders = olNS.Folders;
+           // //Outlook.MAPIFolder oPublicFolder = oFolders.Item("Public Folders");
+           // //oFolders = oPublicFolder.Folders;
+           // //Outlook.MAPIFolder oAllPFolder = oFolders.Item("All Public Folders");
+           // //oFolders = oAllPFolder.Folders;
+           // //Outlook.MAPIFolder oMyFolder  = oFolders.Item("My Public Folder");
+           // //Console.Write(oMyFolder.Name);
+
+
+        }        
         private void recursive_folders(Outlook.Folder folder, string basefolder)
         {
 
         }
-
         private void DemoTableColumns()
         {
         //    const string PR_HAS_ATTACH =
@@ -2250,7 +2390,6 @@ namespace WindowsApplication1
         //        MessageBox.Show(sb.ToString());
         //    }
         }
-
         private void button1_Click(object sender, EventArgs e)
         {
             //decodr.Text = System.Web.HttpUtility.UrlEncode(encodr.Text.ToString()).Replace("+", " ").Replace("*", "%2A").Replace("!", "%21").Replace("(", "%28").Replace(")", "%29").Replace("'", "%27").Replace("_", "%5f").Replace(" ", "%20").Replace("%", "_");
@@ -2268,7 +2407,6 @@ namespace WindowsApplication1
             gmailUser.Dirty = true;
 
         }
-
         private void button2_Click(object sender, EventArgs e)
         {
           //  encodr.Text = System.Web.HttpUtility.UrlDecode(decodr.Text.ToString().Replace("_", "%"));\
@@ -2282,7 +2420,6 @@ namespace WindowsApplication1
             decodr.Text = gmailUser.Dirty.ToString();
             decodr.Text += gmailUser.IsDirty();
         }
-
         private void button3_Click(object sender, EventArgs e)
         {
            // decodr.Text = Regex.Replace(Regex.Replace(encodr.Text.ToString(), @"[^a-z|^A-Z|^0-9|^\.|_|-]|[\^|\|]|", ""), @"\.+", ".");
@@ -2344,7 +2481,6 @@ namespace WindowsApplication1
 
             
         }
-
         private void button5_Click(object sender, EventArgs e)
         {
             //decodr.Text = encodr.Text.ToString().Replace("<", "%3c").Replace(">", "%3e").Replace("=", "%3d").Replace("%", "%25");
@@ -2392,6 +2528,117 @@ namespace WindowsApplication1
 
 
 
+        }
+
+
+        // CONFIGURATION TAB
+        private void Config_LogType_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            settingsconfig.LogType = Config_LogType.Text.ToString();
+            ArrayList adobjects = new ArrayList(); 
+            if (Config_LogType.Text.ToString() == "Text File")
+            {
+                LogDirLabel.Visible = true;
+                Config_LogSelectFolder.Visible = true;
+                Config_LogFolder.Visible = true;
+
+                DBsLabel.Visible = false;
+                CatLabel.Visible = false;
+                Config_LogDB.Visible = false;
+                Config_LogCatalog.Visible = false;
+
+            }
+            else if (Config_LogType.Text.ToString() == "Database")
+            {
+                LogDirLabel.Visible = false;
+                Config_LogSelectFolder.Visible = false;
+                Config_LogFolder.Visible = false;
+
+                DBsLabel.Visible = true;
+                CatLabel.Visible = true;
+                Config_LogDB.Visible = true;
+                Config_LogCatalog.Visible = true;
+            }
+        }
+        private void Config_LogDB_Leave(object sender, EventArgs e)
+        {
+            ArrayList tableList = new ArrayList();
+            System.Data.SqlClient.SqlConnection SqlCon = new System.Data.SqlClient.SqlConnection("server=" + Config_LogDB.Text.ToString() + ";Integrated Security=SSPI;");
+            try
+            {
+                SqlCon.Open();
+
+                System.Data.SqlClient.SqlCommand sqlComm = new System.Data.SqlClient.SqlCommand();
+                sqlComm.Connection = SqlCon;
+                sqlComm.CommandType = CommandType.StoredProcedure;
+                sqlComm.CommandText = "sp_databases";
+
+                System.Data.SqlClient.SqlDataReader r;
+
+                r = sqlComm.ExecuteReader();
+                while (r.Read())
+                {
+                    tableList.Add((string)r[0].ToString().Trim());
+                }
+                r.Close();
+            }
+            catch
+            {
+                Config_LogDB.Text = "";
+                MessageBox.Show("Could not find database server " + Config_LogDB.Text.ToString());
+                Config_LogDB.Focus();
+            }
+
+
+            SqlCon.Close();
+
+            Config_LogCatalog.DataSource = tableList;
+        }
+        private void Config_LogCatalog_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            SqlConnection sqlConn = new SqlConnection("Data Source=" + Config_LogDB.Text.ToString() + ";Initial Catalog=" + Config_LogCatalog.Text.ToString() + ";Integrated Security=SSPI;");
+            try
+            {
+                sqlConn.Open();
+                settingsconfig.LogCatalog = Config_LogCatalog.Text.ToString();
+                settingsconfig.LogDB = Config_LogDB.Text.ToString();
+                sqlConn.Close();
+            }
+            catch
+            {
+                MessageBox.Show("Cannot Locate Database");
+                Config_LogCatalog.Text = "";
+                Config_LogDB.Text = "";
+            }
+        }
+        private void Config_LogFolder_TextChanged(object sender, EventArgs e)
+        {
+            settingsconfig.LogDirectory = Config_LogFolder.Text.ToString();
+        }
+        private void Config_TempTableCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (Config_TempTableCheckbox.Checked == true)
+            {
+                settingsconfig.TempTables = true;
+            }
+            else
+            {
+                settingsconfig.TempTables = false;
+            }
+        }
+
+        // BUTTONS FOR CONFIGURATION TAB
+
+        private void Config_LogSelectFolder_Click(object sender, EventArgs e)
+        {
+            FolderBrowserDialog folderBrowser = new FolderBrowserDialog();
+            folderBrowser.Description = "Please select a folder for the log files";
+            folderBrowser.ShowNewFolderButton = true;
+            folderBrowser.RootFolder = Environment.SpecialFolder.MyComputer;
+            DialogResult result = folderBrowser.ShowDialog();
+            string foldername = folderBrowser.SelectedPath;
+            Config_LogFolder.Text = foldername;
+            settingsconfig.LogDirectory = foldername;
         }
 
 
