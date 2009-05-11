@@ -34,6 +34,9 @@ using WindowsApplication1.utils;
 // additional fields from usersynch not getting checked in update
 // logging not working yet in some non activated state
 
+// Wish list
+// preview area
+
 
 
 
@@ -1936,12 +1939,12 @@ namespace WindowsApplication1.utils
 
 
         }
-        public string GetObjectDistinguishedName(objectClass objectCls, returnType returnValue, string objectName, string LdapDomain, LogFile log)
+        public string GetObjectDistinguishedName(objectClass objectCls, returnType returnValue, string objectName, string ldapDomain, LogFile log)
         {
             // LdapDomain = "DC=Fabrikam,DC=COM" 
 
             string distinguishedName = string.Empty;
-            string connectionPrefix = "LDAP://" + LdapDomain;
+            string connectionPrefix = "LDAP://" + ldapDomain;
             try
             {
                 DirectoryEntry entry = new DirectoryEntry(connectionPrefix);
@@ -1986,7 +1989,7 @@ namespace WindowsApplication1.utils
             }
             catch (Exception ex)
             {
-                log.errors.Add("searcher failed " + LdapDomain + " " + objectName + " Exception " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                log.errors.Add("searcher failed " + ldapDomain + " " + objectName + " Exception " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
             }
 
             return distinguishedName;
@@ -2014,10 +2017,10 @@ namespace WindowsApplication1.utils
         }
         public void CreateGroup(string ouPath, Dictionary<string, string> properties, LogFile log)
         {
-            // otherProperties is a mapping  <the key is the active driectory field, and the value is the the value>
+            // otherProperties is a mapping  <the key is the active directory field, and the value is the the value>
             // the keys must contain valid AD fields
             // the value will relate to the specific key
-            //needs parent OU present to work
+            // needs parent OU present to work
             try
             {
                 if (!DirectoryEntry.Exists("LDAP://CN=" + System.Web.HttpUtility.UrlEncode(properties["CN"].ToString()).Replace("+", " ").Replace("*", "%2A") + "," + ouPath))
@@ -2165,7 +2168,7 @@ namespace WindowsApplication1.utils
                 log.errors.Add(ex.Message.ToString() + " error deleting ou LDAP://OU=" + name + "," + ouPath + "\n" + ex.StackTrace.ToString());
             }
         }
-        public void AddUserToGroup(string userDn, string groupDn, LogFile log)
+        public void AddUserToGroup(string userDn, string groupDn, bool search, string ldapDomain, LogFile log)
         {
             try
             {
@@ -2181,7 +2184,22 @@ namespace WindowsApplication1.utils
                 }
                 else
                 {
-                    log.warnings.Add(" Warning could not add user " + userDn + " to group LDAP://" + groupDn + " group did not exist");
+                    if (search)
+                    {
+
+                        DirectoryEntry entry = new DirectoryEntry("LDAP://" + groupDn);
+                        userDn = GetObjectDistinguishedName(objectClass.user, returnType.distinguishedName, userDn.Substring((userDn.IndexOf("CN=") + 3), (userDn.IndexOf(",OU") - 3)), ldapDomain, log);
+                        entry.Properties["member"].Add(userDn);
+                        // dirEntry.Invoke("Add", new object[] { "LDAP://" + userDn });
+                        entry.CommitChanges();
+                        entry.Close();
+                        entry.Dispose();
+                        log.transactions.Add("Had to find user and then added user to group | " + userDn + " | LDAP://" + groupDn);
+                    }
+                    else
+                    {
+                        log.warnings.Add(" Warning could not add user " + userDn + " to group LDAP://" + groupDn + " group did not exist");
+                    }
 
                 }
 
@@ -2217,7 +2235,7 @@ namespace WindowsApplication1.utils
         }
 
 
-        public void CreateUserAccount(string ouPath, SqlDataReader users, string groupDn, UserSynch usersyn, LogFile log)
+        public void CreateUserAccount(string ouPath, SqlDataReader users, string groupDn, string ldapDomain, UserSynch usersyn, LogFile log)
         {
             // oupath holds the path for the AD OU to hold the Users 
             // users is a sqldatareader witht the required fields in it ("CN") other Datastructures would be easy to substitute 
@@ -2265,7 +2283,7 @@ namespace WindowsApplication1.utils
                                 }
 
 
-                                AddUserToGroup("CN=" + System.Web.HttpUtility.UrlEncode(users[usersyn.User_sAMAccount].ToString()).Replace("+", " ").Replace("*", "%2A") + "," + usersyn.UserHoldingTank, groupDn, log);
+                                AddUserToGroup("CN=" + System.Web.HttpUtility.UrlEncode(users[usersyn.User_sAMAccount].ToString()).Replace("+", " ").Replace("*", "%2A") + "," + usersyn.UserHoldingTank, groupDn, false, ldapDomain, log);
                                 newUser.Invoke("SetPassword", new object[] { System.Web.HttpUtility.UrlEncode((string)users[usersyn.User_password]).Replace("+", " ").Replace("*", "%2A") });
                                 newUser.CommitChanges();
 
@@ -2655,14 +2673,15 @@ namespace WindowsApplication1.utils
         // SQL query tools
         public SqlDataReader QueryNotExists(string table1, string table2, SqlConnection sqlConn, string pkey1, string pkey2, LogFile log)
         {
+            // Array list of pkeys is for use when the primary key is clustered (multiple columns are required to get a unique identification on the row)
             // finds items in table1 who do not exist in table2 and returns the data fields table 1 for these rows
             //*************************************************************************************************
             //| Table1                      | Table2                    | Returned result
             //*************************************************************************************************
             //| ID            Data          | ID             Data       |                   | Table1.ID     Table1.DATA
             //| 1             a             | 1              a          | NOT RETURNED      |
-            //| 2             b             | null           null       | RETURNED          | 3             b
-            //| 3             c             | 2              null       | NOT RETURNED      |
+            //| 2             b             | null           null       | RETURNED          | 2             b
+            //| 3             c             | 3              null       | NOT RETURNED      |
             //| 4             d             | 4              e          | NOT RETURNED      |
             //
             // SqlCommand sqlComm = new SqlCommand("Select Table1.* Into #Table3ADTransfer From " + Table1 + " AS Table1, " + Table2 + " AS Table2 Where Table1." + pkey1 + " = Table2." + pkey2 + " And Table2." + pkey2 + " is null", sqlConn);
@@ -2689,8 +2708,8 @@ namespace WindowsApplication1.utils
             //*************************************************************************************************
             //| ID            Data          | ID             Data       |                   | Table1.ID     Table1.DATA
             //| 1             a             | 1              a          | NOT RETURNED      |
-            //| 2             b             | null           null       | RETURNED          | 3             b
-            //| 3             c             | 2              null       | NOT RETURNED      |
+            //| 2             b             | null           null       | RETURNED          | 2             b
+            //| 3             c             | 3              null       | NOT RETURNED      |
             //| 4             d             | 4              e          | NOT RETURNED      |
             // SqlCommand sqlComm = new SqlCommand("Select Table1.* Into #Table3ADTransfer From " + Table1 + " AS Table1, " + Table2 + " AS Table2 Where Table1." + pkey1 + " = Table2." + pkey2 + " And Table2." + pkey2 + " is null", sqlConn);
             SqlCommand sqlComm = new SqlCommand("SELECT DISTINCT uptoDate.* INTO " + newTable + " FROM " + table1 + " uptoDate LEFT OUTER JOIN " + table2 + " outofDate ON outofDate." + pkey2 + " = uptoDate." + pkey1 + " WHERE outofDate." + pkey2 + " IS NULL", sqlConn);
@@ -2760,7 +2779,7 @@ namespace WindowsApplication1.utils
                 sqlComm = new SqlCommand("SELECT DISTINCT " + table1 + ".*, " + additionalfields + " FROM " + table1 + " INNER JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2, sqlConn);
             }
             else
-            {
+           { 
                 sqlComm = new SqlCommand("SELECT DISTINCT " + table1 + ".* FROM " + table1 + " INNER JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2, sqlConn);
             }
 
@@ -2821,12 +2840,12 @@ namespace WindowsApplication1.utils
             // this basically will just issue a concatenation sql query to the DB for each field to compare
             foreach (string key in compareFields1)
             {
-                compare1 = compare1 + table1 + "." + key + " + ";
+                compare1 = compare1 + table1 + "." + key + " COLLATE SQL_Latin1_General_CP1_CS_AS + ";
                 fields += table1 + "." + key + ", ";
             }
             foreach (string key in compareFields2)
             {
-                compare2 = compare2 + table2 + "." + key + " + ";
+                compare2 = compare2 + table2 + "." + key + " COLLATE SQL_Latin1_General_CP1_CS_AS + ";
             }
             // remove trailing comma and + 
             compare2 = compare2.Remove(compare2.Length - 2);
@@ -2907,17 +2926,17 @@ namespace WindowsApplication1.utils
             // this basically will just issue a concatenation sql query to the DB for each field to compare
             foreach (string key in compareFields1)
             {
-                compare1 = compare1 + table1 + "." + key + " + ";
+                compare1 = compare1 + table1 + "." + key + " COLLATE SQL_Latin1_General_CP1_CS_AS + ";
                 fields += table1 + "." + key + ", ";
             }
-            compare1 = compare1 + table1 + "." + pkey1 + " + ";
+            compare1 = compare1 + table1 + "." + pkey1 + " COLLATE SQL_Latin1_General_CP1_CS_AS + ";
             foreach (string key in compareFields2)
             {
-                compare2 = compare2 + table2 + "." + key + " + ";
+                compare2 = compare2 + table2 + "." + key + " COLLATE SQL_Latin1_General_CP1_CS_AS + ";
                 //fields += table2 + "." + key + ", ";
                 notnull += table2 + "." + key + " <> '' OR ";
             }
-            compare2 = compare2 + table2 + "." + pkey2 + " + ";
+            compare2 = compare2 + table2 + "." + pkey2 + " COLLATE SQL_Latin1_General_CP1_CS_AS + ";
             foreach (string key in additionalFields)
             {
                 additionalfields += key;
@@ -2971,12 +2990,12 @@ namespace WindowsApplication1.utils
             // this basically will just issue a concatenation sql query to the DB for each field to compare
             foreach (string key in compareFields1)
             {
-                compare1 = compare1 + table1 + "." + key + " + ";
+                compare1 = compare1 + table1 + "." + key + " COLLATE SQL_Latin1_General_CP1_CS_AS + ";
                 fields += table1 + "." + key + ", ";
             }
             foreach (string key in compareFields2)
             {
-                compare2 = compare2 + table2 + "." + key + " + ";
+                compare2 = compare2 + table2 + "." + key + " COLLATE SQL_Latin1_General_CP1_CS_AS + ";
             }
             // remove trailing comma and + 
             compare2 = compare2.Remove(compare2.Length - 2);
@@ -4294,11 +4313,11 @@ namespace WindowsApplication1.utils
             SqlCommand sqlComm = new SqlCommand();
             if (groupsyn.Group_where == "")
             {
-                sqlComm = new SqlCommand("SELECT DISTINCT RTRIM(" + groupsyn.Group_sAMAccount + ") AS " + groupsyn.Group_sAMAccount + ", RTRIM(" + groupsyn.Group_CN + ") + '" + groupapp + "' AS " + groupsyn.Group_CN + " INTO " + sqlgroupsTable + " FROM " + groupsyn.Group_dbTable + " ORDER BY " + groupsyn.Group_CN, sqlConn);
+                sqlComm = new SqlCommand("SELECT DISTINCT RTRIM(" + groupsyn.Group_sAMAccount + ") AS " + groupsyn.Group_sAMAccount + ", RTRIM(" + groupsyn.Group_CN + ") + '" + groupapp + "' AS " + groupsyn.Group_CN + " INTO " + sqlgroupsTable + " FROM " + groupsyn.Group_dbTable + " WHERE " + groupsyn.Group_sAMAccount + " IS NOT NULL ORDER BY " + groupsyn.Group_CN, sqlConn);
             }
             else
             {
-                sqlComm = new SqlCommand("SELECT DISTINCT RTRIM(" + groupsyn.Group_sAMAccount + ") AS " + groupsyn.Group_sAMAccount + ", RTRIM(" + groupsyn.Group_CN + ") + '" + groupapp + "' AS " + groupsyn.Group_CN + " INTO " + sqlgroupsTable + " FROM " + groupsyn.Group_dbTable + " WHERE " + groupsyn.Group_where + " ORDER BY " + groupsyn.Group_CN, sqlConn);
+                sqlComm = new SqlCommand("SELECT DISTINCT RTRIM(" + groupsyn.Group_sAMAccount + ") AS " + groupsyn.Group_sAMAccount + ", RTRIM(" + groupsyn.Group_CN + ") + '" + groupapp + "' AS " + groupsyn.Group_CN + " INTO " + sqlgroupsTable + " FROM " + groupsyn.Group_dbTable + " WHERE " + groupsyn.Group_sAMAccount + " IS NOT NULL AND " + groupsyn.Group_where + " ORDER BY " + groupsyn.Group_CN, sqlConn);
             }
 
 
@@ -4694,12 +4713,12 @@ namespace WindowsApplication1.utils
 
 
             // compare and add/remove
-            add = tools.QueryNotExists(sqlgroupMembersTable, ADgroupMembersTable, sqlConn, groupsyn.User_Group_Reference, ADusers.Columns[1].ColumnName, log);
+            add = tools.QueryNotExists(sqlgroupMembersTable, ADgroupMembersTable, sqlConn, groupsyn.User_sAMAccount, ADusers.Columns[0].ColumnName, log);
             try
             {
             while (add.Read())
             {
-                tools.AddUserToGroup((string)add[0], "CN=" + (string)add[1] + ",OU=" + groupapp + "," + groupOU, log);
+                tools.AddUserToGroup((string)add[0], "CN=" + (string)add[1] + ",OU=" + groupapp + "," + groupOU, false, dc, log);
                 // log.transactions.Add("User added ;" + (string)add[0] + ",OU=" + groupapp + "," + groupOU + ";" + (string)add[1]);
                 groupObject.Clear();
             }
@@ -4739,14 +4758,19 @@ namespace WindowsApplication1.utils
             string debugRecordCount;
             SqlCommand sqlDebugComm;
             int j;
-            ArrayList debugList = new ArrayList();
             int i;
+            ArrayList debugList = new ArrayList();
             StopWatch time = new StopWatch();
 
 
             string baseOU = usersyn.BaseUserOU;
             string DC = baseOU.Substring(baseOU.IndexOf("DC"));
             string sqlForCustomFields = "";
+
+            // Table string place holders
+            string sqlUsersTable = "#FHC_USERS_SQLusersTable";
+            string adUsersTable = "#FHC_USERS_ADusersTable";
+
 
             SqlDataReader add;
             SqlDataReader delete;
@@ -4764,13 +4788,14 @@ namespace WindowsApplication1.utils
 
             if (settingsConfig.TempTables == true)
             {
-                string sqlUsersTable = "#FHC_USERS_SQLusersTable";
-                string adUsersTable = "#FHC_USERS_ADusersTable";
+                sqlUsersTable = "#FHC_USERS_SQLusersTable";
+                adUsersTable = "#FHC_USERS_ADusersTable";
             }
             else
             {
-                string sqlUsersTable = "FHC_USERS_SQLusersTable";
-                string adUsersTable = "FHC_USERS_ADusersTable";
+                sqlUsersTable = "FHC_USERS_SQLusersTable";
+                adUsersTable = "FHC_USERS_ADusersTable";
+
             }
 
 
@@ -4784,7 +4809,13 @@ namespace WindowsApplication1.utils
 
 
             sqlConn.Open();
-            // creat initial ou's; will log a warning out if they already exist
+            //housecleaning
+            if (settingsConfig.TempTables == false)
+            {
+                tools.DropTable(sqlUsersTable, sqlConn, log);
+                tools.DropTable(adUsersTable, sqlConn, log);
+            }
+            // create initial ou's; will log a warning out if they already exist
             tools.CreateOURecursive(usersyn.BaseUserOU, log);
             tools.CreateOURecursive(usersyn.UserHoldingTank, log);
 
@@ -5007,7 +5038,7 @@ namespace WindowsApplication1.utils
                 ////debugReader.Close();
                 //MessageBox.Show("table " + adUsersTable + "\n " + debugFieldCount + " fields \n sample data \n" + debug);
 
-                tools.CreateUserAccount(usersyn.UserHoldingTank, add, usersyn.UniversalGroup, usersyn, log);
+                tools.CreateUserAccount(usersyn.UserHoldingTank, add, usersyn.UniversalGroup, DC, usersyn, log);
                 add.Close();
                 
                 sqlComm2 = new SqlCommand("select count(sAMAccountName) FROM " + sqlUsersTable, sqlConn);
@@ -5111,7 +5142,7 @@ namespace WindowsApplication1.utils
                 // add the users without doing additional checks
                 tools.Create_Table(adUsers, adUsersTable, sqlConn, log);
                 add = tools.QueryNotExists(sqlUsersTable, adUsersTable, sqlConn, "sAMAccountName", adUsers.Columns[0].ColumnName, log);
-                tools.CreateUserAccount(usersyn.UserHoldingTank, add, usersyn.UniversalGroup, usersyn, log);
+                tools.CreateUserAccount(usersyn.UserHoldingTank, add, usersyn.UniversalGroup, DC, usersyn, log);
                 add.Close();
             }
             sqlConn.Close();
@@ -5133,6 +5164,16 @@ namespace WindowsApplication1.utils
 			ArrayList sqlUpdateKeys = new ArrayList();
             ArrayList adUpdateKeys = new ArrayList();
             ArrayList additionalKeys = new ArrayList();
+
+            // Table place holders
+            string sqlUsersTable = "#FHC_LDAP_sqlusersTable";
+            string gmailUsersTable = "#FHC_LDAP_gmailusersTable";
+            string nicknamesFromGmailTable = "#FHC_LDAP_gmailNicknamesTable";
+            string loginWithoutNicknamesTable = "#FHC_LDAP_loginsWONicknamesTable";
+            string adNicknamesTable = "#FHC_LDAP_adNicknamesTable";
+            string sqlNicknamesTable = "#FHC_LDAP_sqlNicknamesTable";
+            string nicknamesToUpdateDBTable = "#FHC_LDAP_nicknamesToUpdateDB";
+            string nicknamesFilteredForDuplicatesTable = "#FHC_LDAP_nicknamesFilteredDuplicates";
                                                              
 
 			SqlDataReader add;
@@ -5146,13 +5187,13 @@ namespace WindowsApplication1.utils
 
             if (settingsConfig.TempTables == true)
             {
-                string sqlUsersTable = "#FHC_LDAP_sqlusersTable";
-                string adUsersTable = "#FHC_LDAP_gmailusersTable";
+                sqlUsersTable = "#FHC_LDAP_sqlusersTable";
+                gmailUsersTable = "#FHC_LDAP_gmailusersTable";
             }
             else
             {
-                string sqlUsersTable = "FHC_LDAP_sqlusersTable";
-                string gmailUsersTable = "FHC_LDAP_gmailusersTable";
+                sqlUsersTable = "FHC_LDAP_sqlusersTable";
+                gmailUsersTable = "FHC_LDAP_gmailusersTable";
             }
 
 
@@ -5294,37 +5335,37 @@ namespace WindowsApplication1.utils
             update = tools.CheckUpdate(sqlUsersTable, gmailUsersTable, gusersyn.User_StuID, gmailUsers.Columns[0].ColumnName, sqlUpdateKeys, gmailUpdateKeys, additionalKeys, sqlConn, log);
 
 
-            SqlDataReader debugReader;
-            string debug = "";
-            int debugFieldCount = 0;
+            //SqlDataReader debugReader;
+            //string debug = "";
+            //int debugFieldCount = 0;
 
-            debug = "Gunna update stuff \n";
-            debugFieldCount = update.FieldCount;
-            for (i = 0; i < debugFieldCount; i++)
-            {
-                debug += update.GetName(i) + ", ";
-            }
-            debug += "\n";
-            int j = 0;
-            try
-            {
-                while (update.Read() && j < 20)
-                {
-                    for (i = 0; i < debugFieldCount; i++)
-                    {
-                        debug += (string)update[i] + ", ";
-                    }
-                    debug += "\n";
-                    j++;
-                }
-            }
-            catch (Exception ex)
-            {
-                log.warnings.Add("Issue creating debug data " + ex.Message.ToString());
-            }
+            //debug = "Gunna update stuff \n";
+            //debugFieldCount = update.FieldCount;
+            //for (i = 0; i < debugFieldCount; i++)
+            //{
+            //    debug += update.GetName(i) + ", ";
+            //}
+            //debug += "\n";
+            //int j = 0;
+            //try
+            //{
+            //    while (update.Read() && j < 20)
+            //    {
+            //        for (i = 0; i < debugFieldCount; i++)
+            //        {
+            //            debug += (string)update[i] + ", ";
+            //        }
+            //        debug += "\n";
+            //        j++;
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
+            //    log.warnings.Add("Issue creating debug data " + ex.Message.ToString());
+            //}
 
-            //debugReader.Close();
-            MessageBox.Show("Gmail users to update \n " + debugFieldCount + " fields \n sample data" + debug);
+            ////debugReader.Close();
+            //MessageBox.Show("Gmail users to update \n " + debugFieldCount + " fields \n sample data" + debug);
 
 
             tools.UpdateGmailUser(service, gusersyn, update, log);
@@ -5348,21 +5389,21 @@ namespace WindowsApplication1.utils
 
             if (settingsConfig.TempTables == true)
             {
-                string nicknamesFromGmailTable = "#FHC_LDAP_gmailNicknamesTable";
-                string loginWithoutNicknamesTable = "#FHC_LDAP_loginsWONicknamesTable";
-                string adNicknamesTable = "#FHC_LDAP_adNicknamesTable";
-                string sqlNicknamesTable = "#FHC_LDAP_sqlNicknamesTable";
-                string nicknamesToUpdateDBTable = "#FHC_LDAP_nicknamesToUpdateDB";
-                string nicknamesFilteredForDuplicatesTable = "#FHC_LDAP_nicknamesFilteredDuplicates";
+                nicknamesFromGmailTable = "#FHC_LDAP_gmailNicknamesTable";
+                loginWithoutNicknamesTable = "#FHC_LDAP_loginsWONicknamesTable";
+                adNicknamesTable = "#FHC_LDAP_adNicknamesTable";
+                sqlNicknamesTable = "#FHC_LDAP_sqlNicknamesTable";
+                nicknamesToUpdateDBTable = "#FHC_LDAP_nicknamesToUpdateDB";
+                nicknamesFilteredForDuplicatesTable = "#FHC_LDAP_nicknamesFilteredDuplicates";
             }
             else
             {
-                string nicknamesFromGmailTable = "FHC_LDAP_gmailNicknamesTable";
-                string loginWithoutNicknamesTable = "FHC_LDAP_loginsWONicknamesTable";
-                string adNicknamesTable = "FHC_LDAP_adNicknamesTable";
-                string sqlNicknamesTable = "FHC_LDAP_sqlNicknamesTable";
-                string nicknamesToUpdateDBTable = "FHC_LDAP_nicknamesToUpdateDB";
-                string nicknamesFilteredForDuplicatesTable = "FHC_LDAP_nicknamesFilteredDuplicates";
+                nicknamesFromGmailTable = "FHC_LDAP_gmailNicknamesTable";
+                loginWithoutNicknamesTable = "FHC_LDAP_loginsWONicknamesTable";
+                adNicknamesTable = "FHC_LDAP_adNicknamesTable";
+                sqlNicknamesTable = "FHC_LDAP_sqlNicknamesTable";
+                nicknamesToUpdateDBTable = "FHC_LDAP_nicknamesToUpdateDB";
+                nicknamesFilteredForDuplicatesTable = "FHC_LDAP_nicknamesFilteredDuplicates";
             }
 
             string dc = gusersyn.Writeback_ad_OU.Substring(gusersyn.Writeback_ad_OU.IndexOf("DC"));

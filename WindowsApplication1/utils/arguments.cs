@@ -7,6 +7,7 @@
 * Modified:		28 October 2002
 *
 * Version:		1.0
+* License: The MIT License  
 */
 
 using System;
