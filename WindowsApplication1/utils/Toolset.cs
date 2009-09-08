@@ -25,6 +25,7 @@ using WindowsApplication1.utils;
 
 
 // outstanding issues
+// initial user creation fails to create custom fields
 // send as use fix from google forums
 // update gmail failing to use middle name properly
 // ensure nicknames are genereated properly
@@ -32,7 +33,7 @@ using WindowsApplication1.utils;
 // send as aliasing failing due to blank sqldata reader
 // unique table naming for multiple instances running at once
 // additional fields from usersynch not getting checked in update
-// logging not working yet in some non activated state
+// logging not working yet its in some non activated state
 
 // Wish list
 // preview area
@@ -2235,7 +2236,7 @@ namespace WindowsApplication1.utils
         }
 
 
-        public void CreateUserAccount(string ouPath, SqlDataReader users, string groupDn, string ldapDomain, UserSynch usersyn, LogFile log)
+        public void CreateUsersAccounts(string ouPath, SqlDataReader users, string groupDn, string ldapDomain, UserSynch usersyn, LogFile log)
         {
             // oupath holds the path for the AD OU to hold the Users 
             // users is a sqldatareader witht the required fields in it ("CN") other Datastructures would be easy to substitute 
@@ -2245,6 +2246,8 @@ namespace WindowsApplication1.utils
             int fieldcount;
             int val;
             string name = "";
+            string last = "";
+            string first = "";
             fieldcount = users.FieldCount;
             try
             {
@@ -2273,11 +2276,31 @@ namespace WindowsApplication1.utils
                                 for (i = 0; i < fieldcount; i++)
                                 {
                                     name = users.GetName(i);
+                                    // eliminiate non updatable fields
                                     if (name != "password" && name != "CN")
                                     {
-                                        if ((string)users[i] != "")
+                                        // mail needs some special handling
+                                        if (name != "mail")
                                         {
-                                            newUser.Properties[users.GetName(i)].Value = System.Web.HttpUtility.UrlEncode((string)users[i]).Replace("+", " ").Replace("*", "%2A");
+                                            if ((string)users[name] != "")
+                                            {
+                                                newUser.Properties[name].Value = System.Web.HttpUtility.UrlEncode((string)users[name]).Replace("+", " ").Replace("*", "%2A");
+                                            }
+                                        }
+                                        else
+                                        {
+                                            first = System.Web.HttpUtility.UrlEncode((string)users[name]).Replace("+", " ").Replace("*", "%2A").Replace("%40", "@");
+                                            last = (string)users[name];
+                                            // check to see if mail field has illegal characters
+                                            if (first == last)
+                                            {
+                                                // no illegal characters input the value into AD
+                                                newUser.Properties[name].Value = System.Web.HttpUtility.UrlEncode((string)users[name]).Replace("+", " ").Replace("*", "%2A").Replace("!", "%21").Replace("(", "%28").Replace(")", "%29").Replace("'", "%27").Replace("_", "%5f").Replace(" ", "%20").Replace("%40", "@");
+                                            }
+                                            else
+                                            {
+                                                // newUser.Properties[name].Value = "";
+                                            }
                                         }
                                     }
                                 }
@@ -2394,12 +2417,33 @@ namespace WindowsApplication1.utils
                     for (i = 0; i < fieldcount; i++)
                     {
                         name = users.GetName(i);
+                        // eliminiate non updatable fields
                         if (name != "password" && name != "CN" && name != "sAMAccountName" && name != "distinguishedname")
                         {
-                            if ((string)users[name] != "")
+                            // mail needs some special handling
+                            if (name != "mail")
                             {
-                                user.Properties[name].Value = System.Web.HttpUtility.UrlEncode((string)users[name]).Replace("+", " ").Replace("*", "%2A");
+                                if ((string)users[name] != "")
+                                {
+                                    user.Properties[name].Value = System.Web.HttpUtility.UrlEncode((string)users[name]).Replace("+", " ").Replace("*", "%2A");
+                                }
                             }
+                            else
+                            {
+                                // check to see if mail field has illegal characters
+                                string hi = (System.Web.HttpUtility.UrlEncode((string)users[name]).Replace("+", " ").Replace("*", "%2A").Replace("%40", "@"));
+                                string hi3 = (string)users[name];
+                                if (System.Web.HttpUtility.UrlEncode((string)users[name]).Replace("+", " ").Replace("*", "%2A").Replace("%40", "@") != (string)users[name])
+                                {
+                                    // no illegal characters input the value into AD
+                                    user.Properties[name].Value = System.Web.HttpUtility.UrlEncode((string)users[name]).Replace("+", " ").Replace("*", "%2A").Replace("!", "%21").Replace("(", "%28").Replace(")", "%29").Replace("'", "%27").Replace("_", "%5f").Replace(" ", "%20").Replace("%40", "@");
+                                }
+                                else
+                                {
+                                    user.Properties[name].Value = "illegal Email";
+                                }
+                            }
+
                         }
                     }
                     user.CommitChanges();
@@ -2765,7 +2809,7 @@ namespace WindowsApplication1.utils
             //| 2             b             | null           null         f             | NOT RETURNED      |              
             //| 3             c             | 3              null         g             | RETURNED          | 3             c               g
             //| 4             d             | 4              e            h             | NOT RETURNED      | 
-            
+
             SqlDataReader r;
             SqlCommand sqlComm;
             string additionalfields = "";
@@ -2779,7 +2823,7 @@ namespace WindowsApplication1.utils
                 sqlComm = new SqlCommand("SELECT DISTINCT " + table1 + ".*, " + additionalfields + " FROM " + table1 + " INNER JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2, sqlConn);
             }
             else
-           { 
+            {
                 sqlComm = new SqlCommand("SELECT DISTINCT " + table1 + ".* FROM " + table1 + " INNER JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2, sqlConn);
             }
 
@@ -3387,7 +3431,7 @@ namespace WindowsApplication1.utils
                 log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
             }
         }
-        
+
 
 
         // Gmail tools
@@ -3420,7 +3464,7 @@ namespace WindowsApplication1.utils
                             returnvalue = firstName.Substring(0, (i - r)) + "." + midName + "." + lastName;
                         }
                     }
-                } 
+                }
                 if (i > (r + firstName.Length))
                 {
                     returnvalue = "failure";
@@ -3443,7 +3487,7 @@ namespace WindowsApplication1.utils
                     if (apex.ErrorCode == "1301")
                     {
                         // this error about a non existent entry seems to indicate the nickname is already created
-                        complete = true;                        
+                        complete = true;
                     }
                     i++;
                 }
@@ -3616,7 +3660,7 @@ namespace WindowsApplication1.utils
                 log.errors.Add("Issue creating send as datareader is null " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
             }
         }
-  
+
         // Gmail data pull
         public DataTable Get_Gmail_Users(AppsService service, GmailUsers gusersyn, string table, LogFile log)
         {
@@ -3823,8 +3867,8 @@ namespace WindowsApplication1.utils
                 SqlDateTime datetimestamp = new SqlDateTime(nowstamp);
                 data.Columns.Add("Message");
                 data.Columns.Add("Type");
-                data.Columns.Add("Timestamp",System.Type.GetType("System.DateTime"));
-                
+                data.Columns.Add("Timestamp", System.Type.GetType("System.DateTime"));
+
 
                 row = data.NewRow();
                 for (i = 0; i < log.transactions.Count; i++)
@@ -3878,7 +3922,7 @@ namespace WindowsApplication1.utils
             }
 
         }
-        
+
 
         // possible not in use
 
@@ -4244,7 +4288,7 @@ namespace WindowsApplication1.utils
                     nicknamecount = 0;
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 log.errors.Add("Issue updating nicknames datareader is null " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
             }
@@ -4301,7 +4345,7 @@ namespace WindowsApplication1.utils
             sqlConn.Open();
             // Setup the OU for the program
             tools.CreateOURecursive("OU=" + groupapp + "," + groupOU, log);
-            
+
             // A little house cleaning to empty out tables
             if (settingsConfig.TempTables == false)
             {
@@ -4568,6 +4612,7 @@ namespace WindowsApplication1.utils
                 sqlComm = new SqlCommand("SELECT * FROM " + sqlgroupsTable, sqlConn);
                 try
                 {
+                    sqlComm.CommandTimeout = 360;
                     add = sqlComm.ExecuteReader();
                     while (add.Read())
                     {
@@ -4636,6 +4681,7 @@ namespace WindowsApplication1.utils
             }
             try
             {
+                sqlComm.CommandTimeout = 360;
                 sqlComm.ExecuteNonQuery();
             }
             catch (Exception ex)
@@ -4647,6 +4693,7 @@ namespace WindowsApplication1.utils
             sqlComm = new SqlCommand("SELECT " + groupsyn.Group_CN + " FROM " + sqlgroupsTable, sqlConn);
             try
             {
+                sqlComm.CommandTimeout = 360;
                 sqlgroups = sqlComm.ExecuteReader();
                 while (sqlgroups.Read())
                 {
@@ -4716,12 +4763,12 @@ namespace WindowsApplication1.utils
             add = tools.QueryNotExists(sqlgroupMembersTable, ADgroupMembersTable, sqlConn, groupsyn.User_sAMAccount, ADusers.Columns[0].ColumnName, log);
             try
             {
-            while (add.Read())
-            {
-                tools.AddUserToGroup((string)add[0], "CN=" + (string)add[1] + ",OU=" + groupapp + "," + groupOU, false, dc, log);
-                // log.transactions.Add("User added ;" + (string)add[0] + ",OU=" + groupapp + "," + groupOU + ";" + (string)add[1]);
-                groupObject.Clear();
-            }
+                while (add.Read())
+                {
+                    tools.AddUserToGroup((string)add[0], "CN=" + (string)add[1] + ",OU=" + groupapp + "," + groupOU, false, dc, log);
+                    // log.transactions.Add("User added ;" + (string)add[0] + ",OU=" + groupapp + "," + groupOU + ";" + (string)add[1]);
+                    groupObject.Clear();
+                }
             }
             catch (Exception ex)
             {
@@ -4732,7 +4779,7 @@ namespace WindowsApplication1.utils
             string recordCount = "";
             sqlComm2 = new SqlCommand("select count(" + groupsyn.Group_CN + ") FROM " + sqlgroupMembersTable, sqlConn);
             sqlComm2.CommandTimeout = 360;
-            recordCount =  sqlComm2.ExecuteScalar().ToString();
+            recordCount = sqlComm2.ExecuteScalar().ToString();
             sqlComm2.Dispose();
 
             if (recordCount != "0")
@@ -5038,12 +5085,12 @@ namespace WindowsApplication1.utils
                 ////debugReader.Close();
                 //MessageBox.Show("table " + adUsersTable + "\n " + debugFieldCount + " fields \n sample data \n" + debug);
 
-                tools.CreateUserAccount(usersyn.UserHoldingTank, add, usersyn.UniversalGroup, DC, usersyn, log);
+                tools.CreateUsersAccounts(usersyn.UserHoldingTank, add, usersyn.UniversalGroup, DC, usersyn, log);
                 add.Close();
-                
+
                 sqlComm2 = new SqlCommand("select count(sAMAccountName) FROM " + sqlUsersTable, sqlConn);
                 sqlComm2.CommandTimeout = 360;
-                recordCount =  sqlComm2.ExecuteScalar().ToString();
+                recordCount = sqlComm2.ExecuteScalar().ToString();
                 sqlComm2.Dispose();
 
                 if (recordCount != "0")
@@ -5142,7 +5189,7 @@ namespace WindowsApplication1.utils
                 // add the users without doing additional checks
                 tools.Create_Table(adUsers, adUsersTable, sqlConn, log);
                 add = tools.QueryNotExists(sqlUsersTable, adUsersTable, sqlConn, "sAMAccountName", adUsers.Columns[0].ColumnName, log);
-                tools.CreateUserAccount(usersyn.UserHoldingTank, add, usersyn.UniversalGroup, DC, usersyn, log);
+                tools.CreateUsersAccounts(usersyn.UserHoldingTank, add, usersyn.UniversalGroup, DC, usersyn, log);
                 add.Close();
             }
             sqlConn.Close();
@@ -5151,17 +5198,17 @@ namespace WindowsApplication1.utils
     public class ObjectADGoogleSync
     {
         public void EmailUsersSync(GmailUsers gusersyn, ConfigSettings settingsConfig, ToolSet tools, LogFile log)
-		{
+        {
             // MessageBox.Show("gmail " + gusersyn.Admin_password + " " + gusersyn.Admin_domain + " " + gusersyn.Admin_user + " " + gusersyn.DataServer + " " + gusersyn.DBCatalog + " " + gusersyn.User_ad_OU + " " + gusersyn.User_Datasource + " " + gusersyn.User_dbTable + " " + gusersyn.User_Fname + " " + gusersyn.User_Lname + " " + gusersyn.User_Mname + " " + gusersyn.User_password + " " + gusersyn.User_password_short_fix_checkbox.ToString() + " " + gusersyn.User_password_generate_checkbox.ToString() + " " + gusersyn.User_StuID + " " + gusersyn.User_table_view + " " + gusersyn.User_where + " " + gusersyn.Writeback_AD_checkbox.ToString() + " " + gusersyn.Writeback_ad_OU + " " + gusersyn.Writeback_DB_checkbox.ToString() + " " + gusersyn.Writeback_email_field + " " + gusersyn.Writeback_primary_key + " " + gusersyn.Writeback_secondary_email_field + " " + gusersyn.Writeback_table + " " + gusersyn.Writeback_transfer_email_checkbox.ToString() + " " + gusersyn.Writeback_where_clause);
-			// Email addresses are static so only the names can be updated. passwords will be ignored
-			// appservice variables will come from a config designed ot hold its data (sql and Gmail login)
+            // Email addresses are static so only the names can be updated. passwords will be ignored
+            // appservice variables will come from a config designed ot hold its data (sql and Gmail login)
             int i = 0;
             string userDN = "";
-			AppsService service = new AppsService(gusersyn.Admin_domain, gusersyn.Admin_user + "@" + gusersyn.Admin_domain, gusersyn.Admin_password);
-			ArrayList completeSqlKeys = new ArrayList();
-			ArrayList completeGmailKeys = new ArrayList();
-			ArrayList gmailUpdateKeys = new ArrayList();
-			ArrayList sqlUpdateKeys = new ArrayList();
+            AppsService service = new AppsService(gusersyn.Admin_domain, gusersyn.Admin_user + "@" + gusersyn.Admin_domain, gusersyn.Admin_password);
+            ArrayList completeSqlKeys = new ArrayList();
+            ArrayList completeGmailKeys = new ArrayList();
+            ArrayList gmailUpdateKeys = new ArrayList();
+            ArrayList sqlUpdateKeys = new ArrayList();
             ArrayList adUpdateKeys = new ArrayList();
             ArrayList additionalKeys = new ArrayList();
 
@@ -5174,11 +5221,11 @@ namespace WindowsApplication1.utils
             string sqlNicknamesTable = "#FHC_LDAP_sqlNicknamesTable";
             string nicknamesToUpdateDBTable = "#FHC_LDAP_nicknamesToUpdateDB";
             string nicknamesFilteredForDuplicatesTable = "#FHC_LDAP_nicknamesFilteredDuplicates";
-                                                             
 
-			SqlDataReader add;
-			//SqlDataReader delete;
-			SqlDataReader update;
+
+            SqlDataReader add;
+            //SqlDataReader delete;
+            SqlDataReader update;
             SqlConnection sqlConn = new SqlConnection("Data Source=" + gusersyn.DataServer + ";Initial Catalog=" + gusersyn.DBCatalog + ";Integrated Security=SSPI;Connect Timeout=360;");
 
 
@@ -5197,12 +5244,12 @@ namespace WindowsApplication1.utils
             }
 
 
-			//SqlDataReader sqlusers;
-			SqlCommand sqlComm;
-			DataTable gmailUsers = new DataTable();
+            //SqlDataReader sqlusers;
+            SqlCommand sqlComm;
+            DataTable gmailUsers = new DataTable();
             DataTable adUsers = new DataTable();
             DataTable writeback = new DataTable();
-  
+
 
 
 
@@ -5251,7 +5298,7 @@ namespace WindowsApplication1.utils
                 {
                     sqlComm = new SqlCommand("SELECT DISTINCT RTRIM(" + gusersyn.User_StuID + ")" +
                         ", RTRIM(" + gusersyn.User_Fname + ") AS " + gusersyn.User_Fname +
-                        ", RTRIM(" + gusersyn.User_Lname + ") AS " + gusersyn.User_Lname + 
+                        ", RTRIM(" + gusersyn.User_Lname + ") AS " + gusersyn.User_Lname +
                         ", RTRIM(" + gusersyn.User_Mname + ") AS " + gusersyn.User_Mname +
                         ", RTRIM(" + gusersyn.User_password + ") AS " + gusersyn.User_password +
                         " INTO " + sqlUsersTable + " FROM " + gusersyn.User_dbTable, sqlConn);
@@ -5262,7 +5309,7 @@ namespace WindowsApplication1.utils
                         ", RTRIM(" + gusersyn.User_Fname + ")" + gusersyn.User_Fname +
                         ", RTRIM(" + gusersyn.User_Lname + ")" + gusersyn.User_Lname +
                         ", RTRIM(" + gusersyn.User_Mname + ")" + gusersyn.User_Mname +
-                        ", RTRIM(" + gusersyn.User_password + ")" + gusersyn.User_password + 
+                        ", RTRIM(" + gusersyn.User_password + ")" + gusersyn.User_password +
                         " INTO " + sqlUsersTable + " FROM " + gusersyn.User_dbTable +
                         " WHERE " + gusersyn.User_where, sqlConn);
                 }
@@ -5283,22 +5330,22 @@ namespace WindowsApplication1.utils
                 adUsers = tools.EnumerateUsersInOUDataTable(gusersyn.User_ad_OU, completeSqlKeys, sqlUsersTable, SearchScope.OneLevel, log);
                 // build the database temp table from the users retrieved into adUsers
                 tools.Create_Table(adUsers, sqlUsersTable, sqlConn, log);
-            }   
+            }
 
             // go grab all the users from Gmail from the database
             gmailUsers = tools.Get_Gmail_Users(service, gusersyn, gmailUsersTable, log);
             // make the temp table for ou comparisons
             tools.Create_Table(gmailUsers, gmailUsersTable, sqlConn, log);
 
-            
 
-			// compare and add/remove
-			add = tools.QueryNotExists(sqlUsersTable, gmailUsersTable, sqlConn, gusersyn.User_StuID, gmailUsers.Columns[0].ColumnName, log);
+
+            // compare and add/remove
+            add = tools.QueryNotExists(sqlUsersTable, gmailUsersTable, sqlConn, gusersyn.User_StuID, gmailUsers.Columns[0].ColumnName, log);
 
             //SqlDataReader debugReader;
             //string debug = "";
             //int debugFieldCount = 0;
-            
+
             //debug = "Gunna Add stuff \n";
             //debugFieldCount = add.FieldCount;
             //for (i = 0; i < debugFieldCount; i++)
@@ -5321,16 +5368,16 @@ namespace WindowsApplication1.utils
             // MessageBox.Show("Gmail users to add \n " + debugFieldCount + " fields \n sample data" + debug);
 
             tools.Create_Gmail_Users(service, gusersyn, add, log);
-			add.Close();
+            add.Close();
 
-			//delete = tools.QueryNotExists(sqlUsersTable, gmailUsersTable, sqlConn, gusersyn.User_StuID, completeGmailKeys[0].ToString());
-			// delete groups in AD
-			//while (delete.Read())
-			//{
-				//tools.DeleteGmailUserAccount((string)delete[0], (string)delete[1], log);
-				//
-			//}
-			//delete.Close();
+            //delete = tools.QueryNotExists(sqlUsersTable, gmailUsersTable, sqlConn, gusersyn.User_StuID, completeGmailKeys[0].ToString());
+            // delete groups in AD
+            //while (delete.Read())
+            //{
+            //tools.DeleteGmailUserAccount((string)delete[0], (string)delete[1], log);
+            //
+            //}
+            //delete.Close();
 
             update = tools.CheckUpdate(sqlUsersTable, gmailUsersTable, gusersyn.User_StuID, gmailUsers.Columns[0].ColumnName, sqlUpdateKeys, gmailUpdateKeys, additionalKeys, sqlConn, log);
 
@@ -5370,7 +5417,7 @@ namespace WindowsApplication1.utils
 
             tools.UpdateGmailUser(service, gusersyn, update, log);
             update.Close();
-            
+
 
 
 
@@ -5458,6 +5505,7 @@ namespace WindowsApplication1.utils
                     }
                     try
                     {
+                        sqlComm.CommandTimeout = 360;
                         sqlComm.ExecuteNonQuery();
                     }
                     catch (Exception ex)
@@ -5516,7 +5564,7 @@ namespace WindowsApplication1.utils
                 // gusersyn.User_password:: SQL or AD                *******
 
 
-                
+
                 // TABLE created by query to database
                 // nicknamesToUpdateDBTable:: #nicknamesToUpdateDBTable 
                 //---------------------------------------------
@@ -5572,59 +5620,59 @@ namespace WindowsApplication1.utils
                 //string debugRecordCount = "";
                 //int debugFieldCount = 0;
 
-               // try
-               // {
+                // try
+                // {
 
-               //     //string sqlUsersTable = "#sqlusersTable";
-               //     debug = " Users from sql \n";
-               //     sqlDebugComm = new SqlCommand("select top 40 * FROM " + sqlUsersTable, sqlConn);
-               //     debugReader = sqlDebugComm.ExecuteReader();
-               //     debugFieldCount = debugReader.FieldCount;
-               //     firstfield = debugReader.GetName(0);
-               //     for (i = 0; i < debugFieldCount; i++)
-               //     {
-               //         debug += debugReader.GetName(i) + ", ";
-               //     }
-               //     debug += "\n";
-               //     while (debugReader.Read())
-               //     {
-               //         for (i = 0; i < debugFieldCount; i++)
-               //         {
-               //             debug += (string)debugReader[i].ToString() + ", ";
-               //         }
-               //         debug += "\n";
-               //     }
-               //     sqlDebugComm = new SqlCommand("select count(" + firstfield + ") FROM " + sqlUsersTable, sqlConn);
-               //     debugReader.Close();
-               //     debugRecordCount = sqlDebugComm.ExecuteScalar().ToString();
-               //     MessageBox.Show("table " + sqlUsersTable + " has " + debugRecordCount + " records \n " + debugFieldCount + " fields \n sample data" + debug);
+                //     //string sqlUsersTable = "#sqlusersTable";
+                //     debug = " Users from sql \n";
+                //     sqlDebugComm = new SqlCommand("select top 40 * FROM " + sqlUsersTable, sqlConn);
+                //     debugReader = sqlDebugComm.ExecuteReader();
+                //     debugFieldCount = debugReader.FieldCount;
+                //     firstfield = debugReader.GetName(0);
+                //     for (i = 0; i < debugFieldCount; i++)
+                //     {
+                //         debug += debugReader.GetName(i) + ", ";
+                //     }
+                //     debug += "\n";
+                //     while (debugReader.Read())
+                //     {
+                //         for (i = 0; i < debugFieldCount; i++)
+                //         {
+                //             debug += (string)debugReader[i].ToString() + ", ";
+                //         }
+                //         debug += "\n";
+                //     }
+                //     sqlDebugComm = new SqlCommand("select count(" + firstfield + ") FROM " + sqlUsersTable, sqlConn);
+                //     debugReader.Close();
+                //     debugRecordCount = sqlDebugComm.ExecuteScalar().ToString();
+                //     MessageBox.Show("table " + sqlUsersTable + " has " + debugRecordCount + " records \n " + debugFieldCount + " fields \n sample data" + debug);
 
 
 
-               //     //string gmailUsersTable = "#gmailusersTable";
-               //     debug = "";
-               //     debug = " Users from gmail \n";
-               //     sqlDebugComm = new SqlCommand("select top 40 * FROM " + gmailUsersTable, sqlConn);
-               //     debugReader = sqlDebugComm.ExecuteReader();
-               //     debugFieldCount = debugReader.FieldCount;
-               //     firstfield = debugReader.GetName(0);
-               //     for (i = 0; i < debugFieldCount; i++)
-               //     {
-               //         debug += debugReader.GetName(i) + ", ";
-               //     }
-               //     debug += "\n";
-               //     while (debugReader.Read())
-               //     {
-               //         for (i = 0; i < debugFieldCount; i++)
-               //         {
-               //             debug += (string)debugReader[i] + ", ";
-               //         }
-               //         debug += "\n";
-               //     }
-               //     sqlDebugComm = new SqlCommand("select count(" + firstfield + ") FROM " + gmailUsersTable, sqlConn);
-               //     debugReader.Close();
-               //     debugRecordCount = sqlDebugComm.ExecuteScalar().ToString();
-               //     MessageBox.Show("table " + gmailUsersTable + " has " + debugRecordCount + " records \n " + debugFieldCount + " fields \n sample data" + debug);
+                //     //string gmailUsersTable = "#gmailusersTable";
+                //     debug = "";
+                //     debug = " Users from gmail \n";
+                //     sqlDebugComm = new SqlCommand("select top 40 * FROM " + gmailUsersTable, sqlConn);
+                //     debugReader = sqlDebugComm.ExecuteReader();
+                //     debugFieldCount = debugReader.FieldCount;
+                //     firstfield = debugReader.GetName(0);
+                //     for (i = 0; i < debugFieldCount; i++)
+                //     {
+                //         debug += debugReader.GetName(i) + ", ";
+                //     }
+                //     debug += "\n";
+                //     while (debugReader.Read())
+                //     {
+                //         for (i = 0; i < debugFieldCount; i++)
+                //         {
+                //             debug += (string)debugReader[i] + ", ";
+                //         }
+                //         debug += "\n";
+                //     }
+                //     sqlDebugComm = new SqlCommand("select count(" + firstfield + ") FROM " + gmailUsersTable, sqlConn);
+                //     debugReader.Close();
+                //     debugRecordCount = sqlDebugComm.ExecuteScalar().ToString();
+                //     MessageBox.Show("table " + gmailUsersTable + " has " + debugRecordCount + " records \n " + debugFieldCount + " fields \n sample data" + debug);
 
 
                 ////string nicknamesFromGmailTable = "#gmailNicknamesTable";
@@ -5653,63 +5701,63 @@ namespace WindowsApplication1.utils
                 //MessageBox.Show("table " + nicknamesFromGmailTable + " has " + debugRecordCount + " records \n " + debugFieldCount + " fields \n sample data" + debug);
 
 
-               //     //string loginWithoutNicknamesTable = "#loginsWONicknamesTable";
-               //     debug = "";
-               //     debug = " Logons without nicknames \n";
-               //     sqlDebugComm = new SqlCommand("select top 40 * FROM " + loginWithoutNicknamesTable, sqlConn);
-               //     debugReader = sqlDebugComm.ExecuteReader();
-               //     debugFieldCount = debugReader.FieldCount;
-               //     firstfield = debugReader.GetName(0);
-               //     for (i = 0; i < debugFieldCount; i++)
-               //     {
-               //         debug += debugReader.GetName(i) + ", ";
-               //     }
-               //     debug += "\n";
-               //     while (debugReader.Read())
-               //     {
-               //         for (i = 0; i < debugFieldCount; i++)
-               //         {
-               //             debug += (string)debugReader[i] + ", ";
-               //         }
-               //         debug += "\n";
-               //     }
-               //     sqlDebugComm = new SqlCommand("select count(" + firstfield + ") FROM " + loginWithoutNicknamesTable, sqlConn);
-               //     debugReader.Close();
-               //     debugRecordCount = sqlDebugComm.ExecuteScalar().ToString();
-               //     MessageBox.Show("table " + loginWithoutNicknamesTable + " has " + debugRecordCount + " records \n " + debugFieldCount + " fields \n sample data" + debug);
+                //     //string loginWithoutNicknamesTable = "#loginsWONicknamesTable";
+                //     debug = "";
+                //     debug = " Logons without nicknames \n";
+                //     sqlDebugComm = new SqlCommand("select top 40 * FROM " + loginWithoutNicknamesTable, sqlConn);
+                //     debugReader = sqlDebugComm.ExecuteReader();
+                //     debugFieldCount = debugReader.FieldCount;
+                //     firstfield = debugReader.GetName(0);
+                //     for (i = 0; i < debugFieldCount; i++)
+                //     {
+                //         debug += debugReader.GetName(i) + ", ";
+                //     }
+                //     debug += "\n";
+                //     while (debugReader.Read())
+                //     {
+                //         for (i = 0; i < debugFieldCount; i++)
+                //         {
+                //             debug += (string)debugReader[i] + ", ";
+                //         }
+                //         debug += "\n";
+                //     }
+                //     sqlDebugComm = new SqlCommand("select count(" + firstfield + ") FROM " + loginWithoutNicknamesTable, sqlConn);
+                //     debugReader.Close();
+                //     debugRecordCount = sqlDebugComm.ExecuteScalar().ToString();
+                //     MessageBox.Show("table " + loginWithoutNicknamesTable + " has " + debugRecordCount + " records \n " + debugFieldCount + " fields \n sample data" + debug);
 
-               //     if (gusersyn.Writeback_AD_checkbox == true || gusersyn.Writeback_DB_checkbox == true)
-               //     {
-               //         if (gusersyn.Writeback_AD_checkbox == true)
-               //         {
-               //             //string adNicknamesTable = "#adNicknamesTable";
-               //             debug = "";
-               //             debug = " Nickname list from AD for writeback \n";
-               //             sqlDebugComm = new SqlCommand("select top 40 * FROM " + adNicknamesTable, sqlConn);
-               //             debugReader = sqlDebugComm.ExecuteReader();
-               //             debugFieldCount = debugReader.FieldCount;
-               //             firstfield = debugReader.GetName(0);
-               //             for (i = 0; i < debugFieldCount; i++)
-               //             {
-               //                 debug += debugReader.GetName(i) + ", ";
-               //             }
-               //             debug += "\n";
-               //             while (debugReader.Read())
-               //             {
-               //                 for (i = 0; i < debugFieldCount; i++)
-               //                 {
-               //                     debug += (string)debugReader[i] + ", ";
-               //                 }
-               //                 debug += "\n";
-               //             }
-               //             sqlDebugComm = new SqlCommand("select count(" + firstfield + ") FROM " + adNicknamesTable, sqlConn);
-               //             debugReader.Close();
-               //             debugRecordCount = sqlDebugComm.ExecuteScalar().ToString();
-               //             MessageBox.Show("table " + adNicknamesTable + " has " + debugRecordCount + " records \n " + debugFieldCount + " fields \n sample data" + debug);
-               //         }
+                //     if (gusersyn.Writeback_AD_checkbox == true || gusersyn.Writeback_DB_checkbox == true)
+                //     {
+                //         if (gusersyn.Writeback_AD_checkbox == true)
+                //         {
+                //             //string adNicknamesTable = "#adNicknamesTable";
+                //             debug = "";
+                //             debug = " Nickname list from AD for writeback \n";
+                //             sqlDebugComm = new SqlCommand("select top 40 * FROM " + adNicknamesTable, sqlConn);
+                //             debugReader = sqlDebugComm.ExecuteReader();
+                //             debugFieldCount = debugReader.FieldCount;
+                //             firstfield = debugReader.GetName(0);
+                //             for (i = 0; i < debugFieldCount; i++)
+                //             {
+                //                 debug += debugReader.GetName(i) + ", ";
+                //             }
+                //             debug += "\n";
+                //             while (debugReader.Read())
+                //             {
+                //                 for (i = 0; i < debugFieldCount; i++)
+                //                 {
+                //                     debug += (string)debugReader[i] + ", ";
+                //                 }
+                //                 debug += "\n";
+                //             }
+                //             sqlDebugComm = new SqlCommand("select count(" + firstfield + ") FROM " + adNicknamesTable, sqlConn);
+                //             debugReader.Close();
+                //             debugRecordCount = sqlDebugComm.ExecuteScalar().ToString();
+                //             MessageBox.Show("table " + adNicknamesTable + " has " + debugRecordCount + " records \n " + debugFieldCount + " fields \n sample data" + debug);
+                //         }
 
-               //         if (gusersyn.Writeback_DB_checkbox == true)
-               //         {
+                //         if (gusersyn.Writeback_DB_checkbox == true)
+                //         {
                 //string sqlNicknamesTable = "#sqlNicknamesTable";
                 //debug = "";
                 //debug = " Nicknames from sql fro writeback \n";
@@ -5734,15 +5782,15 @@ namespace WindowsApplication1.utils
                 //debugReader.Close();
                 //debugRecordCount = sqlDebugComm.ExecuteScalar().ToString();
                 //MessageBox.Show("table " + sqlNicknamesTable + " has " + debugRecordCount + " records \n " + debugFieldCount + " fields \n sample data" + debug);
-               //         }
-               //     }
-               // }
-               // catch (Exception ex)
-               // {
-               //     log.warnings.Add("Issue creating debug data some sort of sql error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
-               // }
+                //         }
+                //     }
+                // }
+                // catch (Exception ex)
+                // {
+                //     log.warnings.Add("Issue creating debug data some sort of sql error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                // }
 
-                
+
                 //************************************************************
                 //                            END
                 //                   DEBUG AND TEST DATA
@@ -5814,7 +5862,7 @@ namespace WindowsApplication1.utils
                     keywordFields.Add(gusersyn.User_Lname);
                     keywordFields.Add(gusersyn.User_Fname);
                     keywordFields.Add(gusersyn.User_Mname);
-                    
+
                     selectFields.Add(nicknames.Columns[2].ColumnName);
 
 
@@ -5825,35 +5873,35 @@ namespace WindowsApplication1.utils
 
 
 
-                     //SqlDataReader debugReader;
-                     //string debug = "";
-                     //SqlCommand sqlDebugComm;
-                     //string firstfield = "";
-                     //string debugRecordCount = "";
-                     //int debugFieldCount = 0;
-                     //string sqlUsersTable = "#sqlusersTable";
-                     //debug = " Users from sql \n";
-                     //sqlDebugComm = new SqlCommand("select top 40 * FROM " + nicknamesToUpdateDBTable, sqlConn);
-                     //debugReader = sqlDebugComm.ExecuteReader();
-                     //debugFieldCount = debugReader.FieldCount;
-                     //firstfield = debugReader.GetName(0);
-                     //for (i = 0; i < debugFieldCount; i++)
-                     //{
-                     //    debug += debugReader.GetName(i) + ", ";
-                     //}
-                     //debug += "\n";
-                     //while (debugReader.Read())
-                     //{
-                     //    for (i = 0; i < debugFieldCount; i++)
-                     //    {
-                     //        debug += (string)debugReader[i].ToString() + ", ";
-                     //    }
-                     //    debug += "\n";
-                     //}
-                     //sqlDebugComm = new SqlCommand("select count(" + firstfield + ") FROM " + nicknamesToUpdateDBTable, sqlConn);
-                     //debugReader.Close();
-                     //debugRecordCount = sqlDebugComm.ExecuteScalar().ToString();
-                     //MessageBox.Show("table " + sqlUsersTable + " has " + debugRecordCount + " records \n " + debugFieldCount + " fields \n sample data" + debug);
+                    //SqlDataReader debugReader;
+                    //string debug = "";
+                    //SqlCommand sqlDebugComm;
+                    //string firstfield = "";
+                    //string debugRecordCount = "";
+                    //int debugFieldCount = 0;
+                    //string sqlUsersTable = "#sqlusersTable";
+                    //debug = " Users from sql \n";
+                    //sqlDebugComm = new SqlCommand("select top 40 * FROM " + nicknamesToUpdateDBTable, sqlConn);
+                    //debugReader = sqlDebugComm.ExecuteReader();
+                    //debugFieldCount = debugReader.FieldCount;
+                    //firstfield = debugReader.GetName(0);
+                    //for (i = 0; i < debugFieldCount; i++)
+                    //{
+                    //    debug += debugReader.GetName(i) + ", ";
+                    //}
+                    //debug += "\n";
+                    //while (debugReader.Read())
+                    //{
+                    //    for (i = 0; i < debugFieldCount; i++)
+                    //    {
+                    //        debug += (string)debugReader[i].ToString() + ", ";
+                    //    }
+                    //    debug += "\n";
+                    //}
+                    //sqlDebugComm = new SqlCommand("select count(" + firstfield + ") FROM " + nicknamesToUpdateDBTable, sqlConn);
+                    //debugReader.Close();
+                    //debugRecordCount = sqlDebugComm.ExecuteScalar().ToString();
+                    //MessageBox.Show("table " + sqlUsersTable + " has " + debugRecordCount + " records \n " + debugFieldCount + " fields \n sample data" + debug);
 
 
                     // nicknamesToAddToDatabase = tools.QueryNotExists(nicknamesFromGmailTable, sqlNicknamesTable, sqlConn, nicknames.Columns[0].ColumnName, gusersyn.Writeback_primary_key, log);
@@ -5869,17 +5917,17 @@ namespace WindowsApplication1.utils
                     adMailUpdateKeys.Add("mail");
                     if (gusersyn.Writeback_transfer_email_checkbox == true)
                     {
-                  
-                        
+
+
                         //UPDATE a1 SET a1.e_mail = a2.gmail FROM address as a1 INNER JOIN address as a2 ON a1.soc_sec = a2.soc_sec where a2.gmail <> ' '
 
                         nicknameKeysAndTable.Add(gusersyn.Writeback_table + "." + gusersyn.Writeback_email_field); // source table and column
                         sqlkeysAndTable.Add(gusersyn.Writeback_table + "." + gusersyn.Writeback_secondary_email_field); // target table and column
 
                         //UNTESTED WILL MOST LIKELY FAIL
-                        tools.Mass_Email_Shift(gusersyn, nicknamesToUpdateDBTable, gusersyn.Writeback_table, nicknames.Columns[0].ColumnName, gusersyn.Writeback_primary_key, nicknameKeysAndTable, sqlkeysAndTable, gusersyn.Writeback_where_clause, sqlConn, log); 
+                        tools.Mass_Email_Shift(gusersyn, nicknamesToUpdateDBTable, gusersyn.Writeback_table, nicknames.Columns[0].ColumnName, gusersyn.Writeback_primary_key, nicknameKeysAndTable, sqlkeysAndTable, gusersyn.Writeback_where_clause, sqlConn, log);
                     }
-                    tools.Mass_Table_update(nicknamesToUpdateDBTable, gusersyn.Writeback_table, nicknames.Columns[0].ColumnName, gusersyn.Writeback_primary_key, nicknameKeys, sqlkeys, gusersyn.Writeback_where_clause, sqlConn, log); 
+                    tools.Mass_Table_update(nicknamesToUpdateDBTable, gusersyn.Writeback_table, nicknames.Columns[0].ColumnName, gusersyn.Writeback_primary_key, nicknameKeys, sqlkeys, gusersyn.Writeback_where_clause, sqlConn, log);
                 }
 
                 // reset arraylists  for new update check
@@ -5913,7 +5961,7 @@ namespace WindowsApplication1.utils
                     }
                     nicknamesToAddToAD.Close();
                 }
-            
+
 
                 // create send as aliases need to get data for users 
 
@@ -5921,7 +5969,7 @@ namespace WindowsApplication1.utils
                 additionalKeys.Add(nicknamesFilteredForDuplicatesTable + "." + nicknames.Columns[2].ColumnName + ", ");
                 sendAsAliases = tools.QueryInnerJoin(sqlUsersTable, nicknamesFilteredForDuplicatesTable, gusersyn.User_StuID, nicknames.Columns[0].ColumnName, additionalKeys, sqlConn, log);
                 tools.CreateSendAs(gusersyn, sendAsAliases, nicknames.Columns[2].ColumnName, nicknames.Columns[2].ColumnName, log);
-                
+
 
                 //tools.DropTable(nicknamesFromGmailTable, sqlConn, log);
                 //tools.DropTable(loginWithoutNicknamesTable, sqlConn, log);
@@ -5929,12 +5977,12 @@ namespace WindowsApplication1.utils
                 //tools.DropTable(sqlNicknamesTable, sqlConn, log);
                 //tools.DropTable(nicknamesToUpdateDBTable, sqlConn, log);
                 //tools.DropTable(nicknamesFilteredForDuplicatesTable, sqlConn, log);
-            }                      
+            }
             //tools.DropTable(sqlUsersTable, sqlConn, log);
             //tools.DropTable(gmailUsersTable, sqlConn, log);
             //nicknamesToAddToDatabase.Close();
-			sqlConn.Close();
-		}
+            sqlConn.Close();
+        }
     }
 }
 
