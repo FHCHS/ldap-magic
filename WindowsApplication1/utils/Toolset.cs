@@ -1783,7 +1783,7 @@ namespace WindowsApplication1.utils
                 //dsUsers.PropertiesToLoad.Add("sAMAccountName");
 
                 // grab the users and do whatever you need to do with them 
-                dsUsers.PageSize = 500;
+                dsUsers.PageSize = 1000;
                 row = returnvalue.NewRow();
 
                 foreach (SearchResult oResult in dsUsers.FindAll())
@@ -1803,6 +1803,7 @@ namespace WindowsApplication1.utils
                     returnvalue.Rows.Add(row);
                     row = returnvalue.NewRow();
                 }
+                dsUsers.Dispose();
             }
 
             catch (Exception ex)
@@ -1820,28 +1821,102 @@ namespace WindowsApplication1.utils
             // returns FQDN "CN=user,OU=test,DC=Fabrikam,DC=COM" & group "CN=Sales,OU=test,DC=Fabrikam,DC=COM" of users in group 
             DataTable returnvalue = new DataTable();
             DataRow row;
+            int count = 0;
 
             //string bladh = "LDAP://" + "CN=" + System.Web.HttpUtility.UrlEncode(groupDN).Replace("+", " ").Replace("*", "%2A") + groupou;
-            try
-            {
-                DirectoryEntry group = new DirectoryEntry("LDAP://" + "CN=" + System.Web.HttpUtility.UrlEncode(groupDN).Replace("+", " ").Replace("*", "%2A") + groupou);
-                DirectorySearcher groupUsers = new DirectorySearcher(group);
-                returnvalue.TableName = table;
-                returnvalue.Columns.Add(coulumnNameForFQDN);
-                returnvalue.Columns.Add(coulumnNameForGroup);
-                row = returnvalue.NewRow();
-                foreach (object dn in group.Properties["member"])
+
+                //DirectoryEntry group = new DirectoryEntry("LDAP://" + "CN=" + System.Web.HttpUtility.UrlEncode(groupDN).Replace("+", " ").Replace("*", "%2A") + groupou);
+                //DirectorySearcher groupUsers = new DirectorySearcher(group);
+
+                
+                try
                 {
-                    row[0] = dn.ToString();
-                    row[1] = groupDN;
-                    returnvalue.Rows.Add(row);
+                    DirectoryEntry group = new DirectoryEntry("LDAP://" + "CN=" + System.Web.HttpUtility.UrlEncode(groupDN).Replace("+", " ").Replace("*", "%2A") + groupou);
+                    DirectorySearcher groupUsers = new DirectorySearcher(group);
+                    groupUsers.Filter = "(objectClass=*)";
                     row = returnvalue.NewRow();
+                    returnvalue.TableName = table;
+                    returnvalue.Columns.Add(coulumnNameForFQDN);
+                    returnvalue.Columns.Add(coulumnNameForGroup);
+                    uint rangeStep = 1000;
+                    uint rangeLow = 0;
+                    uint rangeHigh = rangeLow + (rangeStep - 1);
+                    bool lastQuery = false;
+                    bool quitLoop = false;
+
+                    do
+                    {
+                        string attributeWithRange;
+                        if (!lastQuery)
+                        {
+                            attributeWithRange = String.Format("member;range={0}-{1}", rangeLow, rangeHigh);
+                        }
+                        else
+                        {
+                            attributeWithRange = String.Format("member;range={0}-*", rangeLow);
+                        }
+                        groupUsers.PropertiesToLoad.Clear();
+                        groupUsers.PropertiesToLoad.Add(attributeWithRange);
+                        SearchResult results = groupUsers.FindOne();
+                        groupUsers.Dispose();
+                        foreach (string res in results.Properties.PropertyNames)
+                        {
+                            System.Diagnostics.Debug.WriteLine(res.ToString());
+                        }
+                        if (results.Properties.Contains(attributeWithRange))
+                        {
+                            foreach (object obj in results.Properties[attributeWithRange])
+                            {
+                                Console.WriteLine(obj.GetType());
+                                if (obj.GetType().Equals(typeof(System.String)))
+                                {
+                                }
+                                else if (obj.GetType().Equals(typeof(System.Int32)))
+                                {
+                                }
+                                row[0] = obj.ToString();
+                                row[1] = groupDN;
+                                returnvalue.Rows.Add(row);
+                                row = returnvalue.NewRow();
+                                count++;
+                            }
+                            if (lastQuery)
+                            {
+                                quitLoop = true;
+                            }
+                        }
+                        else
+                        {
+                            lastQuery = true;
+                        }
+                        if (!lastQuery)
+                        {
+                            rangeLow = rangeHigh + 1;
+                            rangeHigh = rangeLow + (rangeStep - 1);
+                        }
+                        // if we are searching for the next set of members 1000-* and it did not return any records count == 0
+                        if (attributeWithRange == String.Format("member;range={0}-*", rangeLow) && count == 0)
+                        {
+                            quitLoop = true;
+                        }
+                        count = 0;
+                    }
+                    while (!quitLoop);
                 }
-            }
             catch (Exception ex)
             {
                 log.errors.Add("Failure getting AD users in a groups exception " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
             }
+            //foreach (object dn in group.properties["member"])
+            //{
+            //    row[0] = dn.tostring();
+            //    row[1] = groupDN;
+            //    returnvalue.row.add(row);
+            //    row = returnvalue.newrow();
+
+            //}
+            
+
             return returnvalue;
         }
         public DataTable EnumerateGroupsInOUDataTable(string ouDN, ArrayList returnProperties, string table, LogFile log)
@@ -1872,7 +1947,7 @@ namespace WindowsApplication1.utils
                     returnvalue.Columns.Add(returnProperties[i].ToString());
                 }
                 // grab the users and do whatever you need to do with them 
-                dsUsers.PageSize = 500;
+                dsUsers.PageSize = 1000;
                 row = returnvalue.NewRow();
                 foreach (SearchResult oResult in dsUsers.FindAll())
                 {
@@ -1891,6 +1966,7 @@ namespace WindowsApplication1.utils
                     returnvalue.Rows.Add(row);
                     row = returnvalue.NewRow();
                 }
+                dsUsers.Dispose();
             }
             catch (Exception ex)
             {
@@ -4310,11 +4386,11 @@ namespace WindowsApplication1.utils
             //int i;
             StopWatch time = new StopWatch();
 
-
             string groupapp = groupsyn.Group_Append;
             string groupOU = groupsyn.BaseGroupOU;
             string sAMAccountName = "";
             string description = "";
+            int count = 0;
             string sqlgroupsTable = "#FHC_GROUPS_SQLgroupsTable";
             string adGroupsTable = "#FHC_GROUPS_ADgroupsTable";
             if (settingsConfig.TempTables == true)
@@ -4689,18 +4765,41 @@ namespace WindowsApplication1.utils
                 log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
             }
 
+
+
             // populate datatable with users from AD groups by looping thru the list of groups from SQL and loading the cross referenced AD group members
             sqlComm = new SqlCommand("SELECT " + groupsyn.Group_CN + " FROM " + sqlgroupsTable, sqlConn);
             try
             {
+                ArrayList sqlgroupsStr = new ArrayList();
                 sqlComm.CommandTimeout = 360;
                 sqlgroups = sqlComm.ExecuteReader();
+                DataTable currentOu = new DataTable();
                 while (sqlgroups.Read())
                 {
-                    // hopefully merge acts as an append
-                    ADusers.Merge(tools.EnumerateUsersInGroupDataTable((string)sqlgroups[0], ",OU=" + groupapp + "," + groupOU, groupsyn.User_sAMAccount, groupsyn.User_Group_Reference, ADgroupMembersTable, log));
+                    sqlgroupsStr.Add((string)sqlgroups[0]);
                 }
                 sqlgroups.Close();
+                count = 0;
+                foreach (string key in sqlgroupsStr)
+                {
+                    ADusers = tools.EnumerateUsersInGroupDataTable(key, ",OU=" + groupapp + "," + groupOU, groupsyn.User_sAMAccount, groupsyn.User_Group_Reference, ADgroupMembersTable, log);
+                    if (count == 0)
+                    {
+                        // make the temp table for ou comparisons the datatable must have somethign in it to make it
+                        tools.Create_Table(ADusers, ADgroupMembersTable, sqlConn, log);
+                    }
+                    else
+                    {
+                        // table is already made now we need to only add to it
+                        tools.Append_to_Table(ADusers, ADgroupMembersTable, sqlConn, log);
+                    }
+                    count++;
+                }
+                // hopefully merge acts as an append
+                // ADusers.Merge(tools.EnumerateUsersInGroupDataTable((string)sqlgroups[0], ",OU=" + groupapp + "," + groupOU, groupsyn.User_sAMAccount, groupsyn.User_Group_Reference, ADgroupMembersTable, log));
+                // currentOu = tools.EnumerateUsersInGroupDataTable(  , ",OU=" + groupapp + "," + groupOU, groupsyn.User_sAMAccount, groupsyn.User_Group_Reference, ADgroupMembersTable, log);
+                // tools.Append_to_Table(currentOu, ADgroupMembersTable, sqlConn, log);
             }
             catch (Exception ex)
             {
@@ -4708,8 +4807,7 @@ namespace WindowsApplication1.utils
             }
 
 
-            // make the temp table for ou comparisons
-            tools.Create_Table(ADusers, ADgroupMembersTable, sqlConn, log);
+
 
 
 
@@ -4767,13 +4865,14 @@ namespace WindowsApplication1.utils
                 {
                     tools.AddUserToGroup((string)add[0], "CN=" + (string)add[1] + ",OU=" + groupapp + "," + groupOU, false, dc, log);
                     // log.transactions.Add("User added ;" + (string)add[0] + ",OU=" + groupapp + "," + groupOU + ";" + (string)add[1]);
-                    groupObject.Clear();
+                    // groupObject.Clear(); moved outside loop for optimisation
                 }
             }
             catch (Exception ex)
             {
                 log.errors.Add("Issue adding group datareader is null " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
             }
+            groupObject.Clear();
             add.Close();
             SqlCommand sqlComm2 = new SqlCommand();
             string recordCount = "";
@@ -5589,394 +5688,405 @@ namespace WindowsApplication1.utils
                 tools.Create_Table(adUsers, adNicknamesTable, sqlConn, log);
 
 
-                // get list of nicknames from gmail
-                nicknames.Clear();
-                nicknames = tools.Get_Gmail_Nicknames(service, gusersyn, nicknamesFromGmailTable, log);
-                tools.Create_Table(nicknames, nicknamesFromGmailTable, sqlConn, log);
+
 
                 // get list of users from gmail this may have changed when we ran the update
                 gmailUsers.Clear();
                 tools.DropTable(gmailUsersTable, sqlConn, log);
                 gmailUsers = tools.Get_Gmail_Users(service, gusersyn, gmailUsersTable, log);
                 tools.Create_Table(gmailUsers, gmailUsersTable, sqlConn, log);
-
-
-                // check which nicknames do not have a an associated user with them 
-                // cross reference for null userID's in nickname service.RetrieveAllNicknames table with list of all userlogin userID's from gmail service.RetrieveAllUsers
-                tools.QueryNotExistsIntoNewTable(gmailUsersTable, nicknamesFromGmailTable, loginWithoutNicknamesTable, sqlConn, gusersyn.User_StuID, nicknames.Columns[0].ColumnName, log);
-
-
-                //************************************************************
-                //                          START
-                //                   DEBUG AND TEST DATA
-                //
-                //************************************************************
-
-
-                //SqlDataReader debugReader;
-                //string debug = "";
-                //SqlCommand sqlDebugComm;
-                //string firstfield = "";
-                //string debugRecordCount = "";
-                //int debugFieldCount = 0;
-
-                // try
-                // {
-
-                //     //string sqlUsersTable = "#sqlusersTable";
-                //     debug = " Users from sql \n";
-                //     sqlDebugComm = new SqlCommand("select top 40 * FROM " + sqlUsersTable, sqlConn);
-                //     debugReader = sqlDebugComm.ExecuteReader();
-                //     debugFieldCount = debugReader.FieldCount;
-                //     firstfield = debugReader.GetName(0);
-                //     for (i = 0; i < debugFieldCount; i++)
-                //     {
-                //         debug += debugReader.GetName(i) + ", ";
-                //     }
-                //     debug += "\n";
-                //     while (debugReader.Read())
-                //     {
-                //         for (i = 0; i < debugFieldCount; i++)
-                //         {
-                //             debug += (string)debugReader[i].ToString() + ", ";
-                //         }
-                //         debug += "\n";
-                //     }
-                //     sqlDebugComm = new SqlCommand("select count(" + firstfield + ") FROM " + sqlUsersTable, sqlConn);
-                //     debugReader.Close();
-                //     debugRecordCount = sqlDebugComm.ExecuteScalar().ToString();
-                //     MessageBox.Show("table " + sqlUsersTable + " has " + debugRecordCount + " records \n " + debugFieldCount + " fields \n sample data" + debug);
-
-
-
-                //     //string gmailUsersTable = "#gmailusersTable";
-                //     debug = "";
-                //     debug = " Users from gmail \n";
-                //     sqlDebugComm = new SqlCommand("select top 40 * FROM " + gmailUsersTable, sqlConn);
-                //     debugReader = sqlDebugComm.ExecuteReader();
-                //     debugFieldCount = debugReader.FieldCount;
-                //     firstfield = debugReader.GetName(0);
-                //     for (i = 0; i < debugFieldCount; i++)
-                //     {
-                //         debug += debugReader.GetName(i) + ", ";
-                //     }
-                //     debug += "\n";
-                //     while (debugReader.Read())
-                //     {
-                //         for (i = 0; i < debugFieldCount; i++)
-                //         {
-                //             debug += (string)debugReader[i] + ", ";
-                //         }
-                //         debug += "\n";
-                //     }
-                //     sqlDebugComm = new SqlCommand("select count(" + firstfield + ") FROM " + gmailUsersTable, sqlConn);
-                //     debugReader.Close();
-                //     debugRecordCount = sqlDebugComm.ExecuteScalar().ToString();
-                //     MessageBox.Show("table " + gmailUsersTable + " has " + debugRecordCount + " records \n " + debugFieldCount + " fields \n sample data" + debug);
-
-
-                ////string nicknamesFromGmailTable = "#gmailNicknamesTable";
-                //debug = "";
-                //debug = " Nicknames from gmail \n";
-                //sqlDebugComm = new SqlCommand("select top 40 * FROM " + nicknamesFromGmailTable, sqlConn);
-                //debugReader = sqlDebugComm.ExecuteReader();
-                //debugFieldCount = debugReader.FieldCount;
-                //firstfield = debugReader.GetName(0);
-                //for (i = 0; i < debugFieldCount; i++)
-                //{
-                //    debug += debugReader.GetName(i) + ", ";
-                //}
-                //debug += "\n";
-                //while (debugReader.Read())
-                //{
-                //    for (i = 0; i < debugFieldCount; i++)
-                //    {
-                //        debug += (string)debugReader[i] + ", ";
-                //    }
-                //    debug += "\n";
-                //}
-                //sqlDebugComm = new SqlCommand("select count(" + firstfield + ") FROM " + nicknamesFromGmailTable, sqlConn);
-                //debugReader.Close();
-                //debugRecordCount = sqlDebugComm.ExecuteScalar().ToString();
-                //MessageBox.Show("table " + nicknamesFromGmailTable + " has " + debugRecordCount + " records \n " + debugFieldCount + " fields \n sample data" + debug);
-
-
-                //     //string loginWithoutNicknamesTable = "#loginsWONicknamesTable";
-                //     debug = "";
-                //     debug = " Logons without nicknames \n";
-                //     sqlDebugComm = new SqlCommand("select top 40 * FROM " + loginWithoutNicknamesTable, sqlConn);
-                //     debugReader = sqlDebugComm.ExecuteReader();
-                //     debugFieldCount = debugReader.FieldCount;
-                //     firstfield = debugReader.GetName(0);
-                //     for (i = 0; i < debugFieldCount; i++)
-                //     {
-                //         debug += debugReader.GetName(i) + ", ";
-                //     }
-                //     debug += "\n";
-                //     while (debugReader.Read())
-                //     {
-                //         for (i = 0; i < debugFieldCount; i++)
-                //         {
-                //             debug += (string)debugReader[i] + ", ";
-                //         }
-                //         debug += "\n";
-                //     }
-                //     sqlDebugComm = new SqlCommand("select count(" + firstfield + ") FROM " + loginWithoutNicknamesTable, sqlConn);
-                //     debugReader.Close();
-                //     debugRecordCount = sqlDebugComm.ExecuteScalar().ToString();
-                //     MessageBox.Show("table " + loginWithoutNicknamesTable + " has " + debugRecordCount + " records \n " + debugFieldCount + " fields \n sample data" + debug);
-
-                //     if (gusersyn.Writeback_AD_checkbox == true || gusersyn.Writeback_DB_checkbox == true)
-                //     {
-                //         if (gusersyn.Writeback_AD_checkbox == true)
-                //         {
-                //             //string adNicknamesTable = "#adNicknamesTable";
-                //             debug = "";
-                //             debug = " Nickname list from AD for writeback \n";
-                //             sqlDebugComm = new SqlCommand("select top 40 * FROM " + adNicknamesTable, sqlConn);
-                //             debugReader = sqlDebugComm.ExecuteReader();
-                //             debugFieldCount = debugReader.FieldCount;
-                //             firstfield = debugReader.GetName(0);
-                //             for (i = 0; i < debugFieldCount; i++)
-                //             {
-                //                 debug += debugReader.GetName(i) + ", ";
-                //             }
-                //             debug += "\n";
-                //             while (debugReader.Read())
-                //             {
-                //                 for (i = 0; i < debugFieldCount; i++)
-                //                 {
-                //                     debug += (string)debugReader[i] + ", ";
-                //                 }
-                //                 debug += "\n";
-                //             }
-                //             sqlDebugComm = new SqlCommand("select count(" + firstfield + ") FROM " + adNicknamesTable, sqlConn);
-                //             debugReader.Close();
-                //             debugRecordCount = sqlDebugComm.ExecuteScalar().ToString();
-                //             MessageBox.Show("table " + adNicknamesTable + " has " + debugRecordCount + " records \n " + debugFieldCount + " fields \n sample data" + debug);
-                //         }
-
-                //         if (gusersyn.Writeback_DB_checkbox == true)
-                //         {
-                //string sqlNicknamesTable = "#sqlNicknamesTable";
-                //debug = "";
-                //debug = " Nicknames from sql fro writeback \n";
-                //sqlDebugComm = new SqlCommand("select top 40 * FROM " + sqlNicknamesTable, sqlConn);
-                //debugReader = sqlDebugComm.ExecuteReader();
-                //debugFieldCount = debugReader.FieldCount;
-                //firstfield = debugReader.GetName(0);
-                //for (i = 0; i < debugFieldCount; i++)
-                //{
-                //    debug += debugReader.GetName(i) + ", ";
-                //}
-                //debug += "\n";
-                //while (debugReader.Read())
-                //{
-                //    for (i = 0; i < debugFieldCount; i++)
-                //    {
-                //        debug += (string)debugReader[i] + ", ";
-                //    }
-                //    debug += "\n";
-                //}
-                //sqlDebugComm = new SqlCommand("select count(" + firstfield + ") FROM " + sqlNicknamesTable, sqlConn);
-                //debugReader.Close();
-                //debugRecordCount = sqlDebugComm.ExecuteScalar().ToString();
-                //MessageBox.Show("table " + sqlNicknamesTable + " has " + debugRecordCount + " records \n " + debugFieldCount + " fields \n sample data" + debug);
-                //         }
-                //     }
-                // }
-                // catch (Exception ex)
-                // {
-                //     log.warnings.Add("Issue creating debug data some sort of sql error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
-                // }
-
-
-                //************************************************************
-                //                            END
-                //                   DEBUG AND TEST DATA
-                //
-                //************************************************************
-
-
-
-
-
-
-
-                // use retrieved list of users without nicknames and check for updates against list of users in main datasource
-                // use the datatable from the view/table as the primary data source
-                // this table is generated above during the user account addition and update section
-                // sqlUsersTable will have AD or SQL no matter which we checked, there was only on variable used
-                // Pulls back the account infromation from the add/update section for users without a nickname
-                // loginWithoutNicknamesTable inherits key from from #gmailuserstable during QueryNotExistsIntoNewTable due to only pulling data from the gmailuserstable
-
-                lostNicknames = tools.QueryInnerJoin(sqlUsersTable, loginWithoutNicknamesTable, gusersyn.User_StuID, gusersyn.User_StuID, sqlConn, log);
-                // iterate lostnicknames and create nicknames
-                try
+                if (gmailUsers.Rows.Count > 0)
                 {
-                    while (lostNicknames.Read())
+                    // get list of nicknames from gmail
+                    nicknames.Clear();
+                    nicknames = tools.Get_Gmail_Nicknames(service, gusersyn, nicknamesFromGmailTable, log);
+                    tools.Create_Table(nicknames, nicknamesFromGmailTable, sqlConn, log);
+
+                    // if we did not get any nicknames there will be problems
+                    if (nicknames.Rows.Count > 0)
                     {
-                        userNickName = tools.GetNewUserNickname(service, lostNicknames[gusersyn.User_StuID.ToString()].ToString(), lostNicknames[gusersyn.User_Fname.ToString()].ToString(), lostNicknames[gusersyn.User_Mname.ToString()].ToString(), lostNicknames[gusersyn.User_Lname.ToString()].ToString(), 0, false);
-                        log.transactions.Add("Added Gmail user " + lostNicknames[gusersyn.User_StuID.ToString()].ToString() + "@" + gusersyn.Admin_domain + " Aliased as " + userNickName + "@" + gusersyn.Admin_domain);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    log.errors.Add("Issue creating new nicknames datareader is null " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
-                }
-
-                lostNicknames.Close();
-                // get list of nicknames from gmail it may have changed in the last update. Need to clear teh temp table or we will get an error
-                tools.DropTable(nicknamesFromGmailTable, sqlConn, log);
-                nicknames = tools.Get_Gmail_Nicknames(service, gusersyn, nicknamesFromGmailTable, log);
-                tools.Create_Table(nicknames, nicknamesFromGmailTable, sqlConn, log);
+                        // check which nicknames do not have a an associated user with them 
+                        // cross reference for null userID's in nickname service.RetrieveAllNicknames table with list of all userlogin userID's from gmail service.RetrieveAllUsers
+                        tools.QueryNotExistsIntoNewTable(gmailUsersTable, nicknamesFromGmailTable, loginWithoutNicknamesTable, sqlConn, gusersyn.User_StuID, nicknames.Columns[0].ColumnName, log);
 
 
-                // create array lists of fields which match for updating
-                // ID field
-                nicknameKeys.Add(nicknames.Columns[0].ColumnName);
-                nicknameKeys.Add(nicknames.Columns[2].ColumnName);
-                sqlkeys.Add(gusersyn.Writeback_primary_key);
-                sqlkeys.Add(gusersyn.Writeback_email_field);
+                        //************************************************************
+                        //                          START
+                        //                   DEBUG AND TEST DATA
+                        //
+                        //************************************************************
 
 
+                        //SqlDataReader debugReader;
+                        //string debug = "";
+                        //SqlCommand sqlDebugComm;
+                        //string firstfield = "";
+                        //string debugRecordCount = "";
+                        //int debugFieldCount = 0;
 
+                        // try
+                        // {
 
-                // check against list of nicknames in database
-                if (gusersyn.Writeback_DB_checkbox == true)
-                {
-
-                    // check the table to see if the nicknames match the ones we have there can be more than one nickname per user  
-
-                    //select FHC_test2_gmailNicknamesTable.soc_sec, FHC_test2_gmailNicknamesTable.Email
-                    //FROM FHC_test2_gmailNicknamesTable INNER JOIN FHC_test2_sqlNicknamesTable 
-                    //ON FHC_test2_gmailNicknamesTable.soc_sec = FHC_test2_sqlNicknamesTable.soc_sec 
-                    //where email not in (select email from FHC_test2_gmailnicknamestable)
-
-                    //Filter out the good nicknames
-
-
-                    // gusersyn.User_Fname:: SQL or AD                   first
-                    // gusersyn.User_Lname:: SQL or AD                   middle
-                    // gusersyn.User_Mname:: SQL or AD                   last
-                    keywordFields.Add(gusersyn.User_Lname);
-                    keywordFields.Add(gusersyn.User_Fname);
-                    keywordFields.Add(gusersyn.User_Mname);
-
-                    selectFields.Add(nicknames.Columns[2].ColumnName);
-
-
-                    // Filter nicknames for duplicates into new table 
-                    tools.SelectNicknamesClosestToActualNameIntoNewTable(nicknamesFromGmailTable, sqlUsersTable, nicknames.Columns[0].ColumnName, gusersyn.User_StuID, nicknamesFilteredForDuplicatesTable, selectFields, nicknames.Columns[1].ColumnName, keywordFields, sqlConn, log);
-                    // Check filtered nicknames against the sql data to see which emails need updating and put into a table for the next operation
-                    tools.CheckEmailUpdateIntoNewTable(nicknames.Columns[2].ColumnName, gusersyn.Writeback_email_field, nicknamesFilteredForDuplicatesTable, sqlNicknamesTable, nicknames.Columns[0].ColumnName, gusersyn.Writeback_primary_key, nicknamesToUpdateDBTable, nicknameKeys, sqlkeys, sqlConn, log);
+                        //     //string sqlUsersTable = "#sqlusersTable";
+                        //     debug = " Users from sql \n";
+                        //     sqlDebugComm = new SqlCommand("select top 40 * FROM " + sqlUsersTable, sqlConn);
+                        //     debugReader = sqlDebugComm.ExecuteReader();
+                        //     debugFieldCount = debugReader.FieldCount;
+                        //     firstfield = debugReader.GetName(0);
+                        //     for (i = 0; i < debugFieldCount; i++)
+                        //     {
+                        //         debug += debugReader.GetName(i) + ", ";
+                        //     }
+                        //     debug += "\n";
+                        //     while (debugReader.Read())
+                        //     {
+                        //         for (i = 0; i < debugFieldCount; i++)
+                        //         {
+                        //             debug += (string)debugReader[i].ToString() + ", ";
+                        //         }
+                        //         debug += "\n";
+                        //     }
+                        //     sqlDebugComm = new SqlCommand("select count(" + firstfield + ") FROM " + sqlUsersTable, sqlConn);
+                        //     debugReader.Close();
+                        //     debugRecordCount = sqlDebugComm.ExecuteScalar().ToString();
+                        //     MessageBox.Show("table " + sqlUsersTable + " has " + debugRecordCount + " records \n " + debugFieldCount + " fields \n sample data" + debug);
 
 
 
-                    //SqlDataReader debugReader;
-                    //string debug = "";
-                    //SqlCommand sqlDebugComm;
-                    //string firstfield = "";
-                    //string debugRecordCount = "";
-                    //int debugFieldCount = 0;
-                    //string sqlUsersTable = "#sqlusersTable";
-                    //debug = " Users from sql \n";
-                    //sqlDebugComm = new SqlCommand("select top 40 * FROM " + nicknamesToUpdateDBTable, sqlConn);
-                    //debugReader = sqlDebugComm.ExecuteReader();
-                    //debugFieldCount = debugReader.FieldCount;
-                    //firstfield = debugReader.GetName(0);
-                    //for (i = 0; i < debugFieldCount; i++)
-                    //{
-                    //    debug += debugReader.GetName(i) + ", ";
-                    //}
-                    //debug += "\n";
-                    //while (debugReader.Read())
-                    //{
-                    //    for (i = 0; i < debugFieldCount; i++)
-                    //    {
-                    //        debug += (string)debugReader[i].ToString() + ", ";
-                    //    }
-                    //    debug += "\n";
-                    //}
-                    //sqlDebugComm = new SqlCommand("select count(" + firstfield + ") FROM " + nicknamesToUpdateDBTable, sqlConn);
-                    //debugReader.Close();
-                    //debugRecordCount = sqlDebugComm.ExecuteScalar().ToString();
-                    //MessageBox.Show("table " + sqlUsersTable + " has " + debugRecordCount + " records \n " + debugFieldCount + " fields \n sample data" + debug);
+                        //     //string gmailUsersTable = "#gmailusersTable";
+                        //     debug = "";
+                        //     debug = " Users from gmail \n";
+                        //     sqlDebugComm = new SqlCommand("select top 40 * FROM " + gmailUsersTable, sqlConn);
+                        //     debugReader = sqlDebugComm.ExecuteReader();
+                        //     debugFieldCount = debugReader.FieldCount;
+                        //     firstfield = debugReader.GetName(0);
+                        //     for (i = 0; i < debugFieldCount; i++)
+                        //     {
+                        //         debug += debugReader.GetName(i) + ", ";
+                        //     }
+                        //     debug += "\n";
+                        //     while (debugReader.Read())
+                        //     {
+                        //         for (i = 0; i < debugFieldCount; i++)
+                        //         {
+                        //             debug += (string)debugReader[i] + ", ";
+                        //         }
+                        //         debug += "\n";
+                        //     }
+                        //     sqlDebugComm = new SqlCommand("select count(" + firstfield + ") FROM " + gmailUsersTable, sqlConn);
+                        //     debugReader.Close();
+                        //     debugRecordCount = sqlDebugComm.ExecuteScalar().ToString();
+                        //     MessageBox.Show("table " + gmailUsersTable + " has " + debugRecordCount + " records \n " + debugFieldCount + " fields \n sample data" + debug);
 
 
-                    // nicknamesToAddToDatabase = tools.QueryNotExists(nicknamesFromGmailTable, sqlNicknamesTable, sqlConn, nicknames.Columns[0].ColumnName, gusersyn.Writeback_primary_key, log);
-                    // update email fields in database where we did not have an primary key in the second table
-                    //tools.Mass_update_email_field(nicknamesToAddToDatabase, sqlConn, gusersyn, log);
-
-                    // reset arraylists with just the data fields we don't to be updating the  primary key
-                    nicknameKeys.Clear();
-                    sqlkeys.Clear();
-                    nicknameKeys.Add(nicknames.Columns[2].ColumnName);
-                    sqlkeys.Add(gusersyn.Writeback_email_field);
-
-                    adMailUpdateKeys.Add("mail");
-                    if (gusersyn.Writeback_transfer_email_checkbox == true)
-                    {
-
-
-                        //UPDATE a1 SET a1.e_mail = a2.gmail FROM address as a1 INNER JOIN address as a2 ON a1.soc_sec = a2.soc_sec where a2.gmail <> ' '
-
-                        nicknameKeysAndTable.Add(gusersyn.Writeback_table + "." + gusersyn.Writeback_email_field); // source table and column
-                        sqlkeysAndTable.Add(gusersyn.Writeback_table + "." + gusersyn.Writeback_secondary_email_field); // target table and column
-
-                        //UNTESTED WILL MOST LIKELY FAIL
-                        tools.Mass_Email_Shift(gusersyn, nicknamesToUpdateDBTable, gusersyn.Writeback_table, nicknames.Columns[0].ColumnName, gusersyn.Writeback_primary_key, nicknameKeysAndTable, sqlkeysAndTable, gusersyn.Writeback_where_clause, sqlConn, log);
-                    }
-                    tools.Mass_Table_update(nicknamesToUpdateDBTable, gusersyn.Writeback_table, nicknames.Columns[0].ColumnName, gusersyn.Writeback_primary_key, nicknameKeys, sqlkeys, gusersyn.Writeback_where_clause, sqlConn, log);
-                }
-
-                // reset arraylists  for new update check
-                nicknameKeys.Clear();
-                nicknameKeys.Add(nicknames.Columns[0].ColumnName);
-                nicknameKeys.Add(nicknames.Columns[2].ColumnName);
-                // AD fields hard code due to not giving options in interface
-                adMailUpdateKeys.Clear();
-                adMailUpdateKeys.Add("sAMAccountName");
-                adMailUpdateKeys.Add("mail");
+                        ////string nicknamesFromGmailTable = "#gmailNicknamesTable";
+                        //debug = "";
+                        //debug = " Nicknames from gmail \n";
+                        //sqlDebugComm = new SqlCommand("select top 40 * FROM " + nicknamesFromGmailTable, sqlConn);
+                        //debugReader = sqlDebugComm.ExecuteReader();
+                        //debugFieldCount = debugReader.FieldCount;
+                        //firstfield = debugReader.GetName(0);
+                        //for (i = 0; i < debugFieldCount; i++)
+                        //{
+                        //    debug += debugReader.GetName(i) + ", ";
+                        //}
+                        //debug += "\n";
+                        //while (debugReader.Read())
+                        //{
+                        //    for (i = 0; i < debugFieldCount; i++)
+                        //    {
+                        //        debug += (string)debugReader[i] + ", ";
+                        //    }
+                        //    debug += "\n";
+                        //}
+                        //sqlDebugComm = new SqlCommand("select count(" + firstfield + ") FROM " + nicknamesFromGmailTable, sqlConn);
+                        //debugReader.Close();
+                        //debugRecordCount = sqlDebugComm.ExecuteScalar().ToString();
+                        //MessageBox.Show("table " + nicknamesFromGmailTable + " has " + debugRecordCount + " records \n " + debugFieldCount + " fields \n sample data" + debug);
 
 
-                if (gusersyn.Writeback_AD_checkbox == true)
-                {
-                    // find nicknames missing in AD
-                    nicknamesToAddToAD = tools.CheckUpdate(nicknamesFilteredForDuplicatesTable, adNicknamesTable, nicknames.Columns[0].ColumnName, adPullKeys[0].ToString(), nicknameKeys, adMailUpdateKeys, sqlConn, log);
-                    //nicknamesToAddToAD = tools.QueryNotExists(nicknamesFromGmailTable, adNicknamesTable, sqlConn, nicknames.Columns[0].ColumnName, adPullKeys[0].ToString(), log);
-                    // interate and update mail fields
+                        //     //string loginWithoutNicknamesTable = "#loginsWONicknamesTable";
+                        //     debug = "";
+                        //     debug = " Logons without nicknames \n";
+                        //     sqlDebugComm = new SqlCommand("select top 40 * FROM " + loginWithoutNicknamesTable, sqlConn);
+                        //     debugReader = sqlDebugComm.ExecuteReader();
+                        //     debugFieldCount = debugReader.FieldCount;
+                        //     firstfield = debugReader.GetName(0);
+                        //     for (i = 0; i < debugFieldCount; i++)
+                        //     {
+                        //         debug += debugReader.GetName(i) + ", ";
+                        //     }
+                        //     debug += "\n";
+                        //     while (debugReader.Read())
+                        //     {
+                        //         for (i = 0; i < debugFieldCount; i++)
+                        //         {
+                        //             debug += (string)debugReader[i] + ", ";
+                        //         }
+                        //         debug += "\n";
+                        //     }
+                        //     sqlDebugComm = new SqlCommand("select count(" + firstfield + ") FROM " + loginWithoutNicknamesTable, sqlConn);
+                        //     debugReader.Close();
+                        //     debugRecordCount = sqlDebugComm.ExecuteScalar().ToString();
+                        //     MessageBox.Show("table " + loginWithoutNicknamesTable + " has " + debugRecordCount + " records \n " + debugFieldCount + " fields \n sample data" + debug);
 
-                    try
-                    {
-                        while (nicknamesToAddToAD.Read())
+                        //     if (gusersyn.Writeback_AD_checkbox == true || gusersyn.Writeback_DB_checkbox == true)
+                        //     {
+                        //         if (gusersyn.Writeback_AD_checkbox == true)
+                        //         {
+                        //             //string adNicknamesTable = "#adNicknamesTable";
+                        //             debug = "";
+                        //             debug = " Nickname list from AD for writeback \n";
+                        //             sqlDebugComm = new SqlCommand("select top 40 * FROM " + adNicknamesTable, sqlConn);
+                        //             debugReader = sqlDebugComm.ExecuteReader();
+                        //             debugFieldCount = debugReader.FieldCount;
+                        //             firstfield = debugReader.GetName(0);
+                        //             for (i = 0; i < debugFieldCount; i++)
+                        //             {
+                        //                 debug += debugReader.GetName(i) + ", ";
+                        //             }
+                        //             debug += "\n";
+                        //             while (debugReader.Read())
+                        //             {
+                        //                 for (i = 0; i < debugFieldCount; i++)
+                        //                 {
+                        //                     debug += (string)debugReader[i] + ", ";
+                        //                 }
+                        //                 debug += "\n";
+                        //             }
+                        //             sqlDebugComm = new SqlCommand("select count(" + firstfield + ") FROM " + adNicknamesTable, sqlConn);
+                        //             debugReader.Close();
+                        //             debugRecordCount = sqlDebugComm.ExecuteScalar().ToString();
+                        //             MessageBox.Show("table " + adNicknamesTable + " has " + debugRecordCount + " records \n " + debugFieldCount + " fields \n sample data" + debug);
+                        //         }
+
+                        //         if (gusersyn.Writeback_DB_checkbox == true)
+                        //         {
+                        //string sqlNicknamesTable = "#sqlNicknamesTable";
+                        //debug = "";
+                        //debug = " Nicknames from sql fro writeback \n";
+                        //sqlDebugComm = new SqlCommand("select top 40 * FROM " + sqlNicknamesTable, sqlConn);
+                        //debugReader = sqlDebugComm.ExecuteReader();
+                        //debugFieldCount = debugReader.FieldCount;
+                        //firstfield = debugReader.GetName(0);
+                        //for (i = 0; i < debugFieldCount; i++)
+                        //{
+                        //    debug += debugReader.GetName(i) + ", ";
+                        //}
+                        //debug += "\n";
+                        //while (debugReader.Read())
+                        //{
+                        //    for (i = 0; i < debugFieldCount; i++)
+                        //    {
+                        //        debug += (string)debugReader[i] + ", ";
+                        //    }
+                        //    debug += "\n";
+                        //}
+                        //sqlDebugComm = new SqlCommand("select count(" + firstfield + ") FROM " + sqlNicknamesTable, sqlConn);
+                        //debugReader.Close();
+                        //debugRecordCount = sqlDebugComm.ExecuteScalar().ToString();
+                        //MessageBox.Show("table " + sqlNicknamesTable + " has " + debugRecordCount + " records \n " + debugFieldCount + " fields \n sample data" + debug);
+                        //         }
+                        //     }
+                        // }
+                        // catch (Exception ex)
+                        // {
+                        //     log.warnings.Add("Issue creating debug data some sort of sql error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                        // }
+
+
+                        //************************************************************
+                        //                            END
+                        //                   DEBUG AND TEST DATA
+                        //
+                        //************************************************************
+
+
+
+
+
+
+
+                        // use retrieved list of users without nicknames and check for updates against list of users in main datasource
+                        // use the datatable from the view/table as the primary data source
+                        // this table is generated above during the user account addition and update section
+                        // sqlUsersTable will have AD or SQL no matter which we checked, there was only on variable used
+                        // Pulls back the account infromation from the add/update section for users without a nickname
+                        // loginWithoutNicknamesTable inherits key from from #gmailuserstable during QueryNotExistsIntoNewTable due to only pulling data from the gmailuserstable
+
+                        lostNicknames = tools.QueryInnerJoin(sqlUsersTable, loginWithoutNicknamesTable, gusersyn.User_StuID, gusersyn.User_StuID, sqlConn, log);
+                        // iterate lostnicknames and create nicknames
+                        try
                         {
-                            userDN = tools.GetObjectDistinguishedName(objectClass.user, returnType.distinguishedName, nicknamesToAddToAD[nicknames.Columns[0].ColumnName].ToString(), dc, log);
-                            tools.SetAttributeValuesSingleString("mail", nicknamesToAddToAD[nicknames.Columns[2].ColumnName.ToString()].ToString(), userDN, log);
+                            while (lostNicknames.Read())
+                            {
+                                userNickName = tools.GetNewUserNickname(service, lostNicknames[gusersyn.User_StuID.ToString()].ToString(), lostNicknames[gusersyn.User_Fname.ToString()].ToString(), lostNicknames[gusersyn.User_Mname.ToString()].ToString(), lostNicknames[gusersyn.User_Lname.ToString()].ToString(), 0, false);
+                                log.transactions.Add("Added Gmail user " + lostNicknames[gusersyn.User_StuID.ToString()].ToString() + "@" + gusersyn.Admin_domain + " Aliased as " + userNickName + "@" + gusersyn.Admin_domain);
+                            }
                         }
+                        catch (Exception ex)
+                        {
+                            log.errors.Add("Issue creating new nicknames datareader is null " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                        }
+
+                        lostNicknames.Close();
+                        // get list of nicknames from gmail it may have changed in the last update. Need to clear teh temp table or we will get an error
+                        tools.DropTable(nicknamesFromGmailTable, sqlConn, log);
                     }
-                    catch (Exception ex)
+                    nicknames = tools.Get_Gmail_Nicknames(service, gusersyn, nicknamesFromGmailTable, log);
+                    tools.Create_Table(nicknames, nicknamesFromGmailTable, sqlConn, log);
+                    // check if we got nicknames or else it will be a problem
+                    if (nicknames.Rows.Count > 0)
                     {
-                        log.errors.Add("Issue writing nickname to AD datareader is null " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+
+
+                        // create array lists of fields which match for updating
+                        // ID field
+                        nicknameKeys.Add(nicknames.Columns[0].ColumnName);
+                        nicknameKeys.Add(nicknames.Columns[2].ColumnName);
+                        sqlkeys.Add(gusersyn.Writeback_primary_key);
+                        sqlkeys.Add(gusersyn.Writeback_email_field);
+
+
+
+
+                        // check against list of nicknames in database
+                        if (gusersyn.Writeback_DB_checkbox == true)
+                        {
+
+                            // check the table to see if the nicknames match the ones we have there can be more than one nickname per user  
+
+                            //select FHC_test2_gmailNicknamesTable.soc_sec, FHC_test2_gmailNicknamesTable.Email
+                            //FROM FHC_test2_gmailNicknamesTable INNER JOIN FHC_test2_sqlNicknamesTable 
+                            //ON FHC_test2_gmailNicknamesTable.soc_sec = FHC_test2_sqlNicknamesTable.soc_sec 
+                            //where email not in (select email from FHC_test2_gmailnicknamestable)
+
+                            //Filter out the good nicknames
+
+
+                            // gusersyn.User_Fname:: SQL or AD                   first
+                            // gusersyn.User_Lname:: SQL or AD                   middle
+                            // gusersyn.User_Mname:: SQL or AD                   last
+                            keywordFields.Add(gusersyn.User_Lname);
+                            keywordFields.Add(gusersyn.User_Fname);
+                            keywordFields.Add(gusersyn.User_Mname);
+
+                            selectFields.Add(nicknames.Columns[2].ColumnName);
+
+
+                            // Filter nicknames for duplicates into new table 
+                            tools.SelectNicknamesClosestToActualNameIntoNewTable(nicknamesFromGmailTable, sqlUsersTable, nicknames.Columns[0].ColumnName, gusersyn.User_StuID, nicknamesFilteredForDuplicatesTable, selectFields, nicknames.Columns[1].ColumnName, keywordFields, sqlConn, log);
+                            // Check filtered nicknames against the sql data to see which emails need updating and put into a table for the next operation
+                            tools.CheckEmailUpdateIntoNewTable(nicknames.Columns[2].ColumnName, gusersyn.Writeback_email_field, nicknamesFilteredForDuplicatesTable, sqlNicknamesTable, nicknames.Columns[0].ColumnName, gusersyn.Writeback_primary_key, nicknamesToUpdateDBTable, nicknameKeys, sqlkeys, sqlConn, log);
+
+
+
+                            //SqlDataReader debugReader;
+                            //string debug = "";
+                            //SqlCommand sqlDebugComm;
+                            //string firstfield = "";
+                            //string debugRecordCount = "";
+                            //int debugFieldCount = 0;
+                            //string sqlUsersTable = "#sqlusersTable";
+                            //debug = " Users from sql \n";
+                            //sqlDebugComm = new SqlCommand("select top 40 * FROM " + nicknamesToUpdateDBTable, sqlConn);
+                            //debugReader = sqlDebugComm.ExecuteReader();
+                            //debugFieldCount = debugReader.FieldCount;
+                            //firstfield = debugReader.GetName(0);
+                            //for (i = 0; i < debugFieldCount; i++)
+                            //{
+                            //    debug += debugReader.GetName(i) + ", ";
+                            //}
+                            //debug += "\n";
+                            //while (debugReader.Read())
+                            //{
+                            //    for (i = 0; i < debugFieldCount; i++)
+                            //    {
+                            //        debug += (string)debugReader[i].ToString() + ", ";
+                            //    }
+                            //    debug += "\n";
+                            //}
+                            //sqlDebugComm = new SqlCommand("select count(" + firstfield + ") FROM " + nicknamesToUpdateDBTable, sqlConn);
+                            //debugReader.Close();
+                            //debugRecordCount = sqlDebugComm.ExecuteScalar().ToString();
+                            //MessageBox.Show("table " + sqlUsersTable + " has " + debugRecordCount + " records \n " + debugFieldCount + " fields \n sample data" + debug);
+
+
+                            // nicknamesToAddToDatabase = tools.QueryNotExists(nicknamesFromGmailTable, sqlNicknamesTable, sqlConn, nicknames.Columns[0].ColumnName, gusersyn.Writeback_primary_key, log);
+                            // update email fields in database where we did not have an primary key in the second table
+                            //tools.Mass_update_email_field(nicknamesToAddToDatabase, sqlConn, gusersyn, log);
+
+                            // reset arraylists with just the data fields we don't to be updating the  primary key
+                            nicknameKeys.Clear();
+                            sqlkeys.Clear();
+                            nicknameKeys.Add(nicknames.Columns[2].ColumnName);
+                            sqlkeys.Add(gusersyn.Writeback_email_field);
+
+                            adMailUpdateKeys.Add("mail");
+                            if (gusersyn.Writeback_transfer_email_checkbox == true)
+                            {
+
+
+                                //UPDATE a1 SET a1.e_mail = a2.gmail FROM address as a1 INNER JOIN address as a2 ON a1.soc_sec = a2.soc_sec where a2.gmail <> ' '
+
+                                nicknameKeysAndTable.Add(gusersyn.Writeback_table + "." + gusersyn.Writeback_email_field); // source table and column
+                                sqlkeysAndTable.Add(gusersyn.Writeback_table + "." + gusersyn.Writeback_secondary_email_field); // target table and column
+
+                                //UNTESTED WILL MOST LIKELY FAIL
+                                tools.Mass_Email_Shift(gusersyn, nicknamesToUpdateDBTable, gusersyn.Writeback_table, nicknames.Columns[0].ColumnName, gusersyn.Writeback_primary_key, nicknameKeysAndTable, sqlkeysAndTable, gusersyn.Writeback_where_clause, sqlConn, log);
+                            }
+                            tools.Mass_Table_update(nicknamesToUpdateDBTable, gusersyn.Writeback_table, nicknames.Columns[0].ColumnName, gusersyn.Writeback_primary_key, nicknameKeys, sqlkeys, gusersyn.Writeback_where_clause, sqlConn, log);
+                        }
+
+                        // reset arraylists  for new update check
+                        nicknameKeys.Clear();
+                        nicknameKeys.Add(nicknames.Columns[0].ColumnName);
+                        nicknameKeys.Add(nicknames.Columns[2].ColumnName);
+                        // AD fields hard code due to not giving options in interface
+                        adMailUpdateKeys.Clear();
+                        adMailUpdateKeys.Add("sAMAccountName");
+                        adMailUpdateKeys.Add("mail");
+
+
+                        if (gusersyn.Writeback_AD_checkbox == true)
+                        {
+                            // find nicknames missing in AD
+                            nicknamesToAddToAD = tools.CheckUpdate(nicknamesFilteredForDuplicatesTable, adNicknamesTable, nicknames.Columns[0].ColumnName, adPullKeys[0].ToString(), nicknameKeys, adMailUpdateKeys, sqlConn, log);
+                            //nicknamesToAddToAD = tools.QueryNotExists(nicknamesFromGmailTable, adNicknamesTable, sqlConn, nicknames.Columns[0].ColumnName, adPullKeys[0].ToString(), log);
+                            // interate and update mail fields
+
+                            try
+                            {
+                                while (nicknamesToAddToAD.Read())
+                                {
+                                    userDN = tools.GetObjectDistinguishedName(objectClass.user, returnType.distinguishedName, nicknamesToAddToAD[nicknames.Columns[0].ColumnName].ToString(), dc, log);
+                                    tools.SetAttributeValuesSingleString("mail", nicknamesToAddToAD[nicknames.Columns[2].ColumnName.ToString()].ToString(), userDN, log);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                log.errors.Add("Issue writing nickname to AD datareader is null " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                            }
+                            nicknamesToAddToAD.Close();
+                        }
+
+
+                        // create send as aliases need to get data for users 
+
+                        additionalKeys.Clear();
+                        additionalKeys.Add(nicknamesFilteredForDuplicatesTable + "." + nicknames.Columns[2].ColumnName + ", ");
+                        sendAsAliases = tools.QueryInnerJoin(sqlUsersTable, nicknamesFilteredForDuplicatesTable, gusersyn.User_StuID, nicknames.Columns[0].ColumnName, additionalKeys, sqlConn, log);
+                        tools.CreateSendAs(gusersyn, sendAsAliases, nicknames.Columns[2].ColumnName, nicknames.Columns[2].ColumnName, log);
+
+
+                        //tools.DropTable(nicknamesFromGmailTable, sqlConn, log);
+                        //tools.DropTable(loginWithoutNicknamesTable, sqlConn, log);
+                        //tools.DropTable(adNicknamesTable, sqlConn, log);
+                        //tools.DropTable(sqlNicknamesTable, sqlConn, log);
+                        //tools.DropTable(nicknamesToUpdateDBTable, sqlConn, log);
+                        //tools.DropTable(nicknamesFilteredForDuplicatesTable, sqlConn, log);
                     }
-                    nicknamesToAddToAD.Close();
                 }
-
-
-                // create send as aliases need to get data for users 
-
-                additionalKeys.Clear();
-                additionalKeys.Add(nicknamesFilteredForDuplicatesTable + "." + nicknames.Columns[2].ColumnName + ", ");
-                sendAsAliases = tools.QueryInnerJoin(sqlUsersTable, nicknamesFilteredForDuplicatesTable, gusersyn.User_StuID, nicknames.Columns[0].ColumnName, additionalKeys, sqlConn, log);
-                tools.CreateSendAs(gusersyn, sendAsAliases, nicknames.Columns[2].ColumnName, nicknames.Columns[2].ColumnName, log);
-
-
-                //tools.DropTable(nicknamesFromGmailTable, sqlConn, log);
-                //tools.DropTable(loginWithoutNicknamesTable, sqlConn, log);
-                //tools.DropTable(adNicknamesTable, sqlConn, log);
-                //tools.DropTable(sqlNicknamesTable, sqlConn, log);
-                //tools.DropTable(nicknamesToUpdateDBTable, sqlConn, log);
-                //tools.DropTable(nicknamesFilteredForDuplicatesTable, sqlConn, log);
             }
             //tools.DropTable(sqlUsersTable, sqlConn, log);
             //tools.DropTable(gmailUsersTable, sqlConn, log);
