@@ -1,0 +1,116 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Font Name="Tahoma" Size="8.25" />
+  <Class Name="WindowsApplication1.utils.LogFile">
+    <Position X="0.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>utils\Toolset.cs</FileName>
+      <HashCode>ABAAAAAAAAAAAAAAAIEAAAAQAAAAAAAAAAAAAAAAgBA=</HashCode>
+    </TypeIdentifier>
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+  </Class>
+  <Class Name="WindowsApplication1.utils.GroupSynch">
+    <Position X="5.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>utils\Toolset.cs</FileName>
+      <HashCode>AJGhkgEAIBAQQIAAAgCJIGAAAAACAAQARAAAEAGBABw=</HashCode>
+    </TypeIdentifier>
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+  </Class>
+  <Class Name="WindowsApplication1.utils.UserSynch">
+    <Position X="7" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>utils\Toolset.cs</FileName>
+      <HashCode>BBGgAAAAMJIQIAAAEUABIGAiAAASAAAIJCoQAoAFAo4=</HashCode>
+    </TypeIdentifier>
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+  </Class>
+  <Class Name="WindowsApplication1.utils.GmailUsers">
+    <Position X="4" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>utils\Toolset.cs</FileName>
+      <HashCode>ghmCQAEAIJAUIA4AAEQB8AAAAAQEQUAAACARAAABAg8=</HashCode>
+    </TypeIdentifier>
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+  </Class>
+  <Class Name="WindowsApplication1.utils.UserStateChange">
+    <Position X="2.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>utils\Toolset.cs</FileName>
+      <HashCode>gBXAAIAAIZAQAIAgAgAAISgAUAAAAEAIDAGAAAABQAw=</HashCode>
+    </TypeIdentifier>
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+  </Class>
+  <Class Name="WindowsApplication1.utils.executionOrder">
+    <Position X="0.5" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>utils\Toolset.cs</FileName>
+      <HashCode>AAAAAAABAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+  </Class>
+  <Class Name="WindowsApplication1.utils.StopWatch">
+    <Position X="0.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>utils\Toolset.cs</FileName>
+      <HashCode>AAAAAAAAACAAAAAAEAggAAAAAAgAAAAAMAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+  </Class>
+  <Class Name="WindowsApplication1.utils.ToolSet">
+    <Position X="9" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>utils\Toolset.cs</FileName>
+      <HashCode>EgABgQQCAACCCIABAADAACICAEECAAQAggBIGQUAAB0=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WindowsApplication1.utils.ObjectADSqlsyncGroup">
+    <Position X="4.25" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>utils\Toolset.cs</FileName>
+      <HashCode>AAAAAAAAAAEAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WindowsApplication1.utils.ObjectADGoogleSync">
+    <Position X="2.75" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>utils\Toolset.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAACAAAAAAAAA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Enum Name="WindowsApplication1.utils.objectClass" Collapsed="true">
+    <Position X="0.5" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>utils\Toolset.cs</FileName>
+      <HashCode>QAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAQA=</HashCode>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="WindowsApplication1.utils.returnType" Collapsed="true">
+    <Position X="0.5" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>utils\Toolset.cs</FileName>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAIAAAA=</HashCode>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="WindowsApplication1.utils.accountFlags" Collapsed="true">
+    <Position X="0.5" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <FileName>utils\Toolset.cs</FileName>
+      <HashCode>ACAGFACACAAAACAFAQAIAAAABAgCAACEAQIAEAQAAAA=</HashCode>
+    </TypeIdentifier>
+  </Enum>
+</ClassDiagram>
