@@ -18,7 +18,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Windows.Forms;
-using Outlook = Microsoft.Office.Interop.Outlook;
+//using Outlook = Microsoft.Office.Interop.Outlook;
 using Google.GData.Apps;
 using Google.GData.Client;
 using Google.GData.Apps.GoogleMailSettings;
@@ -270,6 +270,7 @@ namespace WindowsApplication1
                 users_user_Address.DataSource = columnList.Clone();
                 users_user_Mobile.DataSource = columnList.Clone();
                 users_user_sAMAccountName.DataSource = columnList.Clone();
+                users_user_CN.DataSource = columnList.Clone();
                 users_user_password.DataSource = columnList.Clone();
 //                users_user_email.DataSource = columnList.Clone();
                 ADColumn.DataSource = tools.ADobjectAttribute();
@@ -315,9 +316,39 @@ namespace WindowsApplication1
         {
             userconfig.User_sAMAccount = users_user_sAMAccountName.Text.ToString();
         }
+        private void users_user_CN_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            userconfig.User_CN = users_user_CN.Text.ToString();
+        }
         private void users_user_password_SelectedIndexChanged(object sender, EventArgs e)
         {
             userconfig.User_password = users_user_password.Text.ToString();
+        }
+        private void users_user_Update_CheckedChanged(object sender, EventArgs e)
+        {
+            
+            if (users_user_Update.Checked == true)
+            {
+                users_holdingTank.Enabled = false;
+                users_group.Enabled = false;
+                users_user_password.Enabled = false;
+                label16.Enabled = false;
+                label138.Enabled = false;
+                label28.Enabled = false;
+
+                userconfig.UpdateOnly = true;
+            }
+            if (users_user_Update.Checked == false)
+            {
+                users_holdingTank.Enabled = true;
+                users_group.Enabled = true;
+                users_user_password.Enabled = true;
+                label16.Enabled = true;
+                label138.Enabled = true;
+                label28.Enabled = true;
+
+                userconfig.UpdateOnly = false;
+            }
         }
         //private void users_user_email_SelectedIndexChanged(object sender, EventArgs e)
         //{
@@ -353,6 +384,10 @@ namespace WindowsApplication1
                     }
                 }
             }
+        }
+        private void users_searchLevel_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            userconfig.SearchScope = users_searchLevel.Text.ToString();
         }
         private void users_holdingTank_Leave(object sender, EventArgs e)
         {
@@ -560,6 +595,8 @@ namespace WindowsApplication1
             userconfig.Load(properties);
             users_user_sAMAccountName.Text = userconfig.User_sAMAccount;
             userconfig.Load(properties);
+            users_user_CN.Text = userconfig.User_CN;
+            userconfig.Load(properties);
             users_user_Lname.Text = userconfig.User_Lname;
             userconfig.Load(properties);
             users_user_Fname.Text = userconfig.User_Fname;
@@ -574,11 +611,15 @@ namespace WindowsApplication1
             userconfig.Load(properties);
             users_user_password.Text = userconfig.User_password;
             userconfig.Load(properties);
+            users_user_Update.Checked = userconfig.UpdateOnly;
+            userconfig.Load(properties);
             users_user_PostalCode.Text = userconfig.User_Zip;
             userconfig.Load(properties);
             users_user_where.Text = userconfig.User_where;
             userconfig.Load(properties);
             users_holdingTank.Text = userconfig.UserHoldingTank;
+            userconfig.Load(properties);
+            users_searchLevel.Text = userconfig.SearchScope;
             userconfig.Load(properties);
             users_mapping_description.Text = userconfig.Notes;
             users_baseUserOU.Text = userconfig.BaseUserOU;
@@ -2349,10 +2390,10 @@ namespace WindowsApplication1
 
 
         }        
-        private void recursive_folders(Outlook.Folder folder, string basefolder)
+        /*private void recursive_folders(Outlook.Folder folder, string basefolder)
         {
 
-        }
+        }*/
         private void DemoTableColumns()
         {
         //    const string PR_HAS_ATTACH =
@@ -2640,6 +2681,24 @@ namespace WindowsApplication1
             Config_LogFolder.Text = foldername;
             settingsconfig.LogDirectory = foldername;
         }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            
+             string user = tools.GetObjectDistinguishedName(objectClass.user, returnType.distinguishedName, execution_transactions_warnings_textbox.Text, userconfig.BaseUserOU.Substring(userconfig.BaseUserOU.IndexOf("DC")), log);
+            execution_errors_textbox.Text = user;
+            tools.SetAttributeValuesSingleString("manager", user.Substring(user.IndexOf("CN")), "LDAP://CN=Michael Neubrander,OU=Information Technology Admins,OU=FHCHS,DC=FHCHS,DC=EDU", log);
+        }
+
+
+
+
+
+
+
+
+
+
 
 
 

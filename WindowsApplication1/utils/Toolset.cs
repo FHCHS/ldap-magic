@@ -444,6 +444,7 @@ namespace WindowsApplication1.utils
     }
     public class UserSynch
     {
+        private String configSearchScope;
         private String configBaseUserOU;
         private String configUniversalGroup;
         private String configNotes;
@@ -455,6 +456,7 @@ namespace WindowsApplication1.utils
         private String configUser_Address;
         private String configUser_Mobile;
         private String configUser_sAMAccount;
+        private String configUser_CN;
         //private String configUser_mail;
         private String configUser_table_view;
         private String configUser_dbTable;
@@ -463,9 +465,11 @@ namespace WindowsApplication1.utils
         private String configDBCatalog;
         private String configUserHoldingTank;
         private String configUser_password;
+        private Boolean configUser_UpdateOnly;
         //private String configUserEmailDomain;
         private DataTable configCustoms = new DataTable();
         private string custom = "";
+        private string boolconv = "";
         int i = 0;
         private DataRow row;
 
@@ -474,6 +478,7 @@ namespace WindowsApplication1.utils
         // constructor creates a blank instance
         public UserSynch()
         {
+            configSearchScope = "";
             configUniversalGroup = "";
             configBaseUserOU = "";
             configNotes = "";
@@ -486,6 +491,7 @@ namespace WindowsApplication1.utils
             configUser_Mobile = "";
             configUser_table_view = "";
             configUser_sAMAccount = "";
+            configUser_CN = "";
             configUser_dbTable = "";
             //configUser_mail = "";
             configUser_where = "";
@@ -493,6 +499,7 @@ namespace WindowsApplication1.utils
             configDBCatalog = "";
             configUserHoldingTank = "";
             configUser_password = "";
+            configUser_UpdateOnly = false;
             //configUserEmailDomain = "";
             configCustoms.Columns.Add("ad");
             configCustoms.Columns.Add("sql");
@@ -500,6 +507,7 @@ namespace WindowsApplication1.utils
         }
         public void Load(Dictionary<string, string> dictionary)
         {
+            dictionary.TryGetValue("configSearchScope", out configSearchScope);
             dictionary.TryGetValue("configBaseUserOU", out configBaseUserOU);
             dictionary.TryGetValue("configUniversalGroup", out configUniversalGroup);
             dictionary.TryGetValue("configNotes", out configNotes);
@@ -512,6 +520,7 @@ namespace WindowsApplication1.utils
             dictionary.TryGetValue("configUser_Mobile", out configUser_Mobile);
             dictionary.TryGetValue("configUser_table_view", out configUser_table_view);
             dictionary.TryGetValue("configUser_sAMAccount", out configUser_sAMAccount);
+            dictionary.TryGetValue("configUser_CN", out configUser_CN);
             //dictionary.TryGetValue("configUser_mail", out configUser_mail);
             dictionary.TryGetValue("configUser_dbTable", out configUser_dbTable);
             dictionary.TryGetValue("configUser_where", out configUser_where);
@@ -519,6 +528,15 @@ namespace WindowsApplication1.utils
             dictionary.TryGetValue("configDBCatalog", out configDBCatalog);
             dictionary.TryGetValue("configUserHoldingTank", out configUserHoldingTank);
             dictionary.TryGetValue("configUser_password", out configUser_password);
+            dictionary.TryGetValue("configUser_UpdateOnly", out boolconv);
+            if (boolconv == "True")
+            {
+                configUser_UpdateOnly = true;
+            }
+            else
+            {
+                configUser_UpdateOnly = false;
+            }
             dictionary.TryGetValue("configCustoms", out custom);
             //dictionary.TryGetValue("configUserEmailDomain", out configUserEmailDomain);
 
@@ -606,6 +624,17 @@ namespace WindowsApplication1.utils
                 configUser_Mobile = value;
             }
         }
+        public String SearchScope
+        {
+            get
+            {
+                return configSearchScope;
+            }
+            set
+            {
+                configSearchScope = value;
+            }
+        }
         public String BaseUserOU
         {
             get
@@ -659,6 +688,17 @@ namespace WindowsApplication1.utils
             set
             {
                 configUser_sAMAccount = value;
+            }
+        }
+        public String User_CN
+        {
+            get
+            {
+                return configUser_CN;
+            }
+            set
+            {
+                configUser_CN = value;
             }
         }
         //public String User_mail
@@ -760,6 +800,17 @@ namespace WindowsApplication1.utils
                 configUser_password = value;
             }
         }
+        public Boolean UpdateOnly
+        {
+            get
+            {
+                return configUser_UpdateOnly;
+            }
+            set
+            {
+                configUser_UpdateOnly = value;
+            }
+        }
         public DataTable UserCustoms
         {
             get
@@ -783,10 +834,11 @@ namespace WindowsApplication1.utils
             }
         }
 
-        // output to a dictionary list
+        // output to a dictionary list    
         public Dictionary<string, string> ToDictionary()
         {
             Dictionary<string, string> returnvalue = new Dictionary<string, string>();
+            returnvalue.Add("configSearchScope", configSearchScope);
             returnvalue.Add("configBaseUserOU", configBaseUserOU);
             returnvalue.Add("configNotes", configNotes);
             returnvalue.Add("configUser_Lname", configUser_Lname);
@@ -798,6 +850,7 @@ namespace WindowsApplication1.utils
             returnvalue.Add("configUser_Mobile", configUser_Mobile);
             returnvalue.Add("configUser_table_view", configUser_table_view);
             returnvalue.Add("configUser_sAMAccount", configUser_sAMAccount);
+            returnvalue.Add("configUser_CN", configUser_CN);
             //returnvalue.Add("configUser_mail", configUser_mail);
             returnvalue.Add("configUser_dbTable", configUser_dbTable);
             returnvalue.Add("configUser_where", configUser_where);
@@ -806,6 +859,7 @@ namespace WindowsApplication1.utils
             returnvalue.Add("configUniversalGroup", configUniversalGroup);
             returnvalue.Add("configUserHoldingTank", configUserHoldingTank);
             returnvalue.Add("configUser_password", configUser_password);
+            returnvalue.Add("configUser_UpdateOnly", configUser_UpdateOnly.ToString());
             //returnvalue.Add("configUserEmailDomain", configUserEmailDomain);
             //for (i = 0; i < configCustoms.Rows.Count; i++)
             //{
@@ -2338,7 +2392,7 @@ namespace WindowsApplication1.utils
                             {
 
                                 DirectoryEntry entry = new DirectoryEntry("LDAP://" + ouPath);
-                                DirectoryEntry newUser = entry.Children.Add("CN=" + System.Web.HttpUtility.UrlEncode(users[usersyn.User_sAMAccount].ToString()).Replace("+", " ").Replace("*", "%2A"), "user");
+                                DirectoryEntry newUser = entry.Children.Add("CN=" + System.Web.HttpUtility.UrlEncode(users[usersyn.User_CN].ToString()).Replace("+", " ").Replace("*", "%2A"), "user");
                                 // generated
                                 newUser.Properties["samAccountName"].Value = System.Web.HttpUtility.UrlEncode(users[usersyn.User_sAMAccount].ToString()).Replace("+", " ").Replace("*", "%2A");
                                 //newUser.Properties["mail"].Value = System.Web.HttpUtility.UrlEncode(users[usersyn.User_mail].ToString()).Replace("+", " ").Replace("*", "%2A") + "@" + System.Web.HttpUtility.UrlEncode(users[usersyn.UserEmailDomain].ToString()).Replace("+", " ").Replace("*", "%2A");
@@ -2476,16 +2530,19 @@ namespace WindowsApplication1.utils
                 TRUSTED_TO_AUTH_FOR_DELEGATION 0x1000000
              * */
         }
-        public void UpdateUsers(SqlDataReader users, LogFile log)
+        public void UpdateUsers(SqlDataReader users, string ldapDomain, LogFile log)
         {
             // requires distinguished name to be a field
             // all field names must be valid AD field names
+            // does not blank out fields
+
             int fieldcount = 0;
             int i = 0;
             string name = "";
-            fieldcount = users.FieldCount;
+            string fdqn = "";
             try
             {
+            fieldcount = users.FieldCount;
                 while (users.Read())
                 {
 
@@ -2496,29 +2553,72 @@ namespace WindowsApplication1.utils
                         // eliminiate non updatable fields
                         if (name != "password" && name != "CN" && name != "sAMAccountName" && name != "distinguishedname")
                         {
+                            
                             // mail needs some special handling
-                            if (name != "mail")
+                            switch (name)
                             {
-                                if ((string)users[name] != "")
-                                {
-                                    user.Properties[name].Value = System.Web.HttpUtility.UrlEncode((string)users[name]).Replace("+", " ").Replace("*", "%2A");
-                                }
+                                case "mail":
+                                    if ((string)users[name] != "")
+                                    {
+                                        // check to see if mail field has illegal characters
+                                        string hi = (System.Web.HttpUtility.UrlEncode((string)users[name]).Replace("+", " ").Replace("*", "%2A").Replace("%40", "@"));
+                                        string hi3 = (string)users[name];
+                                        if (System.Web.HttpUtility.UrlEncode((string)users[name]).Replace("+", " ").Replace("*", "%2A").Replace("%40", "@") != (string)users[name])
+                                        {
+                                            // no illegal characters input the value into AD
+                                            user.Properties[name].Value = System.Web.HttpUtility.UrlEncode((string)users[name]).Replace("+", " ").Replace("*", "%2A").Replace("!", "%21").Replace("(", "%28").Replace(")", "%29").Replace("'", "%27").Replace("_", "%5f").Replace(" ", "%20").Replace("%40", "@");
+                                        }
+                                        else
+                                        {
+                                            user.Properties[name].Value = "illegal Email";
+                                        }
+                                    }
+                                    break;
+                                case "userAccountControl":
+                                    if ((string)users[name] != "")
+                                    {
+                                        int val = (int)user.Properties["userAccountControl"].Value;
+                                        user.Properties["userAccountControl"].Value = val | Convert.ToInt32(System.Web.HttpUtility.UrlEncode((string)users[name]).Replace("+", " ").Replace("*", "%2A").ToString());
+                                    }
+                                    break;
+                                case "manager":
+                                    if ((string)users[name] != "")
+                                    {
+                                        fdqn = GetObjectDistinguishedName(objectClass.user, returnType.distinguishedName, System.Web.HttpUtility.UrlEncode((string)users[name]).Replace("+", " ").Replace("*", "%2A"), ldapDomain, log);
+                                        user.Properties["manager"].Value = fdqn.Substring(fdqn.IndexOf("CN"));
+                                    }
+                                    break;
+                                default:
+                                    if ((string)users[name] != "")
+                                    {
+                                        user.Properties[name].Value = System.Web.HttpUtility.UrlEncode((string)users[name]).Replace("+", " ").Replace("*", "%2A");
+                                    }
+                                    break;
                             }
-                            else
-                            {
-                                // check to see if mail field has illegal characters
-                                string hi = (System.Web.HttpUtility.UrlEncode((string)users[name]).Replace("+", " ").Replace("*", "%2A").Replace("%40", "@"));
-                                string hi3 = (string)users[name];
-                                if (System.Web.HttpUtility.UrlEncode((string)users[name]).Replace("+", " ").Replace("*", "%2A").Replace("%40", "@") != (string)users[name])
-                                {
-                                    // no illegal characters input the value into AD
-                                    user.Properties[name].Value = System.Web.HttpUtility.UrlEncode((string)users[name]).Replace("+", " ").Replace("*", "%2A").Replace("!", "%21").Replace("(", "%28").Replace(")", "%29").Replace("'", "%27").Replace("_", "%5f").Replace(" ", "%20").Replace("%40", "@");
-                                }
-                                else
-                                {
-                                    user.Properties[name].Value = "illegal Email";
-                                }
-                            }
+
+
+                            //if (name != "mail")
+                            //{
+                            //    if ((string)users[name] != "")
+                            //    {
+                            //        user.Properties[name].Value = System.Web.HttpUtility.UrlEncode((string)users[name]).Replace("+", " ").Replace("*", "%2A");
+                            //    }
+                            //}
+                            //else
+                            //{
+                            //    // check to see if mail field has illegal characters
+                            //    string hi = (System.Web.HttpUtility.UrlEncode((string)users[name]).Replace("+", " ").Replace("*", "%2A").Replace("%40", "@"));
+                            //    string hi3 = (string)users[name];
+                            //    if (System.Web.HttpUtility.UrlEncode((string)users[name]).Replace("+", " ").Replace("*", "%2A").Replace("%40", "@") != (string)users[name])
+                            //    {
+                            //        // no illegal characters input the value into AD
+                            //        user.Properties[name].Value = System.Web.HttpUtility.UrlEncode((string)users[name]).Replace("+", " ").Replace("*", "%2A").Replace("!", "%21").Replace("(", "%28").Replace(")", "%29").Replace("'", "%27").Replace("_", "%5f").Replace(" ", "%20").Replace("%40", "@");
+                            //    }
+                            //    else
+                            //    {
+                            //        user.Properties[name].Value = "illegal Email";
+                            //    }
+                            //}
 
                         }
                     }
@@ -2960,12 +3060,26 @@ namespace WindowsApplication1.utils
             // this basically will just issue a concatenation sql query to the DB for each field to compare
             foreach (string key in compareFields1)
             {
-                compare1 = compare1 + table1 + "." + key + " COLLATE SQL_Latin1_General_CP1_CS_AS + ";
+                if (key == "sAMAccountName")
+                {
+                    compare1 = compare1 + table1 + "." + key;
+                }
+                else 
+                {
+                    compare1 = compare1 + table1 + "." + key + " COLLATE SQL_Latin1_General_CP1_CS_AS + ";
+                }
                 fields += table1 + "." + key + ", ";
             }
             foreach (string key in compareFields2)
             {
-                compare2 = compare2 + table2 + "." + key + " COLLATE SQL_Latin1_General_CP1_CS_AS + ";
+                if (key == "sAMAccountName")
+                {
+                    compare2 = compare2 + table2 + "." + key;
+                }
+                else
+                {
+                    compare2 = compare2 + table2 + "." + key + " COLLATE SQL_Latin1_General_CP1_CS_AS + ";
+                }
             }
             // remove trailing comma and + 
             compare2 = compare2.Remove(compare2.Length - 2);
@@ -2985,8 +3099,10 @@ namespace WindowsApplication1.utils
             }
             return null;
         }
-        public SqlDataReader CheckUpdate(string table1, string table2, string pkey1, string pkey2, ArrayList compareFields1, ArrayList compareFields2, ArrayList additionalFields, SqlConnection sqlConn, LogFile log)
+        public SqlDataReader CheckUpdate(string table1, string table2, string pkey1, string pkey2, ArrayList compareFields1, ArrayList compareFields2, ArrayList additionalFields, int adField, SqlConnection sqlConn, LogFile log)
         {
+            // adField holds the value of which table holds values from ad to check the AD field fomat distinguished name vs samaccount / id if ad field is 0 neither should be checked
+            // managerADtype if true manager field holds an AD object cn=name,ou=blah,dc=blah else it is a samaccount field
             // NULL not handeled as blanks
             // additionalFields takes the field names " table.field,"
             // Assumes table1 holds the correct data and returns a data reader with the update fields columns from table1
@@ -3014,6 +3130,9 @@ namespace WindowsApplication1.utils
             string fields = "";
             string notnull = "";
             string additionalfields = "";
+            bool managerADtype = false;
+            int i = 0;
+
 
             //int i;
             //string debugRecordCount = "";
@@ -3039,29 +3158,127 @@ namespace WindowsApplication1.utils
             //debugReader.Close();
             //debugRecordCount = sqlDebugComm.ExecuteScalar().ToString();
             //MessageBox.Show("table " + table2 + " has " + debugRecordCount + " records \n " + debugFieldCount + " fields \n sample data" + debug);
+            
+            //check to see what format the manager is in and what table it is in
+            if (adField == 1)
+            {
+                foreach (string key in compareFields1)
+                {
+                    if (key == "CN") 
+                    {
+                    }
+                    if (key == "manager")
+                    {
 
+                        SqlCommand sqlCheck = new SqlCommand("select top 1 manager FROM " + table1, sqlConn);
+                        // create the command object
+                        SqlDataReader checkReader;
+                        try
+                        {
+                            sqlCheck.CommandTimeout = 360;
+                            checkReader = sqlCheck.ExecuteReader();
+                            checkReader.Read();
+                            if ((string)checkReader[0].ToString().Substring(0, 2) == "CN=")
+                            {
+                                managerADtype = true;
+                            }
+                            checkReader.Close();
+                        }
+                        catch (Exception ex)
+                        {
+                            log.errors.Add("Failed SQL command " + sqlCheck.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                        }
+                        
+                    }
+                }
+            }
+            else if (adField == 2)
+            {
+                foreach (string key in compareFields2)
+                {
+                    if (key == "manager")
+                    {
 
+                        SqlCommand sqlCheck = new SqlCommand("select top 1 manager FROM " + table2, sqlConn);
+                        // create the command object
+                        SqlDataReader checkReader;
+                        try
+                        {
+                            sqlCheck.CommandTimeout = 360;
+                            checkReader = sqlCheck.ExecuteReader();
+                            checkReader.Read();
+                            if ((string)checkReader[0].ToString().Substring(0, 2) == "CN=")
+                            {
+                                managerADtype = true;
+                            }
+                            checkReader.Close();
+                        }
+                        catch (Exception ex)
+                        {
+                            log.errors.Add("Failed SQL command " + sqlCheck.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                        }
+                    }
+                }
+            }
 
             // need a comand builder and research on the best way to compare all fields in a row
             // this basically will just issue a concatenation sql query to the DB for each field to compare
+            //foreach (string key in compareFields1)
+            //{
+            //    if (managerADtype == false && key == "manager" && adField == 2)
+            //    {
+            //        //add code for substring of manager field
+            //        compare1 = compare1 + "case when " + table2 + "." + compareFields2[i] + " <> '' then (substring(" + table1 + "." + key + ",4, charindex('ou=', " + table1 + "." + key + ")-5) COLLATE SQL_Latin1_General_CP1_CS_AS ) else '' end + ";
+            //        fields += "substring(" + table1 + "." + key + ",4, charindex('ou=', " + table1 + "." + key + ")-5), ";
+            //    }
+            //    else
+            //    {
+            //         compare1 = compare1 + "case when " + table2 + "." + compareFields2[i] + " <> '' then (" + table1 + "." + key + " COLLATE SQL_Latin1_General_CP1_CS_AS ) else '' end + ";
+            //         fields += table1 + "." + key + ", ";
+            //    }
+            //    i++;
+            //}
+            //i = 0;
+
             foreach (string key in compareFields1)
             {
-                compare1 = compare1 + table1 + "." + key + " COLLATE SQL_Latin1_General_CP1_CS_AS + ";
-                fields += table1 + "." + key + ", ";
+                if (managerADtype == false && key == "manager" && adField == 2)
+                {
+                    //add code for substring of manager field
+                    compare1 = compare1 + "substring(" + table1 + "." + key + ",4, charindex('ou=', " + table1 + "." + key + ")-5) COLLATE SQL_Latin1_General_CP1_CS_AS + ";
+                    fields += "substring(" + table1 + "." + key + ",4, charindex('ou=', " + table1 + "." + key + ")-5), ";
+                }
+                else
+                {
+                    compare1 = compare1 + table1 + "." + key + " COLLATE SQL_Latin1_General_CP1_CS_AS + ";
+                    fields += table1 + "." + key + ", ";
+                }
+                i++;
             }
-            compare1 = compare1 + table1 + "." + pkey1 + " COLLATE SQL_Latin1_General_CP1_CS_AS + ";
+            i = 0;
+            //compare1 = compare1 + table1 + "." + pkey1;
             foreach (string key in compareFields2)
             {
-                compare2 = compare2 + table2 + "." + key + " COLLATE SQL_Latin1_General_CP1_CS_AS + ";
-                //fields += table2 + "." + key + ", ";
-                notnull += table2 + "." + key + " <> '' OR ";
+                if (managerADtype == false && key == "manager" && adField == 1)
+                {
+                    //add code for substring of manager field
+                    compare2 = compare2 + "case when " + table1 + "." + compareFields1[i] + " <> '' then (substring(" + table2 + "." + key + ",4, charindex('ou=', " + table2 + "." + key + ")-5) COLLATE SQL_Latin1_General_CP1_CS_AS ) else '' end + ";
+                    notnull += "case when len(" + table2 + "." + key + ") > 3 then substring(" + table2 + "." + key + ",4, charindex('ou=', " + table2 + "." + key + ")-5) else '' end <> '' OR ";
+                }
+                else
+                {
+                    compare2 = compare2 + "case when " + table1 + "." + compareFields1[i] + " <> '' then (" + table2 + "." + key + " COLLATE SQL_Latin1_General_CP1_CS_AS ) else '' end + ";
+                    //fields += table2 + "." + key + ", ";
+                    notnull += table2 + "." + key + " <> '' OR ";
+                }
+                i++;
             }
-            compare2 = compare2 + table2 + "." + pkey2 + " COLLATE SQL_Latin1_General_CP1_CS_AS + ";
+            //compare2 = compare2 + table2 + "." + pkey2;
             foreach (string key in additionalFields)
             {
                 additionalfields += key;
             }
-            // remove trailing stuff commas +'s etc
+            // remove trailing comma and + 
             compare2 = compare2.Remove(compare2.Length - 2);
             compare1 = compare1.Remove(compare1.Length - 2);
             fields = fields.Remove(fields.Length - 2);
@@ -3110,12 +3327,27 @@ namespace WindowsApplication1.utils
             // this basically will just issue a concatenation sql query to the DB for each field to compare
             foreach (string key in compareFields1)
             {
-                compare1 = compare1 + table1 + "." + key + " COLLATE SQL_Latin1_General_CP1_CS_AS + ";
+                if (key == pkey1)
+                {
+                    compare1 = compare1 + table1 + "." + key;
+                }
+                else
+                {
+                    compare1 = compare1 + table1 + "." + key + " COLLATE SQL_Latin1_General_CP1_CS_AS + ";
+                }
                 fields += table1 + "." + key + ", ";
             }
             foreach (string key in compareFields2)
             {
-                compare2 = compare2 + table2 + "." + key + " COLLATE SQL_Latin1_General_CP1_CS_AS + ";
+                if (key == pkey1)
+                {
+                    compare2 = compare2 + table2 + "." + key;
+                }
+                else
+                {
+                    compare2 = compare2 + table2 + "." + key + " COLLATE SQL_Latin1_General_CP1_CS_AS + ";
+                }
+                
             }
             // remove trailing comma and + 
             compare2 = compare2.Remove(compare2.Length - 2);
@@ -4548,13 +4780,12 @@ namespace WindowsApplication1.utils
 
 
                 //time.Start();
+
+                //Find groups that we need to create
                 add = tools.QueryNotExists(sqlgroupsTable, groupsTable, sqlConn, groupsyn.Group_CN, adUpdateKeys[1].ToString(), log);
 
                 //time.Stop();
                 //MessageBox.Show("add query" + time.GetElapsedTime());
-
-
-
                 //debug = "cols to add \n";
                 //while (add.Read())
                 //{
@@ -4566,6 +4797,8 @@ namespace WindowsApplication1.utils
 
                 //time.Start();
                 // i = 0;
+
+                // Create groups
                 while (add.Read())
                 {
                     //i++;
@@ -4883,7 +5116,14 @@ namespace WindowsApplication1.utils
 
             if (recordCount != "0")
             {
-                delete = tools.QueryNotExists(ADgroupMembersTable, sqlgroupMembersTable, sqlConn, ADusers.Columns[1].ColumnName, groupsyn.User_Group_Reference, log);
+                // setup update keys
+                adUpdateKeys.Clear();
+                sqlUpdateKeys.Clear();
+                adUpdateKeys.Add(ADusers.Columns[1].ColumnName);
+                sqlUpdateKeys.Add(ADusers.Columns[1].ColumnName);
+
+                delete = tools.CheckUpdate(ADgroupMembersTable, sqlgroupMembersTable, ADusers.Columns[0].ColumnName, groupsyn.User_Group_Reference, adUpdateKeys, sqlUpdateKeys, sqlConn, log);
+                // delete = tools.QueryNotExists(ADgroupMembersTable, sqlgroupMembersTable, sqlConn, ADusers.Columns[1].ColumnName, groupsyn.User_Group_Reference, log);
                 // delete groups in AD
                 while (delete.Read())
                 {
@@ -4922,6 +5162,7 @@ namespace WindowsApplication1.utils
             SqlDataReader delete;
             SqlDataReader update;
 
+            SearchScope scope = SearchScope.OneLevel;
             ArrayList completeSqlKeys = new ArrayList();
             ArrayList completeADKeys = new ArrayList();
             ArrayList adUpdateKeys = new ArrayList();
@@ -4961,61 +5202,68 @@ namespace WindowsApplication1.utils
                 tools.DropTable(sqlUsersTable, sqlConn, log);
                 tools.DropTable(adUsersTable, sqlConn, log);
             }
-            // create initial ou's; will log a warning out if they already exist
-            tools.CreateOURecursive(usersyn.BaseUserOU, log);
-            tools.CreateOURecursive(usersyn.UserHoldingTank, log);
 
-            // setup extentions for the user accounts to go in to the right ou's
-            userObject.Add("sAMAccountName", usersyn.UniversalGroup.Remove(0, 3).Remove(usersyn.UniversalGroup.IndexOf(",") - 3));
-            userObject.Add("CN", usersyn.UniversalGroup.Remove(0, 3).Remove(usersyn.UniversalGroup.IndexOf(",") - 3));
-            userObject.Add("description", "Universal Group For Users");
-            // creates the group if it does not exist
-            tools.CreateGroup(usersyn.UniversalGroup.Remove(0, usersyn.UniversalGroup.IndexOf(",") + 1), userObject, log);
+            //if were only updating it doesnt matter where we want ot put new users
+            if (usersyn.UpdateOnly == false)
+            {
+                // create initial ou's; will log a warning out if they already exist
+                tools.CreateOURecursive(usersyn.BaseUserOU, log);
+                tools.CreateOURecursive(usersyn.UserHoldingTank, log);
+
+
+                // setup extentions for the user accounts to go in to the right ou's
+                userObject.Add("sAMAccountName", usersyn.UniversalGroup.Remove(0, 3).Remove(usersyn.UniversalGroup.IndexOf(",") - 3));
+                userObject.Add("CN", usersyn.UniversalGroup.Remove(0, 3).Remove(usersyn.UniversalGroup.IndexOf(",") - 3));
+                userObject.Add("description", "Universal Group For Users");
+                // creates the group if it does not exist
+                tools.CreateGroup(usersyn.UniversalGroup.Remove(0, usersyn.UniversalGroup.IndexOf(",") + 1), userObject, log);
+            }
 
 
             // need to add this field first to use as a primary key when checking for existance in AD
             completeSqlKeys.Add("sAMAccountName");
             completeSqlKeys.Add("CN");
             completeSqlKeys.Add("sn");
-            completeSqlKeys.Add("givenname");
-            completeSqlKeys.Add("homephone");
+            completeSqlKeys.Add("givenName");
+            completeSqlKeys.Add("homePhone");
             completeSqlKeys.Add("st");
-            completeSqlKeys.Add("streetaddress");
+            completeSqlKeys.Add("streetAddress");
             completeSqlKeys.Add("l");
-            completeSqlKeys.Add("postalcode");
+            completeSqlKeys.Add("postalCode");
             // ?????? MIGHT NOT BE USED
 
 
             // Lets make the SQL fields to check for update
             sqlUpdateKeys.Add("sn");
-            sqlUpdateKeys.Add("givenname");
-            sqlUpdateKeys.Add("homephone");
+            sqlUpdateKeys.Add("givenName");
+            sqlUpdateKeys.Add("homePhone");
             sqlUpdateKeys.Add("st");
-            sqlUpdateKeys.Add("streetaddress");
+            sqlUpdateKeys.Add("streetAddress");
             sqlUpdateKeys.Add("l");
-            sqlUpdateKeys.Add("postalcode");
+            sqlUpdateKeys.Add("postalCode");
 
 
 
             // Lets make the Active Directory Keys as well
+            completeADKeys.Add("sAMAccountName");
             completeADKeys.Add("CN");
             completeADKeys.Add("sn");
-            completeADKeys.Add("givenname");
-            completeADKeys.Add("homephone");
+            completeADKeys.Add("givenName");
+            completeADKeys.Add("homePhone");
             completeADKeys.Add("st");
-            completeADKeys.Add("streetaddress");
+            completeADKeys.Add("streetAddress");
             completeADKeys.Add("l");
-            completeADKeys.Add("postalcode");
+            completeADKeys.Add("postalCode");
             completeADKeys.Add("distinguishedName");
 
             // Lets make the Active Directory fields to check for update
             adUpdateKeys.Add("sn");
-            adUpdateKeys.Add("givenname");
-            adUpdateKeys.Add("homephone");
+            adUpdateKeys.Add("givenName");
+            adUpdateKeys.Add("homePhone");
             adUpdateKeys.Add("st");
-            adUpdateKeys.Add("streetaddress");
+            adUpdateKeys.Add("streetAddress");
             adUpdateKeys.Add("l");
-            adUpdateKeys.Add("postalcode");
+            adUpdateKeys.Add("postalCode");
 
             //build custom keys
             for (i = 0; i < usersyn.UserCustoms.Rows.Count; i++)
@@ -5047,15 +5295,15 @@ namespace WindowsApplication1.utils
             if (usersyn.User_where == "")
             {
                 sqlComm = new SqlCommand("SELECT DISTINCT RTRIM(" + usersyn.User_sAMAccount + ") AS sAMAccountName" +
-                    ", RTRIM(" + usersyn.User_sAMAccount + ") AS CN" +
+                    ", RTRIM(" + usersyn.User_CN + ") AS CN" +
                     ", RTRIM(" + usersyn.User_Lname + ") AS sn" +
-                    ", RTRIM(" + usersyn.User_Fname + ") AS givenname" +
-                    ", RTRIM(" + usersyn.User_Mobile + ") AS homephone" +
+                    ", RTRIM(" + usersyn.User_Fname + ") AS givenName" +
+                    ", RTRIM(" + usersyn.User_Mobile + ") AS homePhone" +
                     ", RTRIM(" + usersyn.User_State + ") AS st" +
-                    ", RTRIM(" + usersyn.User_Address + ") AS streetaddress" +
+                    ", RTRIM(" + usersyn.User_Address + ") AS streetAddress" +
                     //", RTRIM(" + usersyn.User_mail + ") AS mail" +
                     ", RTRIM(" + usersyn.User_city + ") AS l" +
-                    ", RTRIM(" + usersyn.User_Zip + ") AS postalcode" +
+                    ", RTRIM(" + usersyn.User_Zip + ") AS postalCode" +
                     ", RTRIM(" + usersyn.User_password + ") AS password" +
                     sqlForCustomFields +
                     " INTO " + sqlUsersTable + " FROM " + usersyn.User_dbTable, sqlConn);
@@ -5063,15 +5311,15 @@ namespace WindowsApplication1.utils
             else
             {
                 sqlComm = new SqlCommand("SELECT DISTINCT RTRIM(" + usersyn.User_sAMAccount + ") AS sAMAccountName" +
-                    ", RTRIM(" + usersyn.User_sAMAccount + ") AS CN" +
+                    ", RTRIM(" + usersyn.User_CN + ") AS CN" +
                     ", RTRIM(" + usersyn.User_Lname + ") AS sn" +
-                    ", RTRIM(" + usersyn.User_Fname + ") AS givenname" +
-                    ", RTRIM(" + usersyn.User_Mobile + ") AS homephone" +
+                    ", RTRIM(" + usersyn.User_Fname + ") AS givenName" +
+                    ", RTRIM(" + usersyn.User_Mobile + ") AS homePhone" +
                     ", RTRIM(" + usersyn.User_State + ") AS st" +
-                    ", RTRIM(" + usersyn.User_Address + ") AS streetaddress" +
+                    ", RTRIM(" + usersyn.User_Address + ") AS streetAddress" +
                     //", RTRIM(" + usersyn.User_mail + ") AS mail" +
                     ", RTRIM(" + usersyn.User_city + ") AS l" +
-                    ", RTRIM(" + usersyn.User_Zip + ") AS postalcode" +
+                    ", RTRIM(" + usersyn.User_Zip + ") AS postalCode" +
                     ", RTRIM(" + usersyn.User_password + ") AS password" +
                     sqlForCustomFields +
                     " INTO " + sqlUsersTable + " FROM " + usersyn.User_dbTable +
@@ -5088,157 +5336,163 @@ namespace WindowsApplication1.utils
                 log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
                 throw;
             }
-
+            if (usersyn.SearchScope == "Subtree")
+            {
+                scope = SearchScope.Subtree;
+            }
+                    
             // go grab all the users from AD
-            adUsers = tools.EnumerateUsersInOUDataTable(usersyn.BaseUserOU, completeADKeys, adUsersTable, SearchScope.OneLevel, log);
+            adUsers = tools.EnumerateUsersInOUDataTable(usersyn.BaseUserOU, completeADKeys, adUsersTable, scope, log);
             if (adUsers.Rows.Count > 0)
             {
                 // make the temp table for ou comparisons
                 tools.Create_Table(adUsers, adUsersTable, sqlConn, log);
 
-
-
-                //************************************************************
-                //                          START
-                //                   DEBUG AND TEST DATA
-                //
-                //************************************************************
-                //debug = " total users from sql \n";
-                //sqlDebugComm = new SqlCommand("select top 20 * FROM " + sqlUsersTable, sqlConn);
-                //debugReader = sqlDebugComm.ExecuteReader();
-                //debugFieldCount = debugReader.FieldCount;
-                //for (i = 0; i < debugFieldCount; i++)
-                //{
-                //    debug += debugReader.GetName(i) + ", ";
-                //}
-                //debug += "\n";
-                //while (debugReader.Read())
-                //{
-                //    for (i = 0; i < debugFieldCount; i++)
-                //    {
-                //        debug += (string)debugReader[i].ToString() + ", ";
-                //    }
-                //    debug += "\n";
-                //}
-                //sqlDebugComm = new SqlCommand("select count(sAMAccountName) FROM " + sqlUsersTable, sqlConn);
-                //debugReader.Close();
-                //debugRecordCount = sqlDebugComm.ExecuteScalar().ToString();
-                //MessageBox.Show("table " + sqlUsersTable + " has " + debugRecordCount + " records \n " + debugFieldCount + " fields \n sample data" + debug);
-
-
-                //debug = "";
-                //debug = " total users from AD \n";
-                //sqlDebugComm = new SqlCommand("select top 20 * FROM " + adUsersTable, sqlConn);
-                //debugReader = sqlDebugComm.ExecuteReader();
-                //debugFieldCount = debugReader.FieldCount;
-                //for (i = 0; i < debugFieldCount; i++)
-                //{
-                //    debug += debugReader.GetName(i) + ", ";
-                //}
-                //debug += "\n";
-                //while (debugReader.Read())
-                //{
-                //    for (i = 0; i < debugFieldCount; i++)
-                //    {
-                //        debug += (string)debugReader[i] + ", ";
-                //    }
-                //    debug += "\n";
-                //}
-                //sqlDebugComm = new SqlCommand("select count(" + adUsers.Columns[0].ColumnName + ") FROM " + adUsersTable, sqlConn);
-                //debugReader.Close();
-                //debugRecordCount = sqlDebugComm.ExecuteScalar().ToString();
-                //MessageBox.Show("table " + adUsersTable + " has " + debugRecordCount + " records \n " + debugFieldCount + " fields \n sample data" + debug);
-                //************************************************************
-                //                            END
-                //                   DEBUG AND TEST DATA
-                //
-                //************************************************************
-
-
-
-
-
-
-                // compare and add/remove
-                add = tools.QueryNotExists(sqlUsersTable, adUsersTable, sqlConn, "sAMAccountName", adUsers.Columns[0].ColumnName, log);
-
-
-                //debug = "Gunna Add stuff \n";
-                //debugFieldCount = add.FieldCount;
-                //for (i = 0; i < debugFieldCount; i++)
-                //{
-                //    debug += add.GetName(i) + ", ";
-                //}
-                //debug += "\n";
-                //j = 0;
-                //while (add.Read() && j < 20)
-                //{
-                //    for (i = 0; i < debugFieldCount; i++)
-                //    {
-                //        debug += (string)add[i] + ", ";
-                //    }
-                //    debug += "\n";
-                //    j++;
-                //}
-
-                ////debugReader.Close();
-                //MessageBox.Show("table " + adUsersTable + "\n " + debugFieldCount + " fields \n sample data \n" + debug);
-
-                tools.CreateUsersAccounts(usersyn.UserHoldingTank, add, usersyn.UniversalGroup, DC, usersyn, log);
-                add.Close();
-
-                sqlComm2 = new SqlCommand("select count(sAMAccountName) FROM " + sqlUsersTable, sqlConn);
-                sqlComm2.CommandTimeout = 360;
-                recordCount = sqlComm2.ExecuteScalar().ToString();
-                sqlComm2.Dispose();
-
-                if (recordCount != "0")
+                // Quick check to stop adding if the update only box is checked
+                if (usersyn.UpdateOnly == false)
                 {
-                    delete = tools.QueryNotExists(adUsersTable, sqlUsersTable, sqlConn, usersyn.User_sAMAccount, completeADKeys[0].ToString(), log);
 
-                    //debug = "Gunna delete stuff \n field names are \n";
-                    //debugFieldCount = delete.FieldCount;
+                    //************************************************************
+                    //                          START
+                    //                   DEBUG AND TEST DATA
+                    //
+                    //************************************************************
+                    //debug = " total users from sql \n";
+                    //sqlDebugComm = new SqlCommand("select top 20 * FROM " + sqlUsersTable, sqlConn);
+                    //debugReader = sqlDebugComm.ExecuteReader();
+                    //debugFieldCount = debugReader.FieldCount;
                     //for (i = 0; i < debugFieldCount; i++)
                     //{
-                    //    debug += delete.GetName(i) + ", ";
+                    //    debug += debugReader.GetName(i) + ", ";
                     //}
-                    //debug += "\n data \n";
-                    ////int j = 0;
-                    //j = 0;
-                    //while (delete.Read() && j < 20)
+                    //debug += "\n";
+                    //while (debugReader.Read())
                     //{
                     //    for (i = 0; i < debugFieldCount; i++)
                     //    {
-                    //        debug += (string)delete[i] + ", ";
+                    //        debug += (string)debugReader[i].ToString() + ", ";
+                    //    }
+                    //    debug += "\n";
+                    //}
+                    //sqlDebugComm = new SqlCommand("select count(sAMAccountName) FROM " + sqlUsersTable, sqlConn);
+                    //debugReader.Close();
+                    //debugRecordCount = sqlDebugComm.ExecuteScalar().ToString();
+                    //MessageBox.Show("table " + sqlUsersTable + " has " + debugRecordCount + " records \n " + debugFieldCount + " fields \n sample data" + debug);
+
+
+                    //debug = "";
+                    //debug = " total users from AD \n";
+                    //sqlDebugComm = new SqlCommand("select top 20 * FROM " + adUsersTable, sqlConn);
+                    //debugReader = sqlDebugComm.ExecuteReader();
+                    //debugFieldCount = debugReader.FieldCount;
+                    //for (i = 0; i < debugFieldCount; i++)
+                    //{
+                    //    debug += debugReader.GetName(i) + ", ";
+                    //}
+                    //debug += "\n";
+                    //while (debugReader.Read())
+                    //{
+                    //    for (i = 0; i < debugFieldCount; i++)
+                    //    {
+                    //        debug += (string)debugReader[i] + ", ";
+                    //    }
+                    //    debug += "\n";
+                    //}
+                    //sqlDebugComm = new SqlCommand("select count(" + adUsers.Columns[0].ColumnName + ") FROM " + adUsersTable, sqlConn);
+                    //debugReader.Close();
+                    //debugRecordCount = sqlDebugComm.ExecuteScalar().ToString();
+                    //MessageBox.Show("table " + adUsersTable + " has " + debugRecordCount + " records \n " + debugFieldCount + " fields \n sample data" + debug);
+                    //************************************************************
+                    //                            END
+                    //                   DEBUG AND TEST DATA
+                    //
+                    //************************************************************
+
+
+
+
+
+
+                    // compare and add/remove
+                    add = tools.QueryNotExists(sqlUsersTable, adUsersTable, sqlConn, "sAMAccountName", adUsers.Columns[0].ColumnName, log);
+
+
+                    //debug = "Gunna Add stuff \n";
+                    //debugFieldCount = add.FieldCount;
+                    //for (i = 0; i < debugFieldCount; i++)
+                    //{
+                    //    debug += add.GetName(i) + ", ";
+                    //}
+                    //debug += "\n";
+                    //j = 0;
+                    //while (add.Read() && j < 20)
+                    //{
+                    //    for (i = 0; i < debugFieldCount; i++)
+                    //    {
+                    //        debug += (string)add[i] + ", ";
                     //    }
                     //    debug += "\n";
                     //    j++;
                     //}
 
-                    //MessageBox.Show(debug);
+                    ////debugReader.Close();
+                    //MessageBox.Show("table " + adUsersTable + "\n " + debugFieldCount + " fields \n sample data \n" + debug);
 
-                    // delete users in AD
-                    try
+                    tools.CreateUsersAccounts(usersyn.UserHoldingTank, add, usersyn.UniversalGroup, DC, usersyn, log);
+                    add.Close();
+
+                    sqlComm2 = new SqlCommand("select count(sAMAccountName) FROM " + sqlUsersTable, sqlConn);
+                    sqlComm2.CommandTimeout = 360;
+                    recordCount = sqlComm2.ExecuteScalar().ToString();
+                    sqlComm2.Dispose();
+
+                    if (recordCount != "0")
                     {
-                        while (delete.Read())
+                        delete = tools.QueryNotExists(adUsersTable, sqlUsersTable, sqlConn, usersyn.User_sAMAccount, completeADKeys[0].ToString(), log);
+
+                        //debug = "Gunna delete stuff \n field names are \n";
+                        //debugFieldCount = delete.FieldCount;
+                        //for (i = 0; i < debugFieldCount; i++)
+                        //{
+                        //    debug += delete.GetName(i) + ", ";
+                        //}
+                        //debug += "\n data \n";
+                        ////int j = 0;
+                        //j = 0;
+                        //while (delete.Read() && j < 20)
+                        //{
+                        //    for (i = 0; i < debugFieldCount; i++)
+                        //    {
+                        //        debug += (string)delete[i] + ", ";
+                        //    }
+                        //    debug += "\n";
+                        //    j++;
+                        //}
+
+                        //MessageBox.Show(debug);
+
+                        // delete users in AD
+                        try
                         {
+                            while (delete.Read())
+                            {
 
-                            tools.DeleteUserAccount((string)delete["distinguishedname"], log);
-                            // log.transactions.Add("User removed ;" + (string)delete[adUpdateKeys[1].ToString()].ToString().Trim()); 
+                                tools.DeleteUserAccount((string)delete["distinguishedname"], log);
+                                // log.transactions.Add("User removed ;" + (string)delete[adUpdateKeys[1].ToString()].ToString().Trim()); 
+                            }
                         }
+                        catch (Exception ex)
+                        {
+                            log.errors.Add("Issue deleting AD users datareader is null " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                        }
+                        delete.Close();
                     }
-                    catch (Exception ex)
-                    {
-                        log.errors.Add("Issue deleting AD users datareader is null " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
-                    }
-                    delete.Close();
                 }
-
 
                 // add the extra fields in form ".field ,"
                 extraFieldsToReturn.Add(adUsersTable + ".distinguishedname ,");
 
-                update = tools.CheckUpdate(sqlUsersTable, adUsersTable, usersyn.User_sAMAccount, "CN", sqlUpdateKeys, adUpdateKeys, extraFieldsToReturn, sqlConn, log);
+                update = tools.CheckUpdate(sqlUsersTable, adUsersTable, "sAMAccountName", "sAMAccountName", sqlUpdateKeys, adUpdateKeys, extraFieldsToReturn, 1, sqlConn, log);
 
                 //debug = "Gunna update stuff \n field names are \n";
                 //debugFieldCount = update.FieldCount;
@@ -5261,7 +5515,7 @@ namespace WindowsApplication1.utils
 
                 //MessageBox.Show(debug);
 
-                tools.UpdateUsers(update, log);
+                tools.UpdateUsers(update, DC, log);
                 // update users in ad
                 // last record which matches the primary key is the one which gets inserted into the database
                 //while (update.Read())
@@ -5282,14 +5536,18 @@ namespace WindowsApplication1.utils
                 //}
                 update.Close();
             }
-            // did not find any records in AD
+            // did not find any records in AD we are only adding users
             else
             {
-                // add the users without doing additional checks
-                tools.Create_Table(adUsers, adUsersTable, sqlConn, log);
-                add = tools.QueryNotExists(sqlUsersTable, adUsersTable, sqlConn, "sAMAccountName", adUsers.Columns[0].ColumnName, log);
-                tools.CreateUsersAccounts(usersyn.UserHoldingTank, add, usersyn.UniversalGroup, DC, usersyn, log);
-                add.Close();
+                // and we are not updating users
+                if (usersyn.UpdateOnly == false)
+                {
+                    // add the users without doing additional checks
+                    tools.Create_Table(adUsers, adUsersTable, sqlConn, log);
+                    add = tools.QueryNotExists(sqlUsersTable, adUsersTable, sqlConn, "sAMAccountName", adUsers.Columns[0].ColumnName, log);
+                    tools.CreateUsersAccounts(usersyn.UserHoldingTank, add, usersyn.UniversalGroup, DC, usersyn, log);
+                    add.Close();
+                }
             }
             sqlConn.Close();
         }
@@ -5478,7 +5736,7 @@ namespace WindowsApplication1.utils
             //}
             //delete.Close();
 
-            update = tools.CheckUpdate(sqlUsersTable, gmailUsersTable, gusersyn.User_StuID, gmailUsers.Columns[0].ColumnName, sqlUpdateKeys, gmailUpdateKeys, additionalKeys, sqlConn, log);
+            update = tools.CheckUpdate(sqlUsersTable, gmailUsersTable, gusersyn.User_StuID, gmailUsers.Columns[0].ColumnName, sqlUpdateKeys, gmailUpdateKeys, additionalKeys, 0, sqlConn, log);
 
 
             //SqlDataReader debugReader;

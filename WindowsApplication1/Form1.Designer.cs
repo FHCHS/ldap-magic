@@ -359,7 +359,12 @@ namespace WindowsApplication1
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.UserSynch = new System.Windows.Forms.TabControl();
             this.tabPage6 = new System.Windows.Forms.TabPage();
+            this.label162 = new System.Windows.Forms.Label();
+            this.users_searchLevel = new System.Windows.Forms.ComboBox();
+            this.users_user_Update = new System.Windows.Forms.CheckBox();
             this.groupBox18 = new System.Windows.Forms.GroupBox();
+            this.users_user_CN = new System.Windows.Forms.ComboBox();
+            this.label163 = new System.Windows.Forms.Label();
             this.label28 = new System.Windows.Forms.Label();
             this.users_user_PostalCode = new System.Windows.Forms.ComboBox();
             this.users_user_password = new System.Windows.Forms.ComboBox();
@@ -467,6 +472,7 @@ namespace WindowsApplication1
             this.mailCheckAuth = new System.Windows.Forms.Button();
             this.label48 = new System.Windows.Forms.Label();
             this.Logs = new System.Windows.Forms.TabPage();
+            this.button7 = new System.Windows.Forms.Button();
             this.button5 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
@@ -3808,6 +3814,9 @@ namespace WindowsApplication1
             // 
             // tabPage6
             // 
+            this.tabPage6.Controls.Add(this.label162);
+            this.tabPage6.Controls.Add(this.users_searchLevel);
+            this.tabPage6.Controls.Add(this.users_user_Update);
             this.tabPage6.Controls.Add(this.groupBox18);
             this.tabPage6.Controls.Add(this.users_group);
             this.tabPage6.Controls.Add(this.label138);
@@ -3830,8 +3839,43 @@ namespace WindowsApplication1
             this.tabPage6.Text = "Basic";
             this.tabPage6.UseVisualStyleBackColor = true;
             // 
+            // label162
+            // 
+            this.label162.AutoSize = true;
+            this.label162.Location = new System.Drawing.Point(685, 430);
+            this.label162.Name = "label162";
+            this.label162.Size = new System.Drawing.Size(88, 13);
+            this.label162.TabIndex = 115;
+            this.label162.Text = "AD Search Level";
+            // 
+            // users_searchLevel
+            // 
+            this.users_searchLevel.FormattingEnabled = true;
+            this.users_searchLevel.Items.AddRange(new object[] {
+            "OneLevel",
+            "Subtree"});
+            this.users_searchLevel.Location = new System.Drawing.Point(682, 449);
+            this.users_searchLevel.Name = "users_searchLevel";
+            this.users_searchLevel.Size = new System.Drawing.Size(177, 21);
+            this.users_searchLevel.TabIndex = 114;
+            this.users_searchLevel.SelectedIndexChanged += new System.EventHandler(this.users_searchLevel_SelectedIndexChanged);
+            // 
+            // users_user_Update
+            // 
+            this.users_user_Update.AutoSize = true;
+            this.users_user_Update.Location = new System.Drawing.Point(7, 343);
+            this.users_user_Update.Name = "users_user_Update";
+            this.users_user_Update.Size = new System.Drawing.Size(261, 43);
+            this.users_user_Update.TabIndex = 113;
+            this.users_user_Update.Text = "Only Update AD accounts not added or deleted. \r\nPresent AD values overwritten as " +
+                "long as the new\r\n value is not empty.";
+            this.users_user_Update.UseVisualStyleBackColor = true;
+            this.users_user_Update.CheckedChanged += new System.EventHandler(this.users_user_Update_CheckedChanged);
+            // 
             // groupBox18
             // 
+            this.groupBox18.Controls.Add(this.users_user_CN);
+            this.groupBox18.Controls.Add(this.label163);
             this.groupBox18.Controls.Add(this.label28);
             this.groupBox18.Controls.Add(this.users_user_PostalCode);
             this.groupBox18.Controls.Add(this.users_user_password);
@@ -3857,10 +3901,28 @@ namespace WindowsApplication1
             this.groupBox18.TabStop = false;
             this.groupBox18.Text = "User Information";
             // 
+            // users_user_CN
+            // 
+            this.users_user_CN.FormattingEnabled = true;
+            this.users_user_CN.Location = new System.Drawing.Point(176, 51);
+            this.users_user_CN.Name = "users_user_CN";
+            this.users_user_CN.Size = new System.Drawing.Size(174, 21);
+            this.users_user_CN.TabIndex = 101;
+            this.users_user_CN.SelectedIndexChanged += new System.EventHandler(this.users_user_CN_SelectedIndexChanged);
+            // 
+            // label163
+            // 
+            this.label163.AutoSize = true;
+            this.label163.Location = new System.Drawing.Point(6, 54);
+            this.label163.Name = "label163";
+            this.label163.Size = new System.Drawing.Size(103, 26);
+            this.label163.TabIndex = 102;
+            this.label163.Text = "Common Name (CN)\r\nUnique";
+            // 
             // label28
             // 
             this.label28.AutoSize = true;
-            this.label28.Location = new System.Drawing.Point(6, 57);
+            this.label28.Location = new System.Drawing.Point(6, 91);
             this.label28.Name = "label28";
             this.label28.Size = new System.Drawing.Size(108, 13);
             this.label28.TabIndex = 98;
@@ -3869,7 +3931,7 @@ namespace WindowsApplication1
             // users_user_PostalCode
             // 
             this.users_user_PostalCode.FormattingEnabled = true;
-            this.users_user_PostalCode.Location = new System.Drawing.Point(174, 317);
+            this.users_user_PostalCode.Location = new System.Drawing.Point(176, 347);
             this.users_user_PostalCode.Name = "users_user_PostalCode";
             this.users_user_PostalCode.Size = new System.Drawing.Size(174, 21);
             this.users_user_PostalCode.TabIndex = 100;
@@ -3878,7 +3940,7 @@ namespace WindowsApplication1
             // users_user_password
             // 
             this.users_user_password.FormattingEnabled = true;
-            this.users_user_password.Location = new System.Drawing.Point(174, 54);
+            this.users_user_password.Location = new System.Drawing.Point(176, 88);
             this.users_user_password.Name = "users_user_password";
             this.users_user_password.Size = new System.Drawing.Size(174, 21);
             this.users_user_password.TabIndex = 97;
@@ -3887,7 +3949,7 @@ namespace WindowsApplication1
             // label55
             // 
             this.label55.AutoSize = true;
-            this.label55.Location = new System.Drawing.Point(6, 317);
+            this.label55.Location = new System.Drawing.Point(6, 350);
             this.label55.Name = "label55";
             this.label55.Size = new System.Drawing.Size(84, 13);
             this.label55.TabIndex = 99;
@@ -3896,7 +3958,7 @@ namespace WindowsApplication1
             // users_user_sAMAccountName
             // 
             this.users_user_sAMAccountName.FormattingEnabled = true;
-            this.users_user_sAMAccountName.Location = new System.Drawing.Point(174, 14);
+            this.users_user_sAMAccountName.Location = new System.Drawing.Point(176, 14);
             this.users_user_sAMAccountName.Name = "users_user_sAMAccountName";
             this.users_user_sAMAccountName.Size = new System.Drawing.Size(174, 21);
             this.users_user_sAMAccountName.TabIndex = 3;
@@ -3905,7 +3967,7 @@ namespace WindowsApplication1
             // users_user_Address
             // 
             this.users_user_Address.FormattingEnabled = true;
-            this.users_user_Address.Location = new System.Drawing.Point(174, 277);
+            this.users_user_Address.Location = new System.Drawing.Point(176, 310);
             this.users_user_Address.Name = "users_user_Address";
             this.users_user_Address.Size = new System.Drawing.Size(174, 21);
             this.users_user_Address.TabIndex = 96;
@@ -3916,14 +3978,14 @@ namespace WindowsApplication1
             this.label23.AutoSize = true;
             this.label23.Location = new System.Drawing.Point(6, 17);
             this.label23.Name = "label23";
-            this.label23.Size = new System.Drawing.Size(162, 13);
+            this.label23.Size = new System.Drawing.Size(141, 26);
             this.label23.TabIndex = 78;
-            this.label23.Text = "User ID (CN, sAMAccountName)";
+            this.label23.Text = "User ID (sAMAccountName)\r\nUnique";
             // 
             // users_user_Mobile
             // 
             this.users_user_Mobile.FormattingEnabled = true;
-            this.users_user_Mobile.Location = new System.Drawing.Point(174, 203);
+            this.users_user_Mobile.Location = new System.Drawing.Point(176, 236);
             this.users_user_Mobile.Name = "users_user_Mobile";
             this.users_user_Mobile.Size = new System.Drawing.Size(174, 21);
             this.users_user_Mobile.TabIndex = 94;
@@ -3932,7 +3994,7 @@ namespace WindowsApplication1
             // users_user_State
             // 
             this.users_user_State.FormattingEnabled = true;
-            this.users_user_State.Location = new System.Drawing.Point(174, 240);
+            this.users_user_State.Location = new System.Drawing.Point(176, 273);
             this.users_user_State.Name = "users_user_State";
             this.users_user_State.Size = new System.Drawing.Size(174, 21);
             this.users_user_State.TabIndex = 93;
@@ -3941,7 +4003,7 @@ namespace WindowsApplication1
             // users_user_city
             // 
             this.users_user_city.FormattingEnabled = true;
-            this.users_user_city.Location = new System.Drawing.Point(174, 166);
+            this.users_user_city.Location = new System.Drawing.Point(176, 199);
             this.users_user_city.Name = "users_user_city";
             this.users_user_city.Size = new System.Drawing.Size(174, 21);
             this.users_user_city.TabIndex = 92;
@@ -3950,7 +4012,7 @@ namespace WindowsApplication1
             // users_user_Fname
             // 
             this.users_user_Fname.FormattingEnabled = true;
-            this.users_user_Fname.Location = new System.Drawing.Point(174, 129);
+            this.users_user_Fname.Location = new System.Drawing.Point(176, 162);
             this.users_user_Fname.Name = "users_user_Fname";
             this.users_user_Fname.Size = new System.Drawing.Size(174, 21);
             this.users_user_Fname.TabIndex = 91;
@@ -3959,7 +4021,7 @@ namespace WindowsApplication1
             // label54
             // 
             this.label54.AutoSize = true;
-            this.label54.Location = new System.Drawing.Point(6, 203);
+            this.label54.Location = new System.Drawing.Point(6, 239);
             this.label54.Name = "label54";
             this.label54.Size = new System.Drawing.Size(77, 13);
             this.label54.TabIndex = 90;
@@ -3968,7 +4030,7 @@ namespace WindowsApplication1
             // label53
             // 
             this.label53.AutoSize = true;
-            this.label53.Location = new System.Drawing.Point(6, 277);
+            this.label53.Location = new System.Drawing.Point(6, 313);
             this.label53.Name = "label53";
             this.label53.Size = new System.Drawing.Size(118, 13);
             this.label53.TabIndex = 89;
@@ -3977,7 +4039,7 @@ namespace WindowsApplication1
             // label30
             // 
             this.label30.AutoSize = true;
-            this.label30.Location = new System.Drawing.Point(6, 240);
+            this.label30.Location = new System.Drawing.Point(6, 276);
             this.label30.Name = "label30";
             this.label30.Size = new System.Drawing.Size(49, 13);
             this.label30.TabIndex = 88;
@@ -3986,7 +4048,7 @@ namespace WindowsApplication1
             // label29
             // 
             this.label29.AutoSize = true;
-            this.label29.Location = new System.Drawing.Point(6, 166);
+            this.label29.Location = new System.Drawing.Point(6, 202);
             this.label29.Name = "label29";
             this.label29.Size = new System.Drawing.Size(35, 13);
             this.label29.TabIndex = 87;
@@ -3995,7 +4057,7 @@ namespace WindowsApplication1
             // label26
             // 
             this.label26.AutoSize = true;
-            this.label26.Location = new System.Drawing.Point(6, 92);
+            this.label26.Location = new System.Drawing.Point(6, 128);
             this.label26.Name = "label26";
             this.label26.Size = new System.Drawing.Size(75, 13);
             this.label26.TabIndex = 85;
@@ -4004,7 +4066,7 @@ namespace WindowsApplication1
             // label21
             // 
             this.label21.AutoSize = true;
-            this.label21.Location = new System.Drawing.Point(6, 129);
+            this.label21.Location = new System.Drawing.Point(6, 165);
             this.label21.Name = "label21";
             this.label21.Size = new System.Drawing.Size(120, 13);
             this.label21.TabIndex = 79;
@@ -4013,7 +4075,7 @@ namespace WindowsApplication1
             // users_user_Lname
             // 
             this.users_user_Lname.FormattingEnabled = true;
-            this.users_user_Lname.Location = new System.Drawing.Point(174, 92);
+            this.users_user_Lname.Location = new System.Drawing.Point(176, 125);
             this.users_user_Lname.Name = "users_user_Lname";
             this.users_user_Lname.Size = new System.Drawing.Size(174, 21);
             this.users_user_Lname.TabIndex = 2;
@@ -4057,7 +4119,7 @@ namespace WindowsApplication1
             // 
             this.users_mapping_description.Location = new System.Drawing.Point(6, 183);
             this.users_mapping_description.Name = "users_mapping_description";
-            this.users_mapping_description.Size = new System.Drawing.Size(331, 213);
+            this.users_mapping_description.Size = new System.Drawing.Size(331, 153);
             this.users_mapping_description.TabIndex = 1;
             this.users_mapping_description.Text = "";
             this.users_mapping_description.TextChanged += new System.EventHandler(this.users_mapping_description_TextChanged);
@@ -4948,6 +5010,7 @@ namespace WindowsApplication1
             // 
             // Logs
             // 
+            this.Logs.Controls.Add(this.button7);
             this.Logs.Controls.Add(this.button5);
             this.Logs.Controls.Add(this.button3);
             this.Logs.Controls.Add(this.button2);
@@ -4967,6 +5030,16 @@ namespace WindowsApplication1
             this.Logs.TabIndex = 6;
             this.Logs.Text = "Execution Logs";
             this.Logs.UseVisualStyleBackColor = true;
+            // 
+            // button7
+            // 
+            this.button7.Location = new System.Drawing.Point(113, 149);
+            this.button7.Name = "button7";
+            this.button7.Size = new System.Drawing.Size(75, 23);
+            this.button7.TabIndex = 14;
+            this.button7.Text = "button7";
+            this.button7.UseVisualStyleBackColor = true;
+            this.button7.Click += new System.EventHandler(this.button7_Click);
             // 
             // button5
             // 
@@ -5620,6 +5693,12 @@ namespace WindowsApplication1
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Label label161;
         private System.Windows.Forms.PictureBox pictureBox2;
+        private System.Windows.Forms.CheckBox users_user_Update;
+        private System.Windows.Forms.ComboBox users_searchLevel;
+        private System.Windows.Forms.Label label162;
+        private System.Windows.Forms.Button button7;
+        private System.Windows.Forms.ComboBox users_user_CN;
+        private System.Windows.Forms.Label label163;
     }
 }
 
