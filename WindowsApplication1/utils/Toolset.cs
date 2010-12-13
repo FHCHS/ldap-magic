@@ -5120,15 +5120,18 @@ namespace WindowsApplication1.utils
                 adUpdateKeys.Clear();
                 sqlUpdateKeys.Clear();
                 adUpdateKeys.Add(ADusers.Columns[1].ColumnName);
+                adUpdateKeys.Add(ADusers.Columns[0].ColumnName);
                 sqlUpdateKeys.Add(ADusers.Columns[1].ColumnName);
+                sqlUpdateKeys.Add(ADusers.Columns[0].ColumnName);
 
-                delete = tools.CheckUpdate(ADgroupMembersTable, sqlgroupMembersTable, ADusers.Columns[0].ColumnName, groupsyn.User_Group_Reference, adUpdateKeys, sqlUpdateKeys, sqlConn, log);
+                // get list of keys which have differed. We will delete them and then next time they will be readded as the correct key
+                delete = tools.CheckUpdate(ADgroupMembersTable, sqlgroupMembersTable, ADusers.Columns[0].ColumnName, groupsyn.User_sAMAccount, adUpdateKeys, sqlUpdateKeys, sqlConn, log);
                 // delete = tools.QueryNotExists(ADgroupMembersTable, sqlgroupMembersTable, sqlConn, ADusers.Columns[1].ColumnName, groupsyn.User_Group_Reference, log);
                 // delete groups in AD
                 while (delete.Read())
                 {
 
-                    tools.RemoveUserFromGroup((string)delete[0], (string)delete[1], log);
+                    tools.RemoveUserFromGroup((string)delete[1], "CN=" + (string)delete[0] + ",OU=" + groupapp + "," + groupOU, log);
                     // log.transactions.Add("User removed ;" + (string)delete[adUpdateKeys[1].ToString()].ToString().Trim() + ",OU=" + groupapp + groupOU);
 
                 }
