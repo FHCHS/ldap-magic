@@ -17,9 +17,12 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Windows.Forms;
+
+//Get these from http://code.google.com/p/google-gdata/
 using Google.GData.Apps;
 using Google.GData.Apps.GoogleMailSettings;
 using Google.GData.Client;
+
 using WindowsApplication1;
 using WindowsApplication1.utils;
 
@@ -2563,7 +2566,7 @@ namespace WindowsApplication1.utils
                                         // check to see if mail field has illegal characters
                                         string hi = (System.Web.HttpUtility.UrlEncode((string)users[name]).Replace("+", " ").Replace("*", "%2A").Replace("%40", "@"));
                                         string hi3 = (string)users[name];
-                                        if (System.Web.HttpUtility.UrlEncode((string)users[name]).Replace("+", " ").Replace("*", "%2A").Replace("%40", "@") != (string)users[name])
+                                        if (System.Web.HttpUtility.UrlEncode((string)users[name]).Replace("+", " ").Replace("*", "%2A").Replace("%40", "@") == (string)users[name])
                                         {
                                             // no illegal characters input the value into AD
                                             user.Properties[name].Value = System.Web.HttpUtility.UrlEncode((string)users[name]).Replace("+", " ").Replace("*", "%2A").Replace("!", "%21").Replace("(", "%28").Replace(")", "%29").Replace("'", "%27").Replace("_", "%5f").Replace(" ", "%20").Replace("%40", "@");
