@@ -27,6 +27,7 @@ using WindowsApplication1.utils;
 
 // CONSIDERATIONS
 // This program is designed around SQL server 2000 and Active Directory 2003, SQLserver 2005 uses different methods for accessing databases table information and column information this will need to upgraded when the move is made
+    //note legacy support provided
 // This program depends on the existence of the columns picked in the save data, if columns names change the mappings will have to be remapped
 // This program depends on the use of # temporary tables and therefore needs read & write capabilities to the selected database
 // This program attempts to check for empty lists and handle them robustly however there is a high chance if problem will occurs it is from a mishandeld empty list passed between functions
@@ -37,7 +38,7 @@ using WindowsApplication1.utils;
 // This program has a logfile which will tell which function failed when an exception is thrown and will attempt to add useful data ( timestamp, funciton failed, passed variables)
 // This program requires the SQL server to have access to AD this ADSI stored procedure links the two
 // This program must be run with a user with sufficient rights to read and write to AD users and groups
-// Requires outlook 2007 for working with public folrders
+// Requires exchange 2007 admin access for working with public folrders
 //
 // CLASSES
 // Each of the classes below
@@ -2030,17 +2031,6 @@ namespace WindowsApplication1
 					sw.WriteLine("{0} | {1:C}", str, properties[str]);
 				}
                 
-                // Save the config portion as well
-                sw.WriteLine("<config>");
-                properties.Clear();
-                properties = settingsconfig.ToDictionary();
-
-                c = properties.Keys;
-                i = c.Count;
-                foreach (string str in c)
-                {
-                    sw.WriteLine("{0} | {1:C}", str, properties[str]);
-                }
                 // Save the config portion as well
                 sw.WriteLine("<config>");
                 properties.Clear();
