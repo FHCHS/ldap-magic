@@ -17,25 +17,19 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Windows.Forms;
-
-//Get these from http://code.google.com/p/google-gdata/
 using Google.GData.Apps;
 using Google.GData.Apps.GoogleMailSettings;
 using Google.GData.Client;
-
 using WindowsApplication1;
 using WindowsApplication1.utils;
 
 
 // outstanding issues
-// initial user creation fails to create custom fields
 // send as use fix from google forums
 // update gmail failing to use middle name properly
 // ensure nicknames are genereated properly
 // allow for nulls in blank fields to be matching
-// send as aliasing failing due to blank sqldata reader
 // unique table naming for multiple instances running at once
-// additional fields from usersynch not getting checked in update
 // logging not working yet its in some non activated state
 
 // Wish list
@@ -2566,7 +2560,7 @@ namespace WindowsApplication1.utils
                                         // check to see if mail field has illegal characters
                                         string hi = (System.Web.HttpUtility.UrlEncode((string)users[name]).Replace("+", " ").Replace("*", "%2A").Replace("%40", "@"));
                                         string hi3 = (string)users[name];
-                                        if (System.Web.HttpUtility.UrlEncode((string)users[name]).Replace("+", " ").Replace("*", "%2A").Replace("%40", "@") == (string)users[name])
+                                        if (System.Web.HttpUtility.UrlEncode((string)users[name]).Replace("+", " ").Replace("*", "%2A").Replace("%40", "@") != (string)users[name])
                                         {
                                             // no illegal characters input the value into AD
                                             user.Properties[name].Value = System.Web.HttpUtility.UrlEncode((string)users[name]).Replace("+", " ").Replace("*", "%2A").Replace("!", "%21").Replace("(", "%28").Replace(")", "%29").Replace("'", "%27").Replace("_", "%5f").Replace(" ", "%20").Replace("%40", "@");
@@ -3088,7 +3082,7 @@ namespace WindowsApplication1.utils
             compare2 = compare2.Remove(compare2.Length - 2);
             compare1 = compare1.Remove(compare1.Length - 2);
             fields = fields.Remove(fields.Length - 2);
-            SqlCommand sqlComm = new SqlCommand("SELECT DISTINCT " + fields + " FROM " + table1 + " INNER JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2 + " WHERE (" + compare2 + ") <> (" + compare1 + ")", sqlConn);
+            SqlCommand sqlComm = new SqlCommand("SELECT DISTINCT " + fields + " FROM " + table1 + " INNER JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2 + " WHERE ltrim(rtrim((" + compare2 + "))) <> ltrim(rtrim((" + compare1 + ")))", sqlConn);
             //AND " + table2 + "." + pkey2 + " != NULL
             try
             {
@@ -3290,11 +3284,11 @@ namespace WindowsApplication1.utils
             SqlCommand sqlComm;
             if (additionalFields.Count > 0)
             {
-                sqlComm = new SqlCommand("SELECT DISTINCT " /*+ compare2 + "," + compare1 + "," + table1 + "." + pkey1 + "," + table2 + "." + pkey2 + ","*/ + fields + ", " + additionalfields + " FROM " + table1 + " INNER JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2 + " AND (" + compare2 + ") <> (" + compare1 + ") WHERE " + notnull, sqlConn);
+                sqlComm = new SqlCommand("SELECT DISTINCT " /*+ compare2 + "," + compare1 + "," + table1 + "." + pkey1 + "," + table2 + "." + pkey2 + ","*/ + fields + ", " + additionalfields + " FROM " + table1 + " INNER JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2 + " AND ltrim(rtrim((" + compare2 + "))) <> ltrim(rtrim((" + compare1 + "))) WHERE " + notnull, sqlConn);
             }
             else
             {
-                sqlComm = new SqlCommand("SELECT DISTINCT " + fields + " FROM " + table1 + " INNER JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2 + " AND (" + compare2 + ") <> (" + compare1 + ") WHERE " + notnull, sqlConn);
+                sqlComm = new SqlCommand("SELECT DISTINCT " + fields + " FROM " + table1 + " INNER JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2 + " AND ltrim(rtrim((" + compare2 + "))) <> ltrim(rtrim((" + compare1 + "))) WHERE " + notnull, sqlConn);
             }
             //AND " + table2 + "." + pkey2 + " != NULL
             try
@@ -3356,7 +3350,7 @@ namespace WindowsApplication1.utils
             compare2 = compare2.Remove(compare2.Length - 2);
             compare1 = compare1.Remove(compare1.Length - 2);
             fields = fields.Remove(fields.Length - 2);
-            SqlCommand sqlComm = new SqlCommand("SELECT DISTINCT " + fields + " INTO " + newTable + " FROM " + table1 + " INNER JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2 + " WHERE (" + compare2 + ") <> (" + compare1 + ")", sqlConn);
+            SqlCommand sqlComm = new SqlCommand("SELECT DISTINCT " + fields + " INTO " + newTable + " FROM " + table1 + " INNER JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2 + " WHERE ltrim(rtrim((" + compare2 + "))) <> ltrim(rtrim((" + compare1 + ")))", sqlConn);
             //AND " + table2 + "." + pkey2 + " != NULL
             try
             {
@@ -5843,6 +5837,53 @@ namespace WindowsApplication1.utils
                 tools.DropTable(nicknamesToUpdateDBTable, sqlConn, log);
                 tools.DropTable(nicknamesFilteredForDuplicatesTable, sqlConn, log);
             }
+            // install levenstein if bulid nicknames checked
+            if (gusersyn.Writeback_AD_checkbox == true)
+            {
+                sqlComm = new SqlCommand("SET QUOTED_IDENTIFIER OFF GO SET ANSI_NULLS OFF GO CREATE function LEVENSHTEIN( @s varchar(50), @t varchar(50) )" +
+                    "--Returns the Levenshtein Distance between strings s1 and s2. --Original developer: Michael Gilleland    http://www.merriampark.com/ld.htm " +
+                    "--Translated to TSQL by Joseph Gama returns varchar(50) as BEGIN DECLARE @d varchar(2500), @LD int, @m int, @n int, @i int, @j int, @s_i char(1)," + 
+                    "@t_j char(1),@cost int --Step 1 SET @n=LEN(@s) SET @m=LEN(@t) SET @d=replicate(CHAR(0),2500) If @n = 0 	BEGIN 	SET @LD = @m 	GOTO done" + 	
+                    "END If @m = 0	BEGIN	SET @LD = @n	GOTO done	END --Step 2 SET @i=0 WHILE @i<=@n	BEGIN	SET @d=STUFF(@d,@i+1,1,CHAR(@i))--d(i, 0) = i	" +
+                    "SET @i=@i+1	END SET @i=0 WHILE @i<=@m	BEGIN	SET @d=STUFF(@d,@i*(@n+1)+1,1,CHAR(@i))--d(0, j) = j	SET @i=@i+1	END --goto done --Step 3" +
+                    "SET @i=1	WHILE @i<=@n		BEGIN		SET @s_i=(substring(@s,@i,1)) --Step 4	SET @j=1	WHILE @j<=@m	BEGIN		" +
+                    "SET @t_j=(substring(@t,@j,1))		--Step 5		If @s_i = @t_j			SET @cost=0		ELSE			SET @cost=1 --Step 6" +		
+                    "SET @d=STUFF(@d,@j*(@n+1)+@i+1,1,CHAR(dbo.MIN3(	ASCII(substring(@d,@j*(@n+1)+@i-1+1,1))+1, ASCII(substring(@d,(@j-1)*(@n+1)+@i+1,1))+1,	" +
+                    "ASCII(substring(@d,(@j-1)*(@n+1)+@i-1+1,1))+@cost)	))	SET @j=@j+1	END	SET @i=@i+1	END      --Step 7 SET @LD = ASCII(substring(@d,@n*(@m+1)+@m+1,1))done:" +
+                    "--RETURN @LD --I kept this code that can be used to display the matrix with all calculated values --From Query Analyser it provides a nice way to " +
+                    "check the algorithm in action --RETURN @LD --declare @z varchar(8000) --set @z='' --SET @i=0 --WHILE @i<=@n --	BEGIN --	SET @j=0 --	" +
+                    "WHILE @j<=@m --		BEGIN --		set @z=@z+CONVERT(char(3),ASCII(substring(@d,@i*(@m+1 )+@j+1 ,1))) --		SET @j=@j+1  --		" +
+                    "END --	SET @i=@i+1 --	END --print dbo.wrap(@z,3*(@n+1)) END GO SET QUOTED_IDENTIFIER OFF  GO SET ANSI_NULLS ON GO");
+                try
+                {
+                    sqlComm.CommandTimeout = 360;
+                    sqlComm.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex + "\n" + ex.StackTrace.ToString());
+                }
+                // install min3
+
+                sqlComm = new SqlCommand("SET QUOTED_IDENTIFIER OFF GO SET ANSI_NULLS OFF  GO CREATE function MIN3(@a int,@b int,@c int ) --Returns the smallest of 3 numbers. " +
+                    "returns int as BEGIN declare @temp int if (@a < @b)  AND (@a < @c) 	select @temp=@a else  	if (@b < @a)  AND (@b < @c)		select @temp=@b " +
+                    "else		select @temp=@c return @temp END GO SET QUOTED_IDENTIFIER OFF  GO SET ANSI_NULLS ON GO");
+                try
+                {
+                    sqlComm.CommandTimeout = 360;
+                    sqlComm.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex + "\n" + ex.StackTrace.ToString());
+                }
+            }
+
+
+
+
+
+
 
             if (gusersyn.Writeback_AD_checkbox == true || gusersyn.Writeback_DB_checkbox == true)
             {
