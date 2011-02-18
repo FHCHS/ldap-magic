@@ -5828,15 +5828,15 @@ namespace WindowsApplication1.utils
 
 
             // housecleaning
-            if (settingsConfig.TempTables == false)
-            {
+//            if (settingsConfig.TempTables == false)
+//            {
                 tools.DropTable(nicknamesFromGmailTable, sqlConn, log);
                 tools.DropTable(loginWithoutNicknamesTable, sqlConn, log);
                 tools.DropTable(adNicknamesTable, sqlConn, log);
                 tools.DropTable(sqlNicknamesTable, sqlConn, log);
                 tools.DropTable(nicknamesToUpdateDBTable, sqlConn, log);
                 tools.DropTable(nicknamesFilteredForDuplicatesTable, sqlConn, log);
-            }
+//            }
             // install levenstein if bulid nicknames checked
             if (gusersyn.Writeback_AD_checkbox == true)
             {
@@ -5866,7 +5866,7 @@ namespace WindowsApplication1.utils
             }
 
                 // install min3
-
+/*
 SET QUOTED_IDENTIFIER OFF 
 GO
 SET ANSI_NULLS OFF 
@@ -5896,7 +5896,7 @@ GO
 SET ANSI_NULLS ON 
 GO
 
-
+*/
 
 
 
