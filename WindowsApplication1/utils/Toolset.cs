@@ -17,9 +17,12 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Windows.Forms;
+
+//Get these from http://code.google.com/p/google-gdata/
 using Google.GData.Apps;
 using Google.GData.Apps.GoogleMailSettings;
 using Google.GData.Client;
+
 using WindowsApplication1;
 using WindowsApplication1.utils;
 
@@ -2560,7 +2563,7 @@ namespace WindowsApplication1.utils
                                         // check to see if mail field has illegal characters
                                         string hi = (System.Web.HttpUtility.UrlEncode((string)users[name]).Replace("+", " ").Replace("*", "%2A").Replace("%40", "@"));
                                         string hi3 = (string)users[name];
-                                        if (System.Web.HttpUtility.UrlEncode((string)users[name]).Replace("+", " ").Replace("*", "%2A").Replace("%40", "@") != (string)users[name])
+                                        if (System.Web.HttpUtility.UrlEncode((string)users[name]).Replace("+", " ").Replace("*", "%2A").Replace("%40", "@") == (string)users[name])
                                         {
                                             // no illegal characters input the value into AD
                                             user.Properties[name].Value = System.Web.HttpUtility.UrlEncode((string)users[name]).Replace("+", " ").Replace("*", "%2A").Replace("!", "%21").Replace("(", "%28").Replace(")", "%29").Replace("'", "%27").Replace("_", "%5f").Replace(" ", "%20").Replace("%40", "@");
@@ -3059,11 +3062,11 @@ namespace WindowsApplication1.utils
             {
                 if (key == "sAMAccountName")
                 {
-                    compare1 = compare1 + table1 + "." + key;
+                    compare1 = compare1 + "ltrim(rtrim(" + table1 + "." + key + "))";
                 }
                 else 
                 {
-                    compare1 = compare1 + table1 + "." + key + " COLLATE SQL_Latin1_General_CP1_CS_AS + ";
+                    compare1 = compare1 + "ltrim(rtrim(" + table1 + "." + key + ")) COLLATE SQL_Latin1_General_CP1_CS_AS + ";
                 }
                 fields += table1 + "." + key + ", ";
             }
@@ -3071,18 +3074,18 @@ namespace WindowsApplication1.utils
             {
                 if (key == "sAMAccountName")
                 {
-                    compare2 = compare2 + table2 + "." + key;
+                    compare2 = compare2 + "ltrim(rtrim(" + table2 + "." + key + "))";
                 }
                 else
                 {
-                    compare2 = compare2 + table2 + "." + key + " COLLATE SQL_Latin1_General_CP1_CS_AS + ";
+                    compare2 = compare2 + "ltrim(rtrim(" + table2 + "." + key + ")) COLLATE SQL_Latin1_General_CP1_CS_AS + ";
                 }
             }
             // remove trailing comma and + 
             compare2 = compare2.Remove(compare2.Length - 2);
             compare1 = compare1.Remove(compare1.Length - 2);
             fields = fields.Remove(fields.Length - 2);
-            SqlCommand sqlComm = new SqlCommand("SELECT DISTINCT " + fields + " FROM " + table1 + " INNER JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2 + " WHERE ltrim(rtrim((" + compare2 + "))) <> ltrim(rtrim((" + compare1 + ")))", sqlConn);
+            SqlCommand sqlComm = new SqlCommand("SELECT DISTINCT " + fields + " FROM " + table1 + " INNER JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2 + " WHERE (" + compare2 + ") <> (" + compare1 + ")", sqlConn);
             //AND " + table2 + "." + pkey2 + " != NULL
             try
             {
@@ -3247,7 +3250,7 @@ namespace WindowsApplication1.utils
                 }
                 else
                 {
-                    compare1 = compare1 + table1 + "." + key + " COLLATE SQL_Latin1_General_CP1_CS_AS + ";
+                    compare1 = compare1 + "ltrim(rtrim(" + table1 + "." + key + ")) COLLATE SQL_Latin1_General_CP1_CS_AS + ";
                     fields += table1 + "." + key + ", ";
                 }
                 i++;
@@ -3259,14 +3262,14 @@ namespace WindowsApplication1.utils
                 if (managerADtype == false && key == "manager" && adField == 1)
                 {
                     //add code for substring of manager field
-                    compare2 = compare2 + "case when " + table1 + "." + compareFields1[i] + " <> '' then (substring(" + table2 + "." + key + ",4, charindex('ou=', " + table2 + "." + key + ")-5) COLLATE SQL_Latin1_General_CP1_CS_AS ) else '' end + ";
-                    notnull += "case when len(" + table2 + "." + key + ") > 3 then substring(" + table2 + "." + key + ",4, charindex('ou=', " + table2 + "." + key + ")-5) else '' end <> '' OR ";
+                    compare2 = compare2 + "case when ltrim(rtrim(" + table1 + "." + compareFields1[i] + ")) <> '' then (substring(" + table2 + "." + key + ",4, charindex('ou=', " + table2 + "." + key + ")-5) COLLATE SQL_Latin1_General_CP1_CS_AS ) else '' end + ";
+                    notnull += "case when len(ltrim(rtrim(" + table2 + "." + key + "))) > 3 then substring(" + table2 + "." + key + ",4, charindex('ou=', " + table2 + "." + key + ")-5) else '' end <> '' OR ";
                 }
                 else
                 {
-                    compare2 = compare2 + "case when " + table1 + "." + compareFields1[i] + " <> '' then (" + table2 + "." + key + " COLLATE SQL_Latin1_General_CP1_CS_AS ) else '' end + ";
+                    compare2 = compare2 + "case when ltrim(rtrim(" + table1 + "." + compareFields1[i] + ")) <> '' then (ltrim(rtrim(" + table2 + "." + key + ")) COLLATE SQL_Latin1_General_CP1_CS_AS ) else '' end + ";
                     //fields += table2 + "." + key + ", ";
-                    notnull += table2 + "." + key + " <> '' OR ";
+                    notnull += "ltrim(rtrim(" + table2 + "." + key + ")) <> '' OR ";
                 }
                 i++;
             }
@@ -3284,11 +3287,11 @@ namespace WindowsApplication1.utils
             SqlCommand sqlComm;
             if (additionalFields.Count > 0)
             {
-                sqlComm = new SqlCommand("SELECT DISTINCT " /*+ compare2 + "," + compare1 + "," + table1 + "." + pkey1 + "," + table2 + "." + pkey2 + ","*/ + fields + ", " + additionalfields + " FROM " + table1 + " INNER JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2 + " AND ltrim(rtrim((" + compare2 + "))) <> ltrim(rtrim((" + compare1 + "))) WHERE " + notnull, sqlConn);
+                sqlComm = new SqlCommand("SELECT DISTINCT " /*+ compare2 + "," + compare1 + "," + table1 + "." + pkey1 + "," + table2 + "." + pkey2 + ","*/ + fields + ", " + additionalfields + " FROM " + table1 + " INNER JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2 + " AND (" + compare2 + ") <> (" + compare1 + ") WHERE " + notnull, sqlConn);
             }
             else
             {
-                sqlComm = new SqlCommand("SELECT DISTINCT " + fields + " FROM " + table1 + " INNER JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2 + " AND ltrim(rtrim((" + compare2 + "))) <> ltrim(rtrim((" + compare1 + "))) WHERE " + notnull, sqlConn);
+                sqlComm = new SqlCommand("SELECT DISTINCT " + fields + " FROM " + table1 + " INNER JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2 + " AND (" + compare2 + ") <> (" + compare1 + ") WHERE " + notnull, sqlConn);
             }
             //AND " + table2 + "." + pkey2 + " != NULL
             try
@@ -3326,23 +3329,23 @@ namespace WindowsApplication1.utils
             {
                 if (key == pkey1)
                 {
-                    compare1 = compare1 + table1 + "." + key;
+                    compare1 = compare1 + "ltrim(rtrim(" + table1 + "." + key + "))";
                 }
                 else
                 {
-                    compare1 = compare1 + table1 + "." + key + " COLLATE SQL_Latin1_General_CP1_CS_AS + ";
+                    compare1 = compare1 + "ltrim(rtrim(" + table1 + "." + key + ")) COLLATE SQL_Latin1_General_CP1_CS_AS + ";
                 }
-                fields += table1 + "." + key + ", ";
+                fields += "ltrim(rtrim(" + table1 + "." + key + ")), ";
             }
             foreach (string key in compareFields2)
             {
                 if (key == pkey1)
                 {
-                    compare2 = compare2 + table2 + "." + key;
+                    compare2 = compare2 + "ltrim(rtrim(" + table2 + "." + key + "))";
                 }
                 else
                 {
-                    compare2 = compare2 + table2 + "." + key + " COLLATE SQL_Latin1_General_CP1_CS_AS + ";
+                    compare2 = compare2 + "ltrim(rtrim(" + table2 + "." + key + ")) COLLATE SQL_Latin1_General_CP1_CS_AS + ";
                 }
                 
             }
@@ -3350,7 +3353,7 @@ namespace WindowsApplication1.utils
             compare2 = compare2.Remove(compare2.Length - 2);
             compare1 = compare1.Remove(compare1.Length - 2);
             fields = fields.Remove(fields.Length - 2);
-            SqlCommand sqlComm = new SqlCommand("SELECT DISTINCT " + fields + " INTO " + newTable + " FROM " + table1 + " INNER JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2 + " WHERE ltrim(rtrim((" + compare2 + "))) <> ltrim(rtrim((" + compare1 + ")))", sqlConn);
+            SqlCommand sqlComm = new SqlCommand("SELECT DISTINCT " + fields + " INTO " + newTable + " FROM " + table1 + " INNER JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2 + " WHERE (" + compare2 + ") <> (" + compare1 + ")", sqlConn);
             //AND " + table2 + "." + pkey2 + " != NULL
             try
             {
@@ -5837,6 +5840,7 @@ namespace WindowsApplication1.utils
                 tools.DropTable(nicknamesToUpdateDBTable, sqlConn, log);
                 tools.DropTable(nicknamesFilteredForDuplicatesTable, sqlConn, log);
 //            }
+/*
             // install levenstein if bulid nicknames checked
             if (gusersyn.Writeback_AD_checkbox == true)
             {
@@ -5866,7 +5870,7 @@ namespace WindowsApplication1.utils
             }
 
                 // install min3
-/*
+
 SET QUOTED_IDENTIFIER OFF 
 GO
 SET ANSI_NULLS OFF 
@@ -5896,10 +5900,10 @@ GO
 SET ANSI_NULLS ON 
 GO
 
+
+
+
 */
-
-
-
             if (gusersyn.Writeback_AD_checkbox == true || gusersyn.Writeback_DB_checkbox == true)
             {
                 // DATABASE writeback
