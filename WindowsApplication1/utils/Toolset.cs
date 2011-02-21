@@ -3040,7 +3040,7 @@ namespace WindowsApplication1.utils
         }
         public SqlDataReader CheckUpdate(string table1, string table2, string pkey1, string pkey2, ArrayList compareFields1, ArrayList compareFields2, SqlConnection sqlConn, LogFile log)
         {
-            // NULL not handeled as blanks
+            // NULL not handled as blanks
             // Assumes table1 holds the correct data and returns a data reader with the update fields columns from table1
             // returns the rows which table2's concatenated update fields differ from table1's concatenated update fields
             // eliminates rows which do not have a matching key in both tables
@@ -3051,7 +3051,8 @@ namespace WindowsApplication1.utils
             //| 1             a             | 1              a          | NOT RETURNED      |
             //| 2             b             | null           null       | NOT RETURNED      |              
             //| 3             c             | 3              null       | RETURNED          | 3             c
-            //| 4             d             | 4              e          | RETURNED          | 4             e
+            //| 4             d             | 4              e          | RETURNED          | 4             d
+            //| 4             f             | 4              f          | NOT RETURNED      | 
 
             string compare1 = "";
             string compare2 = "";
@@ -3085,7 +3086,7 @@ namespace WindowsApplication1.utils
             compare2 = compare2.Remove(compare2.Length - 2);
             compare1 = compare1.Remove(compare1.Length - 2);
             fields = fields.Remove(fields.Length - 2);
-            SqlCommand sqlComm = new SqlCommand("SELECT DISTINCT " + fields + " FROM " + table1 + " INNER JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2 + " WHERE (" + compare2 + ") <> (" + compare1 + ")", sqlConn);
+            SqlCommand sqlComm = new SqlCommand("SELECT DISTINCT " + fields + " FROM " + table1 + " LEFT JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2 + " AND (" + compare2 + ") = (" + compare1 + ") INNER JOIN " + table2 + " as [" + table2 + "temp] ON " + table1 + "." + pkey1 + " = [" + table2 + "temp]." + pkey2 + " WHERE " + table2 + "." + pkey2 + " IS NULL", sqlConn);
             //AND " + table2 + "." + pkey2 + " != NULL
             try
             {
@@ -3123,6 +3124,7 @@ namespace WindowsApplication1.utils
             //| 2             b             e           | null           null       r           | NOT RETURNED      |              
             //| 3             c             uyt         | 3              null       f           | RETURNED          | 3             c           uyt                 f        
             //| 4             d             tr          | 4              e          w           | RETURNED          | 4             e           tr                  w
+            //| 4             f             sr          | 4              f          w           | NOT RETURNED      |
 
 
             string compare1 = "";
@@ -3287,11 +3289,11 @@ namespace WindowsApplication1.utils
             SqlCommand sqlComm;
             if (additionalFields.Count > 0)
             {
-                sqlComm = new SqlCommand("SELECT DISTINCT " /*+ compare2 + "," + compare1 + "," + table1 + "." + pkey1 + "," + table2 + "." + pkey2 + ","*/ + fields + ", " + additionalfields + " FROM " + table1 + " INNER JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2 + " AND (" + compare2 + ") <> (" + compare1 + ") WHERE " + notnull, sqlConn);
+                sqlComm = new SqlCommand("SELECT DISTINCT " /*+ compare2 + "," + compare1 + "," + table1 + "." + pkey1 + "," + table2 + "." + pkey2 + ","*/ + fields + ", " + additionalfields + " FROM " + table1 + " LEFT JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2 + " AND (" + compare2 + ") = (" + compare1 + ") INNER JOIN " + table2 + " as [" + table2 + "temp] ON " + table1 + "." + pkey1 + " = [" + table2 + "temp]." + pkey2 + " AND " + table2 + "." + pkey2 + " IS NULL WHERE " + notnull, sqlConn);
             }
             else
             {
-                sqlComm = new SqlCommand("SELECT DISTINCT " + fields + " FROM " + table1 + " INNER JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2 + " AND (" + compare2 + ") <> (" + compare1 + ") WHERE " + notnull, sqlConn);
+                sqlComm = new SqlCommand("SELECT DISTINCT " + fields + " FROM " + table1 + " LEFT JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2 + " AND (" + compare2 + ") = (" + compare1 + ") INNER JOIN " + table2 + " as [" + table2 + "temp] ON " + table1 + "." + pkey1 + " = [" + table2 + "temp]." + pkey2 + " AND " + table2 + "." + pkey2 + " IS NULL WHERE " + notnull, sqlConn);
             }
             //AND " + table2 + "." + pkey2 + " != NULL
             try
@@ -3319,6 +3321,7 @@ namespace WindowsApplication1.utils
             //| 2             b             | null           null       | NOT RETURNED      |              
             //| 3             c             | 3              null       | RETURNED          | 3             c
             //| 4             d             | 4              e          | RETURNED          | 4             e
+            //| 4             f             | 4              f          | NOT RETURNED      |
 
             string compare1 = "";
             string compare2 = "";
@@ -3353,7 +3356,7 @@ namespace WindowsApplication1.utils
             compare2 = compare2.Remove(compare2.Length - 2);
             compare1 = compare1.Remove(compare1.Length - 2);
             fields = fields.Remove(fields.Length - 2);
-            SqlCommand sqlComm = new SqlCommand("SELECT DISTINCT " + fields + " INTO " + newTable + " FROM " + table1 + " INNER JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2 + " WHERE (" + compare2 + ") <> (" + compare1 + ")", sqlConn);
+            SqlCommand sqlComm = new SqlCommand("SELECT DISTINCT " + fields + " INTO " + newTable + " FROM " + table1 + " LEFT JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2 + " AND (" + compare2 + ") = (" + compare1 + ") INNER JOIN " + table2 + " as [" + table2 + "temp] ON " + table1 + "." + pkey1 + " = [" + table2 + "temp]." + pkey2 + " WHERE " + table2 + "." + pkey2 + " IS NULL", sqlConn);
             //AND " + table2 + "." + pkey2 + " != NULL
             try
             {
