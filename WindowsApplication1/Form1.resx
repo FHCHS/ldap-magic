@@ -218,8 +218,8 @@ To run from the command line
   <data name="pictureBox2.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAAlwSFlzAAALDgAA
-        Cw4BQL7hQQAABUdJREFUWEetVwtQVGUUhuWxEDoIgYAguSYggpqEVoDJJAaZReokNKDC0EtM6CWTEyNk
+        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAAlwSFlzAAALDAAA
+        CwwBP0AiyAAABUdJREFUWEetVwtQVGUUhuWxEDoIgYAguSYggpqEVoDJJAaZReokNKDC0EtM6CWTEyNk
         MrkQA/GICETkKWwCCiyDryHBWALFwgY1GZMBnQzxES8V2r7DcJm7l3t37oLOfLPce8//ne88/vP/6qnV
         aj029Dj/lO2P9YGnuO957F6GXSxgLmTL9UXPGs7HX0wVYFbTOhx27NchN3zSFyKHzRY4f/xT8934gM3v
         keApttMSoDj7zxyQn6w5/7AtufCcA4glfCLgOBIC1FUtgzf3Z9W9DRtjrt20BIDYurpt6AqRF9V3F4B0
@@ -248,8 +248,8 @@ To run from the command line
   <data name="pictureBox1.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAAlwSFlzAAALDgAA
-        Cw4BQL7hQQAABUdJREFUWEetVwtQVGUUhuWxEDoIgYAguSYggpqEVoDJJAaZReokNKDC0EtM6CWTEyNk
+        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAAlwSFlzAAALDAAA
+        CwwBP0AiyAAABUdJREFUWEetVwtQVGUUhuWxEDoIgYAguSYggpqEVoDJJAaZReokNKDC0EtM6CWTEyNk
         MrkQA/GICETkKWwCCiyDryHBWALFwgY1GZMBnQzxES8V2r7DcJm7l3t37oLOfLPce8//ne88/vP/6qnV
         aj029Dj/lO2P9YGnuO957F6GXSxgLmTL9UXPGs7HX0wVYFbTOhx27NchN3zSFyKHzRY4f/xT8934gM3v
         keApttMSoDj7zxyQn6w5/7AtufCcA4glfCLgOBIC1FUtgzf3Z9W9DRtjrt20BIDYurpt6AqRF9V3F4B0

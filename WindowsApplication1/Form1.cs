@@ -362,28 +362,43 @@ namespace WindowsApplication1
         }
         private void users_baseUserOU_Leave(object sender, EventArgs e)
         {
-            if (users_baseUserOU.Text.ToString() != "")
+            userconfig.BaseUserOU = users_baseUserOU.Text.ToString();
+            if (users_baseUserOU.Text.ToString() != "" && users_baseUserOU.Text.ToString().ToUpper().Contains("DC="))
             {
+                string DC = users_baseUserOU.Text.ToString().Substring(users_baseUserOU.Text.ToString().IndexOf("DC"));
                 if (tools.Exists(users_baseUserOU.Text.ToString()))
                 {
-                    userconfig.BaseUserOU = users_baseUserOU.Text.ToString();
+                    userconfig.BaseUserOU = tools.GetObjectDistinguishedName(objectClass.organizationalunit, returnType.distinguishedName, users_baseUserOU.Text.ToString(), DC, log).Substring(7);
+                    users_baseUserOU.Text = userconfig.BaseUserOU;
                 }
                 else
                 {
-
-                    DialogResult button = MessageBox.Show("OU LDAP://" + users_baseUserOU.Text.ToString() + " does Not exist shall I create it", "Nonexistent OU", MessageBoxButtons.YesNo);
-
-                    if (button == DialogResult.Yes)
+                    if(tools.Exists(DC))
                     {
-                        tools.CreateOURecursive(users_baseUserOU.Text.ToString(), log);
-                        userconfig.BaseUserOU = users_baseUserOU.Text.ToString();
+                        DialogResult button = MessageBox.Show("OU LDAP://" + users_baseUserOU.Text.ToString() + " does Not exist shall I create it", "Nonexistent OU", MessageBoxButtons.YesNo);
+
+                        if (button == DialogResult.Yes)
+                        {
+                            tools.CreateOURecursive(users_baseUserOU.Text.ToString(), log);
+                            userconfig.BaseUserOU = tools.GetObjectDistinguishedName(objectClass.organizationalunit, returnType.distinguishedName, users_baseUserOU.Text.ToString(), DC, log).Substring(7);
+                            users_baseUserOU.Text = userconfig.BaseUserOU;
+                        }
+
+                        if (button == DialogResult.No)
+                        {
+                            users_baseUserOU.Focus();
+                        }
                     }
-
-                    if (button == DialogResult.No)
+                    else
                     {
+                        MessageBox.Show("Domain does not exist try again; Im not gunna make domains too much work","Nonexistent Domain");
                         users_baseUserOU.Focus();
                     }
                 }
+            }
+            else if (!users_baseUserOU.Text.ToString().ToUpper().Contains("DC="))
+            {
+                users_baseUserOU.Focus();
             }
         }
         private void users_searchLevel_SelectedIndexChanged(object sender, EventArgs e)
@@ -392,28 +407,43 @@ namespace WindowsApplication1
         }
         private void users_holdingTank_Leave(object sender, EventArgs e)
         {
-            if (users_holdingTank.Text.ToString() != "")
+            userconfig.UserHoldingTank = users_holdingTank.Text.ToString();
+            if (users_holdingTank.Text.ToString() != "" && users_holdingTank.Text.ToString().ToUpper().Contains("DC="))
             {
+                string DC = users_holdingTank.Text.ToString().Substring(users_holdingTank.Text.ToString().IndexOf("DC"));
                 if (tools.Exists(users_holdingTank.Text.ToString()))
                 {
-                    userconfig.UserHoldingTank = users_holdingTank.Text.ToString();
+                    userconfig.UserHoldingTank = tools.GetObjectDistinguishedName(objectClass.organizationalunit, returnType.distinguishedName, users_holdingTank.Text.ToString(), DC, log).Substring(7);
+                    users_holdingTank.Text = userconfig.UserHoldingTank;
                 }
                 else
                 {
-
-                    DialogResult button = MessageBox.Show("OU LDAP://" + users_holdingTank.Text.ToString() + " does Not exist shall I create it", "Nonexistent OU", MessageBoxButtons.YesNo);
-
-                    if (button == DialogResult.Yes)
+                    if (tools.Exists(DC))
                     {
-                        tools.CreateOURecursive(users_holdingTank.Text.ToString(), log);
-                        userconfig.UserHoldingTank = users_holdingTank.Text.ToString();
+
+                        DialogResult button = MessageBox.Show("OU LDAP://" + users_holdingTank.Text.ToString() + " does Not exist shall I create it", "Nonexistent OU", MessageBoxButtons.YesNo);
+
+                        if (button == DialogResult.Yes)
+                        {
+                            userconfig.UserHoldingTank = tools.GetObjectDistinguishedName(objectClass.organizationalunit, returnType.distinguishedName, users_holdingTank.Text.ToString(), DC, log).Substring(7);
+                            users_holdingTank.Text = userconfig.UserHoldingTank;
+                        }
+
+                        if (button == DialogResult.No)
+                        {
+                            users_holdingTank.Focus();
+                        }
                     }
-
-                    if (button == DialogResult.No)
+                    else
                     {
+                        MessageBox.Show("Domain does not exist try again; Im not gunna make domains too much work", "Nonexistent Domain");
                         users_holdingTank.Focus();
                     }
                 }
+            }
+            else if (!users_holdingTank.Text.ToString().ToUpper().Contains("DC="))
+            {
+                users_holdingTank.Focus();
             }
         }
         private void users_group_TextChanged(object sender, EventArgs e)
@@ -785,6 +815,7 @@ namespace WindowsApplication1
         }
         private void group_group_prepend_TextChanged(object sender, EventArgs e)
         {
+            group_group_prepend.Text = Regex.Replace(group_group_prepend.Text.ToString(), @"[^a-zA-Z\._]", string.Empty);
             groupconfig.Group_Append = group_group_prepend.Text.ToString();
         }
 
@@ -884,9 +915,91 @@ namespace WindowsApplication1
         {
             groupconfig.BaseGroupOU = group_baseGroupOU.Text.ToString();
         }
+        private void group_baseGroupOU_Leave(object sender, EventArgs e)
+        {
+            groupconfig.BaseGroupOU = group_baseGroupOU.Text.ToString();
+            if (group_baseGroupOU.Text.ToString() != "" && group_baseGroupOU.Text.ToString().ToUpper().Contains("DC="))
+            {
+                string DC = group_baseGroupOU.Text.ToString().Substring(group_baseGroupOU.Text.ToString().IndexOf("DC"));
+                if (tools.Exists(group_baseGroupOU.Text.ToString()))
+                {
+                    groupconfig.BaseGroupOU  = tools.GetObjectDistinguishedName(objectClass.organizationalunit, returnType.distinguishedName, group_baseGroupOU.Text.ToString(), DC, log).Substring(7);
+                    group_baseGroupOU.Text = groupconfig.BaseGroupOU ;
+                }
+                else
+                {
+                    if (tools.Exists(DC))
+                    {
+                        DialogResult button = MessageBox.Show("OU LDAP://" + group_baseGroupOU.Text.ToString() + " does Not exist shall I create it", "Nonexistent OU", MessageBoxButtons.YesNo);
+
+                        if (button == DialogResult.Yes)
+                        {
+                            tools.CreateOURecursive(group_baseGroupOU.Text.ToString(), log);
+                            groupconfig.BaseGroupOU  = tools.GetObjectDistinguishedName(objectClass.organizationalunit, returnType.distinguishedName, group_baseGroupOU.Text.ToString(), DC, log).Substring(7);
+                            group_baseGroupOU.Text = groupconfig.BaseGroupOU ;
+                        }
+
+                        if (button == DialogResult.No)
+                        {
+                            group_baseGroupOU.Focus();
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("Domain does not exist try again; Im not gunna make domains too much work", "Nonexistent Domain");
+                        group_baseGroupOU.Focus();
+                    }
+                }
+            }
+            else if (!group_baseGroupOU.Text.ToString().ToUpper().Contains("DC="))
+            {
+                group_baseUserOU.Focus();
+            }
+        }
         private void group_baseUserOU_TextChanged(object sender, EventArgs e)
         {
             groupconfig.BaseUserOU = group_baseUserOU.Text.ToString();
+        }
+        private void group_baseUserOU_Leave(object sender, EventArgs e)
+        {
+            groupconfig.BaseUserOU = group_baseUserOU.Text.ToString();
+            if (group_baseUserOU.Text.ToString() != "" && group_baseUserOU.Text.ToString().ToUpper().Contains("DC="))
+            {
+                string DC = group_baseUserOU.Text.ToString().Substring(group_baseUserOU.Text.ToString().IndexOf("DC"));
+                if (tools.Exists(group_baseUserOU.Text.ToString()))
+                {
+                    groupconfig.BaseUserOU = tools.GetObjectDistinguishedName(objectClass.organizationalunit, returnType.distinguishedName, group_baseUserOU.Text.ToString(), DC, log).Substring(7);
+                    group_baseUserOU.Text = groupconfig.BaseUserOU;
+                }
+                else
+                {
+                    if (tools.Exists(DC))
+                    {
+                        DialogResult button = MessageBox.Show("OU LDAP://" + group_baseUserOU.Text.ToString() + " does Not exist shall I create it", "Nonexistent OU", MessageBoxButtons.YesNo);
+
+                        if (button == DialogResult.Yes)
+                        {
+                            tools.CreateOURecursive(group_baseUserOU.Text.ToString(), log);
+                            groupconfig.BaseUserOU = tools.GetObjectDistinguishedName(objectClass.organizationalunit, returnType.distinguishedName, group_baseUserOU.Text.ToString(), DC, log).Substring(7);
+                            group_baseUserOU.Text = groupconfig.BaseUserOU;
+                        }
+
+                        if (button == DialogResult.No)
+                        {
+                            group_baseUserOU.Focus();
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("Domain does not exist try again; Im not gunna make domains too much work", "Nonexistent Domain");
+                        group_baseUserOU.Focus();
+                    }
+                }
+            }
+            else if (!group_baseUserOU.Text.ToString().ToUpper().Contains("DC="))
+            {
+                group_baseUserOU.Focus();
+            }
         }
         private void group_mapping_description_TextChanged(object sender, EventArgs e)
         {
@@ -2679,6 +2792,12 @@ namespace WindowsApplication1
             execution_errors_textbox.Text = user;
             tools.SetAttributeValuesSingleString("manager", user.Substring(user.IndexOf("CN")), "LDAP://CN=Michael Neubrander,OU=Information Technology Admins,OU=FHCHS,DC=FHCHS,DC=EDU", log);
         }
+
+
+
+
+
+
 
 
 

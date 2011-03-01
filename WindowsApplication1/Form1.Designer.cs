@@ -3469,6 +3469,7 @@ namespace WindowsApplication1
             this.group_baseUserOU.Size = new System.Drawing.Size(369, 20);
             this.group_baseUserOU.TabIndex = 13;
             this.group_baseUserOU.TextChanged += new System.EventHandler(this.group_baseUserOU_TextChanged);
+            this.group_baseUserOU.Leave += new System.EventHandler(this.group_baseUserOU_Leave);
             // 
             // label14
             // 
@@ -3522,6 +3523,7 @@ namespace WindowsApplication1
             this.group_baseGroupOU.Size = new System.Drawing.Size(369, 20);
             this.group_baseGroupOU.TabIndex = 12;
             this.group_baseGroupOU.TextChanged += new System.EventHandler(this.group_baseGroupOU_TextChanged);
+            this.group_baseGroupOU.Leave += new System.EventHandler(this.group_baseGroupOU_Leave);
             // 
             // groupBox16
             // 

@@ -45,7 +45,7 @@ namespace WindowsApplication1.utils
 {
     public enum objectClass
     {
-        user, group, computer
+        user, group, computer, organizationalunit
     }
     public enum returnType
     {
@@ -2091,6 +2091,9 @@ namespace WindowsApplication1.utils
                         break;
                     case objectClass.computer:
                         mySearcher.Filter = "(&(objectClass=computer)(|(CN=" + objectName + ")(dn=" + objectName + ")))";
+                        break;
+                    case objectClass.organizationalunit:
+                        mySearcher.Filter = "(&(objectClass=organizationalunit)(distinguishedname=" + objectName + "))";
                         break;
                 }
 
@@ -4635,8 +4638,8 @@ namespace WindowsApplication1.utils
             }
             else
             {
-                sqlgroupsTable = "FHC_GROUPS_SQLgroupsTable";
-                adGroupsTable = "FHC_GROUPS_ADgroupsTable";
+                sqlgroupsTable = "FHC_GROUPS_SQLgroupsTable" + groupsyn.Group_Append;
+                adGroupsTable = "FHC_GROUPS_ADgroupsTable" + groupsyn.Group_Append;
             }
             string dc = groupOU.Substring(groupOU.IndexOf("DC"));
             string groupDN;
