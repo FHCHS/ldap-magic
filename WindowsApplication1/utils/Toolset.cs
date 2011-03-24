@@ -897,6 +897,7 @@ namespace WindowsApplication1.utils
         private Boolean configUser_password_generate_checkbox;
         private Boolean configUser_password_short_fix_checkbox;
         private String configUser_password;
+        private Boolean configUser_levenshtein;
 
         private Boolean configUser_writeback_AD_checkbox;
         private Boolean configUser_writeback_DB_checkbox;
@@ -933,6 +934,7 @@ namespace WindowsApplication1.utils
             configUser_password_generate_checkbox = false;
             configUser_password_short_fix_checkbox = false;
             configUser_password = "";
+            configUser_levenshtein = false;
 
             configUser_writeback_AD_checkbox = false;
             configUser_writeback_DB_checkbox = false;
@@ -1133,6 +1135,17 @@ namespace WindowsApplication1.utils
                 configUser_password = value;
             }
         }
+        public Boolean Levenshtein
+        {
+            get
+            {
+                return configUser_levenshtein;
+            }
+            set
+            {
+                configUser_levenshtein = value;
+            }
+        }
 
         public Boolean Writeback_AD_checkbox
         {
@@ -1235,7 +1248,44 @@ namespace WindowsApplication1.utils
         }
 
 
+        // creates a dictionay of values
+        public Dictionary<string, string> ToDictionary()
+        {
+            Dictionary<string, string> returnvalue = new Dictionary<string, string>();
+            returnvalue.Add("configDataServer", configDataServer);
+            returnvalue.Add("configDBCatalog", configDBCatalog);
 
+            returnvalue.Add("configUser_adminUser", configUser_adminUser);
+            returnvalue.Add("configUser_adminDomain", configUser_adminDomain);
+            returnvalue.Add("configUser_adminPassword", configUser_adminPassword);
+
+            returnvalue.Add("configUser_user_Datasource", configUser_user_Datasource);
+            returnvalue.Add("configUser_table_view", configUser_table_view);
+            returnvalue.Add("configUser_dbTable", configUser_dbTable);
+            returnvalue.Add("configUser_where", configUser_where);
+            returnvalue.Add("configUser_user_ad_OU", configUser_user_ad_OU);
+
+            returnvalue.Add("configUser_Lname", configUser_Lname);
+            returnvalue.Add("configUser_Fname", configUser_Fname);
+            returnvalue.Add("configUser_MiddleName", configUser_MiddleName);
+            returnvalue.Add("configUser_StuID", configUser_StuID);
+            returnvalue.Add("configUser_password_generate_checkbox", configUser_password_generate_checkbox.ToString());
+            returnvalue.Add("configUser_password_short_fix_checkbox", configUser_password_short_fix_checkbox.ToString());
+            returnvalue.Add("configUser_password", configUser_password);
+            returnvalue.Add("configUser_levenshtein", configUser_writeback_AD_checkbox.ToString());
+
+            returnvalue.Add("configUser_writeback_AD_checkbox", configUser_writeback_AD_checkbox.ToString());
+            returnvalue.Add("configUser_writeback_DB_checkbox", configUser_writeback_DB_checkbox.ToString());
+            returnvalue.Add("configUser_writeback_table", configUser_writeback_table);
+            returnvalue.Add("configUser_writeback_primary_key", configUser_writeback_primary_key);
+            returnvalue.Add("configUser_writeback_transfer_email_checkbox", configUser_writeback_transfer_email_checkbox.ToString());
+            returnvalue.Add("configUser_writeback_where_clause", configUser_writeback_where_clause);
+            returnvalue.Add("configUser_writeback_email_field", configUser_writeback_email_field);
+            returnvalue.Add("configUser_writeback_secondary_email_field", configUser_writeback_secondary_email_field);
+            returnvalue.Add("configUser_writeback_ad_OU", configUser_writeback_ad_OU);
+
+            return returnvalue;
+        }
         public void Load(Dictionary<string, string> dictionary)
         {
             dictionary.TryGetValue("configDataServer", out configDataServer);
@@ -1274,6 +1324,15 @@ namespace WindowsApplication1.utils
                 configUser_password_short_fix_checkbox = false;
             }
             dictionary.TryGetValue("configUser_password", out configUser_password);
+            dictionary.TryGetValue("configUser_levenshtein", out boolconv);
+            if (boolconv == "True")
+            {
+                configUser_levenshtein = true;
+            }
+            else
+            {
+                configUser_levenshtein = false;
+            }
 
             dictionary.TryGetValue("configUser_writeback_AD_checkbox", out boolconv);
             if (boolconv == "True")
@@ -1311,42 +1370,6 @@ namespace WindowsApplication1.utils
 
         }
 
-        public Dictionary<string, string> ToDictionary()
-        {
-            Dictionary<string, string> returnvalue = new Dictionary<string, string>();
-            returnvalue.Add("configDataServer", configDataServer);
-            returnvalue.Add("configDBCatalog", configDBCatalog);
-
-            returnvalue.Add("configUser_adminUser", configUser_adminUser);
-            returnvalue.Add("configUser_adminDomain", configUser_adminDomain);
-            returnvalue.Add("configUser_adminPassword", configUser_adminPassword);
-
-            returnvalue.Add("configUser_user_Datasource", configUser_user_Datasource);
-            returnvalue.Add("configUser_table_view", configUser_table_view);
-            returnvalue.Add("configUser_dbTable", configUser_dbTable);
-            returnvalue.Add("configUser_where", configUser_where);
-            returnvalue.Add("configUser_user_ad_OU", configUser_user_ad_OU);
-
-            returnvalue.Add("configUser_Lname", configUser_Lname);
-            returnvalue.Add("configUser_Fname", configUser_Fname);
-            returnvalue.Add("configUser_MiddleName", configUser_MiddleName);
-            returnvalue.Add("configUser_StuID", configUser_StuID);
-            returnvalue.Add("configUser_password_generate_checkbox", configUser_password_generate_checkbox.ToString());
-            returnvalue.Add("configUser_password_short_fix_checkbox", configUser_password_short_fix_checkbox.ToString());
-            returnvalue.Add("configUser_password", configUser_password);
-
-            returnvalue.Add("configUser_writeback_AD_checkbox", configUser_writeback_AD_checkbox.ToString());
-            returnvalue.Add("configUser_writeback_DB_checkbox", configUser_writeback_DB_checkbox.ToString());
-            returnvalue.Add("configUser_writeback_table", configUser_writeback_table);
-            returnvalue.Add("configUser_writeback_primary_key", configUser_writeback_primary_key);
-            returnvalue.Add("configUser_writeback_transfer_email_checkbox", configUser_writeback_transfer_email_checkbox.ToString());
-            returnvalue.Add("configUser_writeback_where_clause", configUser_writeback_where_clause);
-            returnvalue.Add("configUser_writeback_email_field", configUser_writeback_email_field);
-            returnvalue.Add("configUser_writeback_secondary_email_field", configUser_writeback_secondary_email_field);
-            returnvalue.Add("configUser_writeback_ad_OU", configUser_writeback_ad_OU);
-
-            return returnvalue;
-        }
     }
     public class ConfigSettings
     {
@@ -3446,6 +3469,81 @@ namespace WindowsApplication1.utils
                 log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
             }
         }
+        public void Levenshtein(string table1, string table2, string pkey1, string pkey2, string newTable, ArrayList selectFields, string targetField, ArrayList valueFields, SqlConnection sqlConn, LogFile log)
+        {
+            //select distinct soc_sec, 
+            //(Select top 1 nickname
+            //    from FHC_TEST_gmailNicknamesTable left join FHC_TEST_sqlusersTable on FHC_TEST_gmailNicknamesTable.soc_sec = FHC_TEST_sqlusersTable.sAMAccountName
+            //    where soc_sec = a.soc_sec 
+            //    order by soc_sec, 
+            //        CHARINDEX(FHC_TEST_sqlusersTable.sn, FHC_TEST_gmailNicknamesTable.nickname) DESC,
+            //        CHARINDEX(FHC_TEST_sqlusersTable.givenName, FHC_TEST_gmailNicknamesTable.nickname) DESC,
+            //        CHARINDEX(FHC_TEST_sqlusersTable.middleName, FHC_TEST_gmailNicknamesTable.nickname) DESC
+            //)
+            //as nickname,
+            //    (Select top 1 email
+            //    from FHC_TEST_gmailNicknamesTable left join FHC_TEST_sqlusersTable on FHC_TEST_gmailNicknamesTable.soc_sec = FHC_TEST_sqlusersTable.sAMAccountName
+            //    where soc_sec = a.soc_sec 
+            //    order by soc_sec, CHARINDEX(FHC_TEST_sqlusersTable.sn, FHC_TEST_gmailNicknamesTable.nickname) DESC, CHARINDEX(FHC_TEST_sqlusersTable.givenName, FHC_TEST_gmailNicknamesTable.nickname) DESC, CHARINDEX(FHC_TEST_sqlusersTable.middleName, FHC_TEST_gmailNicknamesTable.nickname) DESC) as email
+            //FROM FHC_TEST_gmailNicknamesTable as a
+            //ORDER BY soc_sec;
+
+            // Assumes table1 holds the correct data and returns a data reader with the update fields columns from table1
+            // returns the rows which table2's concatenated update fields differ from table1's concatenated update fields
+            // eliminates rows which do not have a matching key in both tables
+            // adds convluted logic to deal with duplicates and select the one closest to the matching data from the table 2 assumed to be the correct first middle last name etc
+            //*************************************************************************************************
+            //| Table1                      | Table2                    | Returned result
+            //*************************************************************************************************
+            //| ID            Data          | ID             Data       |                   | Table1.ID     Table1.DATA
+            //| 1             a             | 1              a          | NOT RETURNED      |
+            //| 2             b             | null           null       | NOT RETURNED      |              
+            //| 3             c             | 3              null       | RETURNED          | 3             c
+            //| 4             d             | 4              e          | RETURNED          | 4             e
+
+            //string table1 the table with the new nicknames
+            //string table2 the table with the original names 
+            //string pkey1
+            //string pkey2
+            //string newTable = ; the name of the new Table We want To return
+            //ArrayList selectFields = new ArrayList( [ email] )List of fields we want returned fields should Be in table1
+            //string targetField = "nickname"; name of the field we want to be close to ie like a google search result validity must be in table1
+            //ArrayList valueFields = new ArrayList( [sn, givenName, middleName ] ); lift of fields which are being compared to the targetField to see how close it gets    
+
+
+            string complexField = "";
+
+            foreach (string key in selectFields)
+            {
+                complexField += "(SELECT TOP 1 " + table1 + "." + key;
+                complexField += " FROM " + table1 + " LEFT JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2;
+                complexField += " WHERE " + table1 + "." + pkey1 + " = extTable." + pkey1;
+                complexField += " ORDER BY " + table2 + "." + pkey2 + ",";
+                foreach (string value in valueFields)
+                {
+                    // should have first middle last as the arraylist for valueFields1
+                    complexField += " CHARINDEX(" + table2 + "." + value + ", " + table1 + "." + targetField + ") DESC,";
+                }
+                // comma remove
+                complexField = complexField.Remove(complexField.Length - 1);
+
+                complexField += ") AS " + key + ",";
+            }
+            // comma remove
+            complexField = complexField.Remove(complexField.Length - 1);
+
+            SqlCommand sqlComm = new SqlCommand("SELECT DISTINCT extTable." + pkey1 + ", " + complexField + " INTO " + newTable + " FROM " + table1 + " AS extTable ORDER BY extTable." + pkey1, sqlConn);
+
+            try
+            {
+                sqlComm.CommandTimeout = 360;
+                sqlComm.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+            }
+        }
 
         public void CheckEmailUpdateIntoNewTable(string email1, string email2, string table1, string table2, string pkey1, string pkey2, string newTable, ArrayList compareFields1, ArrayList compareFields2, SqlConnection sqlConn, LogFile log)
         {
@@ -3835,7 +3933,7 @@ namespace WindowsApplication1.utils
             string last_name = "";
             string middle_name = "";
             string password = "";
-            string userNickName = "";
+            string userNickName = "Aliasing off";
             try
             {
                 while (users.Read())
@@ -3868,23 +3966,26 @@ namespace WindowsApplication1.utils
                         //Create a new user.
                         UserEntry insertedEntry = service.CreateUser(studentID, first_name, last_name, password);
 
-                        // create user ailas here
-                        userNickName = GetNewUserNickname(service, studentID, first_name, middle_name, last_name, 0, false);
+                        //if (gusersyn.Levenshtein == true)
+                        //{
+                            // create user ailas here
+                            userNickName = GetNewUserNickname(service, studentID, first_name, middle_name, last_name, 0, false);
 
-                        row[0] = studentID;
-                        if (userNickName != "failure")
-                        {
-                            row[1] = userNickName + "@" + gusersyn.Admin_domain;
-                        }
-                        else
-                        {
-                            row[1] = studentID + "@" + gusersyn.Admin_domain;
-                        }
+                            row[0] = studentID;
+                            if (userNickName != "failure")
+                            {
+                                row[1] = userNickName + "@" + gusersyn.Admin_domain;
+                            }
+                            else
+                            {
+                                row[1] = studentID + "@" + gusersyn.Admin_domain;
+                            }
 
-                        returnvalue.Rows.Add(row);
-                        row = returnvalue.NewRow();
+                            returnvalue.Rows.Add(row);
+                            row = returnvalue.NewRow();
 
-                        log.transactions.Add("Added Gmail user " + studentID + "@" + gusersyn.Admin_domain + " Aliased as " + userNickName + "@" + gusersyn.Admin_domain);
+                            log.transactions.Add("Added Gmail user " + studentID + "@" + gusersyn.Admin_domain + " Aliased as " + userNickName + "@" + gusersyn.Admin_domain);
+                       // }
                     }
                     catch (AppsException e)
                     {
@@ -3934,8 +4035,12 @@ namespace WindowsApplication1.utils
                         middlename = usersToUpdate[gusersyn.User_Mname].ToString().Replace("<", "%3c").Replace(">", "%3e").Replace("=", "%3d").Replace("%", "%25");
                         service.UpdateUser(gmailUser);
                         log.transactions.Add("Updated " + System.Web.HttpUtility.UrlEncode(usersToUpdate[gusersyn.User_StuID].ToString()).Replace("+", " ").Replace("*", "%2A") + " because of name change. New Name is " + gmailUser.Name.FamilyName.ToString() + ", " + gmailUser.Name.GivenName.ToString());
-                        userNickName = GetNewUserNickname(service, gmailUser.Login.UserName, gmailUser.Name.GivenName, middlename, gmailUser.Name.FamilyName, 0, false);
-                        log.transactions.Add("Added New Alias for " + gmailUser.Login.UserName + "@" + gusersyn.Admin_domain + " Aliased as " + userNickName + "@" + gusersyn.Admin_domain);
+                       // if (gusersyn.Levenshtein == true)
+                       // {
+                            userNickName = GetNewUserNickname(service, gmailUser.Login.UserName, gmailUser.Name.GivenName, middlename, gmailUser.Name.FamilyName, 0, false);
+                            log.transactions.Add("Added New Alias for " + gmailUser.Login.UserName + "@" + gusersyn.Admin_domain + " Aliased as " + userNickName + "@" + gusersyn.Admin_domain);
+                       // }
+                        
                     }
                     catch (Exception ex)
                     {
@@ -5846,70 +5951,52 @@ namespace WindowsApplication1.utils
                 tools.DropTable(nicknamesToUpdateDBTable, sqlConn, log);
                 tools.DropTable(nicknamesFilteredForDuplicatesTable, sqlConn, log);
 //            }
-/*
+
             // install levenstein if bulid nicknames checked
-            if (gusersyn.Writeback_AD_checkbox == true)
+            if (gusersyn.Levenshtein == true)
             {
-                sqlComm = new SqlCommand("SET QUOTED_IDENTIFIER OFF GO SET ANSI_NULLS OFF GO CREATE function LEVENSHTEIN( @s varchar(50), @t varchar(50) )" +
-                    "--Returns the Levenshtein Distance between strings s1 and s2. --Original developer: Michael Gilleland    http://www.merriampark.com/ld.htm " +
-                    "--Translated to TSQL by Joseph Gama returns varchar(50) as BEGIN DECLARE @d varchar(2500), @LD int, @m int, @n int, @i int, @j int, @s_i char(1)," + 
-                    "@t_j char(1),@cost int --Step 1 SET @n=LEN(@s) SET @m=LEN(@t) SET @d=replicate(CHAR(0),2500) If @n = 0 	BEGIN 	SET @LD = @m 	GOTO done" + 	
-                    "END If @m = 0	BEGIN	SET @LD = @n	GOTO done	END --Step 2 SET @i=0 WHILE @i<=@n	BEGIN	SET @d=STUFF(@d,@i+1,1,CHAR(@i))--d(i, 0) = i	" +
-                    "SET @i=@i+1	END SET @i=0 WHILE @i<=@m	BEGIN	SET @d=STUFF(@d,@i*(@n+1)+1,1,CHAR(@i))--d(0, j) = j	SET @i=@i+1	END --goto done --Step 3" +
-                    "SET @i=1	WHILE @i<=@n		BEGIN		SET @s_i=(substring(@s,@i,1)) --Step 4	SET @j=1	WHILE @j<=@m	BEGIN		" +
-                    "SET @t_j=(substring(@t,@j,1))		--Step 5		If @s_i = @t_j			SET @cost=0		ELSE			SET @cost=1 --Step 6" +		
-                    "SET @d=STUFF(@d,@j*(@n+1)+@i+1,1,CHAR(dbo.MIN3(	ASCII(substring(@d,@j*(@n+1)+@i-1+1,1))+1, ASCII(substring(@d,(@j-1)*(@n+1)+@i+1,1))+1,	" +
-                    "ASCII(substring(@d,(@j-1)*(@n+1)+@i-1+1,1))+@cost)	))	SET @j=@j+1	END	SET @i=@i+1	END      --Step 7 SET @LD = ASCII(substring(@d,@n*(@m+1)+@m+1,1))done:" +
-                    "--RETURN @LD --I kept this code that can be used to display the matrix with all calculated values --From Query Analyser it provides a nice way to " +
-                    "check the algorithm in action --RETURN @LD --declare @z varchar(8000) --set @z='' --SET @i=0 --WHILE @i<=@n --	BEGIN --	SET @j=0 --	" +
-                    "WHILE @j<=@m --		BEGIN --		set @z=@z+CONVERT(char(3),ASCII(substring(@d,@i*(@m+1 )+@j+1 ,1))) --		SET @j=@j+1  --		" +
-                    "END --	SET @i=@i+1 --	END --print dbo.wrap(@z,3*(@n+1)) END GO SET QUOTED_IDENTIFIER OFF  GO SET ANSI_NULLS ON GO");
+                string sqlcmd = "CREATE function LEVENSHTEIN( @s varchar(50), @t varchar(50) ) \n --Returns the Levenshtein Distance between strings s1 and s2. \n " +
+                              "--Original developer: Michael Gilleland    http://www.merriampark.com/ld.htm \n --Translated to TSQL by Joseph Gama \n returns varchar(50) \n " +
+                              "as \n BEGIN \n DECLARE @d varchar(2500), @LD int, @m int, @n int, @i int, @j int, \n @s_i char(1), @t_j char(1),@cost int \n --Step 1 \n SET @n=LEN(@s) \n" +
+                              " SET @m=LEN(@t) \n SET @d=replicate(CHAR(0),2500) \n If @n = 0 \n BEGIN \n SET @LD = @m \n GOTO done \n END \n If @m = 0 \n BEGIN \n	SET @LD = @n \n" +
+                              "	GOTO done \n END \n --Step 2 \n SET @i=0 \n WHILE @i<=@n \n	BEGIN \n SET @d=STUFF(@d,@i+1,1,CHAR(@i))--d(i, 0) = i \n SET @i=@i+1 \n END \n" +
+                              " SET @i=0 \n WHILE @i<=@m \n BEGIN \n SET @d=STUFF(@d,@i*(@n+1)+1,1,CHAR(@i))--d(0, j) = j \n SET @i=@i+1 \n	END \n --goto done \n --Step 3 \n" +
+                              " SET @i=1 \n WHILE @i<=@n \n BEGIN \n SET @s_i=(substring(@s,@i,1)) \n --Step 4 \n SET @j=1 \n	WHILE @j<=@m \n	BEGIN \n SET @t_j=(substring(@t,@j,1)) \n" +
+                              " --Step 5 \n If @s_i = @t_j \n	SET @cost=0 \n ELSE \n SET @cost=1 \n --Step 6 \n SET @d=STUFF(@d,@j*(@n+1)+@i+1,1,CHAR(dbo.MIN3( \n" +
+                              " ASCII(substring(@d,@j*(@n+1)+@i-1+1,1))+1, \n ASCII(substring(@d,(@j-1)*(@n+1)+@i+1,1))+1, \n ASCII(substring(@d,(@j-1)*(@n+1)+@i-1+1,1))+@cost) \n )) \n" +
+                              " SET @j=@j+1 \n END \n SET @i=@i+1 \n END \n --Step 7 \n SET @LD = ASCII(substring(@d,@n*(@m+1)+@m+1,1)) \n done: \n --RETURN @LD \n" +
+                              " --I kept this code that can be used to display the matrix with all calculated values \n --From Query Analyser it provides a nice way to check the algorithm in action \n" +
+                              " -- \n RETURN @LD \n --declare @z varchar(8000) \n --set @z='' \n --SET @i=0 \n --WHILE @i<=@n \n --	BEGIN \n --	SET @j=0 \n --	WHILE @j<=@m \n --		BEGIN \n" +
+                              " --		set @z=@z+CONVERT(char(3),ASCII(substring(@d,@i*(@m+1 )+@j+1 ,1))) \n --		SET @j=@j+1  \n --		END \n --	SET @i=@i+1 \n --	END \n --print dbo.wrap(@z,3*(@n+1)) \n END \n";
+                sqlComm = new SqlCommand(sqlcmd, sqlConn);
+
                 try
                 {
+                    sqlComm.CommandTimeout = 360;
+                    // sqlComm.CommandType = System.Data.CommandType.StoredProcedure;
+                    sqlComm.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    log.errors.Add("Failed to install levenstein SQL command or levenstein already installed" + sqlComm.CommandText.ToString() + " error " + ex + "\n" + ex.StackTrace.ToString());
+                }
+                // install min3
+                sqlcmd = "CREATE function MIN3(@a int,@b int,@c int ) \n --Returns the smallest of 3 numbers. \n" +
+                    "returns int \n as \n BEGIN \n declare @temp int \n if (@a < @b)  AND (@a < @c) \n select @temp=@a \n else \n if (@b < @a)  AND (@b < @c) \n select @temp=@b \n else \n" +
+                    "select @temp=@c \n return @temp \n END";
+                sqlComm = new SqlCommand(sqlcmd, sqlConn);
+                try
+                {
+                    //sqlComm.CommandType = System.Data.CommandType.StoredProcedure;
                     sqlComm.CommandTimeout = 360;
                     sqlComm.ExecuteNonQuery();
                 }
                 catch (Exception ex)
                 {
-                    log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex + "\n" + ex.StackTrace.ToString());
-                }   
+                    log.errors.Add("Failed to install min3 SQL command or min3 already installed" + sqlComm.CommandText.ToString() + " error " + ex + "\n" + ex.StackTrace.ToString());
+                }
             }
 
-                // install min3
-
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS OFF 
-GO
-
-
-CREATE function MIN3(@a int,@b int,@c int ) 
---Returns the smallest of 3 numbers.
-returns int
-as
-BEGIN
-declare @temp int
-if (@a < @b)  AND (@a < @c)
-	select @temp=@a
-else 
-	if (@b < @a)  AND (@b < @c)
-		select @temp=@b
-	else
-		select @temp=@c
-return @temp
-END
-
-
-GO
-SET QUOTED_IDENTIFIER OFF 
-GO
-SET ANSI_NULLS ON 
-GO
-
-
-
-
-*/
             if (gusersyn.Writeback_AD_checkbox == true || gusersyn.Writeback_DB_checkbox == true)
             {
                 // DATABASE writeback
@@ -6040,203 +6127,6 @@ GO
                         tools.QueryNotExistsIntoNewTable(gmailUsersTable, nicknamesFromGmailTable, loginWithoutNicknamesTable, sqlConn, gusersyn.User_StuID, nicknames.Columns[0].ColumnName, log);
 
 
-                        //************************************************************
-                        //                          START
-                        //                   DEBUG AND TEST DATA
-                        //
-                        //************************************************************
-
-
-                        //SqlDataReader debugReader;
-                        //string debug = "";
-                        //SqlCommand sqlDebugComm;
-                        //string firstfield = "";
-                        //string debugRecordCount = "";
-                        //int debugFieldCount = 0;
-
-                        // try
-                        // {
-
-                        //     //string sqlUsersTable = "#sqlusersTable";
-                        //     debug = " Users from sql \n";
-                        //     sqlDebugComm = new SqlCommand("select top 40 * FROM " + sqlUsersTable, sqlConn);
-                        //     debugReader = sqlDebugComm.ExecuteReader();
-                        //     debugFieldCount = debugReader.FieldCount;
-                        //     firstfield = debugReader.GetName(0);
-                        //     for (i = 0; i < debugFieldCount; i++)
-                        //     {
-                        //         debug += debugReader.GetName(i) + ", ";
-                        //     }
-                        //     debug += "\n";
-                        //     while (debugReader.Read())
-                        //     {
-                        //         for (i = 0; i < debugFieldCount; i++)
-                        //         {
-                        //             debug += (string)debugReader[i].ToString() + ", ";
-                        //         }
-                        //         debug += "\n";
-                        //     }
-                        //     sqlDebugComm = new SqlCommand("select count(" + firstfield + ") FROM " + sqlUsersTable, sqlConn);
-                        //     debugReader.Close();
-                        //     debugRecordCount = sqlDebugComm.ExecuteScalar().ToString();
-                        //     MessageBox.Show("table " + sqlUsersTable + " has " + debugRecordCount + " records \n " + debugFieldCount + " fields \n sample data" + debug);
-
-
-
-                        //     //string gmailUsersTable = "#gmailusersTable";
-                        //     debug = "";
-                        //     debug = " Users from gmail \n";
-                        //     sqlDebugComm = new SqlCommand("select top 40 * FROM " + gmailUsersTable, sqlConn);
-                        //     debugReader = sqlDebugComm.ExecuteReader();
-                        //     debugFieldCount = debugReader.FieldCount;
-                        //     firstfield = debugReader.GetName(0);
-                        //     for (i = 0; i < debugFieldCount; i++)
-                        //     {
-                        //         debug += debugReader.GetName(i) + ", ";
-                        //     }
-                        //     debug += "\n";
-                        //     while (debugReader.Read())
-                        //     {
-                        //         for (i = 0; i < debugFieldCount; i++)
-                        //         {
-                        //             debug += (string)debugReader[i] + ", ";
-                        //         }
-                        //         debug += "\n";
-                        //     }
-                        //     sqlDebugComm = new SqlCommand("select count(" + firstfield + ") FROM " + gmailUsersTable, sqlConn);
-                        //     debugReader.Close();
-                        //     debugRecordCount = sqlDebugComm.ExecuteScalar().ToString();
-                        //     MessageBox.Show("table " + gmailUsersTable + " has " + debugRecordCount + " records \n " + debugFieldCount + " fields \n sample data" + debug);
-
-
-                        ////string nicknamesFromGmailTable = "#gmailNicknamesTable";
-                        //debug = "";
-                        //debug = " Nicknames from gmail \n";
-                        //sqlDebugComm = new SqlCommand("select top 40 * FROM " + nicknamesFromGmailTable, sqlConn);
-                        //debugReader = sqlDebugComm.ExecuteReader();
-                        //debugFieldCount = debugReader.FieldCount;
-                        //firstfield = debugReader.GetName(0);
-                        //for (i = 0; i < debugFieldCount; i++)
-                        //{
-                        //    debug += debugReader.GetName(i) + ", ";
-                        //}
-                        //debug += "\n";
-                        //while (debugReader.Read())
-                        //{
-                        //    for (i = 0; i < debugFieldCount; i++)
-                        //    {
-                        //        debug += (string)debugReader[i] + ", ";
-                        //    }
-                        //    debug += "\n";
-                        //}
-                        //sqlDebugComm = new SqlCommand("select count(" + firstfield + ") FROM " + nicknamesFromGmailTable, sqlConn);
-                        //debugReader.Close();
-                        //debugRecordCount = sqlDebugComm.ExecuteScalar().ToString();
-                        //MessageBox.Show("table " + nicknamesFromGmailTable + " has " + debugRecordCount + " records \n " + debugFieldCount + " fields \n sample data" + debug);
-
-
-                        //     //string loginWithoutNicknamesTable = "#loginsWONicknamesTable";
-                        //     debug = "";
-                        //     debug = " Logons without nicknames \n";
-                        //     sqlDebugComm = new SqlCommand("select top 40 * FROM " + loginWithoutNicknamesTable, sqlConn);
-                        //     debugReader = sqlDebugComm.ExecuteReader();
-                        //     debugFieldCount = debugReader.FieldCount;
-                        //     firstfield = debugReader.GetName(0);
-                        //     for (i = 0; i < debugFieldCount; i++)
-                        //     {
-                        //         debug += debugReader.GetName(i) + ", ";
-                        //     }
-                        //     debug += "\n";
-                        //     while (debugReader.Read())
-                        //     {
-                        //         for (i = 0; i < debugFieldCount; i++)
-                        //         {
-                        //             debug += (string)debugReader[i] + ", ";
-                        //         }
-                        //         debug += "\n";
-                        //     }
-                        //     sqlDebugComm = new SqlCommand("select count(" + firstfield + ") FROM " + loginWithoutNicknamesTable, sqlConn);
-                        //     debugReader.Close();
-                        //     debugRecordCount = sqlDebugComm.ExecuteScalar().ToString();
-                        //     MessageBox.Show("table " + loginWithoutNicknamesTable + " has " + debugRecordCount + " records \n " + debugFieldCount + " fields \n sample data" + debug);
-
-                        //     if (gusersyn.Writeback_AD_checkbox == true || gusersyn.Writeback_DB_checkbox == true)
-                        //     {
-                        //         if (gusersyn.Writeback_AD_checkbox == true)
-                        //         {
-                        //             //string adNicknamesTable = "#adNicknamesTable";
-                        //             debug = "";
-                        //             debug = " Nickname list from AD for writeback \n";
-                        //             sqlDebugComm = new SqlCommand("select top 40 * FROM " + adNicknamesTable, sqlConn);
-                        //             debugReader = sqlDebugComm.ExecuteReader();
-                        //             debugFieldCount = debugReader.FieldCount;
-                        //             firstfield = debugReader.GetName(0);
-                        //             for (i = 0; i < debugFieldCount; i++)
-                        //             {
-                        //                 debug += debugReader.GetName(i) + ", ";
-                        //             }
-                        //             debug += "\n";
-                        //             while (debugReader.Read())
-                        //             {
-                        //                 for (i = 0; i < debugFieldCount; i++)
-                        //                 {
-                        //                     debug += (string)debugReader[i] + ", ";
-                        //                 }
-                        //                 debug += "\n";
-                        //             }
-                        //             sqlDebugComm = new SqlCommand("select count(" + firstfield + ") FROM " + adNicknamesTable, sqlConn);
-                        //             debugReader.Close();
-                        //             debugRecordCount = sqlDebugComm.ExecuteScalar().ToString();
-                        //             MessageBox.Show("table " + adNicknamesTable + " has " + debugRecordCount + " records \n " + debugFieldCount + " fields \n sample data" + debug);
-                        //         }
-
-                        //         if (gusersyn.Writeback_DB_checkbox == true)
-                        //         {
-                        //string sqlNicknamesTable = "#sqlNicknamesTable";
-                        //debug = "";
-                        //debug = " Nicknames from sql fro writeback \n";
-                        //sqlDebugComm = new SqlCommand("select top 40 * FROM " + sqlNicknamesTable, sqlConn);
-                        //debugReader = sqlDebugComm.ExecuteReader();
-                        //debugFieldCount = debugReader.FieldCount;
-                        //firstfield = debugReader.GetName(0);
-                        //for (i = 0; i < debugFieldCount; i++)
-                        //{
-                        //    debug += debugReader.GetName(i) + ", ";
-                        //}
-                        //debug += "\n";
-                        //while (debugReader.Read())
-                        //{
-                        //    for (i = 0; i < debugFieldCount; i++)
-                        //    {
-                        //        debug += (string)debugReader[i] + ", ";
-                        //    }
-                        //    debug += "\n";
-                        //}
-                        //sqlDebugComm = new SqlCommand("select count(" + firstfield + ") FROM " + sqlNicknamesTable, sqlConn);
-                        //debugReader.Close();
-                        //debugRecordCount = sqlDebugComm.ExecuteScalar().ToString();
-                        //MessageBox.Show("table " + sqlNicknamesTable + " has " + debugRecordCount + " records \n " + debugFieldCount + " fields \n sample data" + debug);
-                        //         }
-                        //     }
-                        // }
-                        // catch (Exception ex)
-                        // {
-                        //     log.warnings.Add("Issue creating debug data some sort of sql error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
-                        // }
-
-
-                        //************************************************************
-                        //                            END
-                        //                   DEBUG AND TEST DATA
-                        //
-                        //************************************************************
-
-
-
-
-
-
-
                         // use retrieved list of users without nicknames and check for updates against list of users in main datasource
                         // use the datatable from the view/table as the primary data source
                         // this table is generated above during the user account addition and update section
@@ -6304,47 +6194,26 @@ GO
                             selectFields.Add(nicknames.Columns[2].ColumnName);
 
 
-                            // Filter nicknames for duplicates into new table 
-                            tools.SelectNicknamesClosestToActualNameIntoNewTable(nicknamesFromGmailTable, sqlUsersTable, nicknames.Columns[0].ColumnName, gusersyn.User_StuID, nicknamesFilteredForDuplicatesTable, selectFields, nicknames.Columns[1].ColumnName, keywordFields, sqlConn, log);
+
+                            if (gusersyn.Levenshtein == true)
+                            {
+                                tools.SelectNicknamesClosestToActualNameIntoNewTable(nicknamesFromGmailTable, sqlUsersTable, nicknames.Columns[0].ColumnName, gusersyn.User_StuID, nicknamesFilteredForDuplicatesTable, selectFields, nicknames.Columns[1].ColumnName, keywordFields, sqlConn, log);
+                                if (gusersyn.Levenshtein == true)
+                                {
+                                    //correct nicknames in Gmail
+                                   // tools.setnames(nicknamesFromGmailTable, sqlConn, log);
+
+                                }
+                            }
+                            else
+                            {
+                                // Filter nicknames for duplicates into new table 
+                                tools.SelectNicknamesClosestToActualNameIntoNewTable(nicknamesFromGmailTable, sqlUsersTable, nicknames.Columns[0].ColumnName, gusersyn.User_StuID, nicknamesFilteredForDuplicatesTable, selectFields, nicknames.Columns[1].ColumnName, keywordFields, sqlConn, log);
+                            }
                             // Check filtered nicknames against the sql data to see which emails need updating and put into a table for the next operation
                             tools.CheckEmailUpdateIntoNewTable(nicknames.Columns[2].ColumnName, gusersyn.Writeback_email_field, nicknamesFilteredForDuplicatesTable, sqlNicknamesTable, nicknames.Columns[0].ColumnName, gusersyn.Writeback_primary_key, nicknamesToUpdateDBTable, nicknameKeys, sqlkeys, sqlConn, log);
 
 
-
-                            //SqlDataReader debugReader;
-                            //string debug = "";
-                            //SqlCommand sqlDebugComm;
-                            //string firstfield = "";
-                            //string debugRecordCount = "";
-                            //int debugFieldCount = 0;
-                            //string sqlUsersTable = "#sqlusersTable";
-                            //debug = " Users from sql \n";
-                            //sqlDebugComm = new SqlCommand("select top 40 * FROM " + nicknamesToUpdateDBTable, sqlConn);
-                            //debugReader = sqlDebugComm.ExecuteReader();
-                            //debugFieldCount = debugReader.FieldCount;
-                            //firstfield = debugReader.GetName(0);
-                            //for (i = 0; i < debugFieldCount; i++)
-                            //{
-                            //    debug += debugReader.GetName(i) + ", ";
-                            //}
-                            //debug += "\n";
-                            //while (debugReader.Read())
-                            //{
-                            //    for (i = 0; i < debugFieldCount; i++)
-                            //    {
-                            //        debug += (string)debugReader[i].ToString() + ", ";
-                            //    }
-                            //    debug += "\n";
-                            //}
-                            //sqlDebugComm = new SqlCommand("select count(" + firstfield + ") FROM " + nicknamesToUpdateDBTable, sqlConn);
-                            //debugReader.Close();
-                            //debugRecordCount = sqlDebugComm.ExecuteScalar().ToString();
-                            //MessageBox.Show("table " + sqlUsersTable + " has " + debugRecordCount + " records \n " + debugFieldCount + " fields \n sample data" + debug);
-
-
-                            // nicknamesToAddToDatabase = tools.QueryNotExists(nicknamesFromGmailTable, sqlNicknamesTable, sqlConn, nicknames.Columns[0].ColumnName, gusersyn.Writeback_primary_key, log);
-                            // update email fields in database where we did not have an primary key in the second table
-                            //tools.Mass_update_email_field(nicknamesToAddToDatabase, sqlConn, gusersyn, log);
 
                             // reset arraylists with just the data fields we don't to be updating the  primary key
                             nicknameKeys.Clear();

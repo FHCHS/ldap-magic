@@ -31,8 +31,8 @@ using WindowsApplication1.utils;
 // This program depends on the existence of the columns picked in the save data, if columns names change the mappings will have to be remapped
 // This program depends on the use of # temporary tables and therefore needs read & write capabilities to the selected database
 // This program attempts to check for empty lists and handle them robustly however there is a high chance if problem will occurs it is from a mishandeld empty list passed between functions
-// This program uses paging on expected large results from AD if too large of a pull (greater than 1499 records) comes from a  AD query it will break a non-paged function resulting in failed transactions
-// The default SQL connection is created so timeouts will match the default selected (not sure but Im gussing it is ~30s) indefinitely held connections could be a problem while the program remains open
+
+// The SQL connection is created with timeouts of 360s indefinitely held connections could be a problem while the program remains open
 // There is a large set of created objects and memory leaks may abound. Most objects are closed however some rely on the garbage collector
 // Many functions in tools are overloaded and when updating a tool be sure to be careful to make sure each overloaded method will match the new standards
 // This program has a logfile which will tell which function failed when an exception is thrown and will attempt to add useful data ( timestamp, funciton failed, passed variables)
@@ -2787,10 +2787,57 @@ namespace WindowsApplication1
 
         private void button7_Click(object sender, EventArgs e)
         {
-            
-             string user = tools.GetObjectDistinguishedName(objectClass.user, returnType.distinguishedName, execution_transactions_warnings_textbox.Text, userconfig.BaseUserOU.Substring(userconfig.BaseUserOU.IndexOf("DC")), log);
+            SqlConnection sqlConn = new SqlConnection("Data Source=" + userconfig.DataServer + ";Initial Catalog=" + userconfig.DBCatalog + ";Integrated Security=SSPI;Connect Timeout=360;");
+            sqlConn.Open();
+            SqlCommand sqlComm;
+
+
+
+            string sqlcmd = "CREATE function LEVENSHTEIN( @s varchar(50), @t varchar(50) ) \n --Returns the Levenshtein Distance between strings s1 and s2. \n " +
+                "--Original developer: Michael Gilleland    http://www.merriampark.com/ld.htm \n --Translated to TSQL by Joseph Gama \n returns varchar(50) \n " +
+                "as \n BEGIN \n DECLARE @d varchar(2500), @LD int, @m int, @n int, @i int, @j int, \n @s_i char(1), @t_j char(1),@cost int \n --Step 1 \n SET @n=LEN(@s) \n" +
+                " SET @m=LEN(@t) \n SET @d=replicate(CHAR(0),2500) \n If @n = 0 \n BEGIN \n SET @LD = @m \n GOTO done \n END \n If @m = 0 \n BEGIN \n	SET @LD = @n \n" +
+                "	GOTO done \n END \n --Step 2 \n SET @i=0 \n WHILE @i<=@n \n	BEGIN \n SET @d=STUFF(@d,@i+1,1,CHAR(@i))--d(i, 0) = i \n SET @i=@i+1 \n END \n" +
+                " SET @i=0 \n WHILE @i<=@m \n BEGIN \n SET @d=STUFF(@d,@i*(@n+1)+1,1,CHAR(@i))--d(0, j) = j \n SET @i=@i+1 \n	END \n --goto done \n --Step 3 \n" +
+                " SET @i=1 \n WHILE @i<=@n \n BEGIN \n SET @s_i=(substring(@s,@i,1)) \n --Step 4 \n SET @j=1 \n	WHILE @j<=@m \n	BEGIN \n SET @t_j=(substring(@t,@j,1)) \n" +
+                " --Step 5 \n If @s_i = @t_j \n	SET @cost=0 \n ELSE \n SET @cost=1 \n --Step 6 \n SET @d=STUFF(@d,@j*(@n+1)+@i+1,1,CHAR(dbo.MIN3( \n" +
+                " ASCII(substring(@d,@j*(@n+1)+@i-1+1,1))+1, \n ASCII(substring(@d,(@j-1)*(@n+1)+@i+1,1))+1, \n ASCII(substring(@d,(@j-1)*(@n+1)+@i-1+1,1))+@cost) \n )) \n" +
+                " SET @j=@j+1 \n END \n SET @i=@i+1 \n END \n --Step 7 \n SET @LD = ASCII(substring(@d,@n*(@m+1)+@m+1,1)) \n done: \n --RETURN @LD \n" +
+                " --I kept this code that can be used to display the matrix with all calculated values \n --From Query Analyser it provides a nice way to check the algorithm in action \n" +
+                " -- \n RETURN @LD \n --declare @z varchar(8000) \n --set @z='' \n --SET @i=0 \n --WHILE @i<=@n \n --	BEGIN \n --	SET @j=0 \n --	WHILE @j<=@m \n --		BEGIN \n" +
+                " --		set @z=@z+CONVERT(char(3),ASCII(substring(@d,@i*(@m+1 )+@j+1 ,1))) \n --		SET @j=@j+1  \n --		END \n --	SET @i=@i+1 \n --	END \n --print dbo.wrap(@z,3*(@n+1)) \n END \n";
+            sqlComm = new SqlCommand(sqlcmd, sqlConn);
+
+            try
+            {
+                sqlComm.CommandTimeout = 360;
+               // sqlComm.CommandType = System.Data.CommandType.StoredProcedure;
+                sqlComm.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                log.errors.Add("Failed to install levenstein SQL command or levenstein already installed" + sqlComm.CommandText.ToString() + " error " + ex + "\n" + ex.StackTrace.ToString());
+            }
+            // install min3
+            sqlcmd = "CREATE function MIN3(@a int,@b int,@c int ) \n --Returns the smallest of 3 numbers. \n" +
+                "returns int \n as \n BEGIN \n declare @temp int \n if (@a < @b)  AND (@a < @c) \n select @temp=@a \n else \n if (@b < @a)  AND (@b < @c) \n select @temp=@b \n else \n" +
+                "select @temp=@c \n return @temp \n END";
+            sqlComm = new SqlCommand(sqlcmd, sqlConn);
+            try
+            {
+                //sqlComm.CommandType = System.Data.CommandType.StoredProcedure;
+                sqlComm.CommandTimeout = 360;
+                sqlComm.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                log.errors.Add("Failed to install min3 SQL command or min3 already installed" + sqlComm.CommandText.ToString() + " error " + ex + "\n" + ex.StackTrace.ToString());
+            }
+            /*
+            string user = tools.GetObjectDistinguishedName(objectClass.user, returnType.distinguishedName, execution_transactions_warnings_textbox.Text, userconfig.BaseUserOU.Substring(userconfig.BaseUserOU.IndexOf("DC")), log);
             execution_errors_textbox.Text = user;
             tools.SetAttributeValuesSingleString("manager", user.Substring(user.IndexOf("CN")), "LDAP://CN=Michael Neubrander,OU=Information Technology Admins,OU=FHCHS,DC=FHCHS,DC=EDU", log);
+             */
         }
 
 

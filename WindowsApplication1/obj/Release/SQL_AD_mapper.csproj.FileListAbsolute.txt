@@ -34,3 +34,7 @@ C:\git\.Net\SQL_AD_mapper\WindowsApplication1\bin\Release\WindowsApplication1.ex
 C:\git\.Net\SQL_AD_mapper\WindowsApplication1\bin\Release\WindowsApplication1.exe
 C:\git\.Net\SQL_AD_mapper\WindowsApplication1\bin\Release\WindowsApplication1.pdb
 C:\git\.Net\SQL_AD_mapper\WindowsApplication1\bin\Release\Interop.ActiveDs.dll
+C:\git\.Net\SQL_AD_mapper\WindowsApplication1\bin\Release\Google.GData.Apps.dll
+C:\git\.Net\SQL_AD_mapper\WindowsApplication1\bin\Release\Google.GData.Client.dll
+C:\git\.Net\SQL_AD_mapper\WindowsApplication1\bin\Release\Google.GData.Extensions.dll
+C:\git\.Net\SQL_AD_mapper\WindowsApplication1\bin\Release\Google.GData.GoogleBase.dll
