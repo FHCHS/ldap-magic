@@ -3089,7 +3089,7 @@ namespace WindowsApplication1.utils
             {
                 if (key == "sAMAccountName")
                 {
-                    compare1 = compare1 + "ltrim(rtrim(" + table1 + "." + key + "))";
+                    compare1 = compare1 + "ltrim(rtrim(" + table1 + "." + key + ")) +";
                 }
                 else 
                 {
@@ -3101,7 +3101,7 @@ namespace WindowsApplication1.utils
             {
                 if (key == "sAMAccountName")
                 {
-                    compare2 = compare2 + "ltrim(rtrim(" + table2 + "." + key + "))";
+                    compare2 = compare2 + "ltrim(rtrim(" + table2 + "." + key + ")) +";
                 }
                 else
                 {
@@ -3956,7 +3956,7 @@ namespace WindowsApplication1.utils
                         {
                             password = GetPassword(14);
                         }
-                        if (gusersyn.User_password_short_fix_checkbox == true && password.Length < 6)
+                        if (gusersyn.User_password_short_fix_checkbox == true && password.Length < 8)
                         {
                             password = GetPassword(14);
                         }
