@@ -6195,7 +6195,7 @@ namespace WindowsApplication1.utils
 
 
 
-                            if (gusersyn.Levenshtein == true)
+                          /*  if (gusersyn.Levenshtein == true)
                             {
                                 tools.SelectNicknamesClosestToActualNameIntoNewTable(nicknamesFromGmailTable, sqlUsersTable, nicknames.Columns[0].ColumnName, gusersyn.User_StuID, nicknamesFilteredForDuplicatesTable, selectFields, nicknames.Columns[1].ColumnName, keywordFields, sqlConn, log);
                                 if (gusersyn.Levenshtein == true)
@@ -6207,9 +6207,9 @@ namespace WindowsApplication1.utils
                             }
                             else
                             {
-                                // Filter nicknames for duplicates into new table 
+                                // Filter nicknames for duplicates into new table */
                                 tools.SelectNicknamesClosestToActualNameIntoNewTable(nicknamesFromGmailTable, sqlUsersTable, nicknames.Columns[0].ColumnName, gusersyn.User_StuID, nicknamesFilteredForDuplicatesTable, selectFields, nicknames.Columns[1].ColumnName, keywordFields, sqlConn, log);
-                            }
+                            // }
                             // Check filtered nicknames against the sql data to see which emails need updating and put into a table for the next operation
                             tools.CheckEmailUpdateIntoNewTable(nicknames.Columns[2].ColumnName, gusersyn.Writeback_email_field, nicknamesFilteredForDuplicatesTable, sqlNicknamesTable, nicknames.Columns[0].ColumnName, gusersyn.Writeback_primary_key, nicknamesToUpdateDBTable, nicknameKeys, sqlkeys, sqlConn, log);
 
@@ -6275,7 +6275,7 @@ namespace WindowsApplication1.utils
                         additionalKeys.Clear();
                         additionalKeys.Add(nicknamesFilteredForDuplicatesTable + "." + nicknames.Columns[2].ColumnName + ", ");
                         sendAsAliases = tools.QueryInnerJoin(sqlUsersTable, nicknamesFilteredForDuplicatesTable, gusersyn.User_StuID, nicknames.Columns[0].ColumnName, additionalKeys, sqlConn, log);
-                        tools.CreateSendAs(gusersyn, sendAsAliases, nicknames.Columns[2].ColumnName, nicknames.Columns[2].ColumnName, log);
+                        // tools.CreateSendAs(gusersyn, sendAsAliases, nicknames.Columns[2].ColumnName, nicknames.Columns[2].ColumnName, log);
 
 
                         //tools.DropTable(nicknamesFromGmailTable, sqlConn, log);
