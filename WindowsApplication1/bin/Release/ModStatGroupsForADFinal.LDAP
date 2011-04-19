@@ -1,0 +1,16 @@
+configBaseGroupOU | OU=Active Students,OU=Student Accounts,DC=STUDENTS,DC=FHCHS,DC=EDU
+configBaseUserOU | OU=Active Students,OU=Student Accounts,DC=STUDENTS,DC=FHCHS,DC=EDU
+configNotes | Groups for differintiating Account type alumni student etc...
+configGroup_CN | mod_stat
+configGroup_table_view | Table
+configGroup_sAMAccount | mod_txt
+configGroup_dbTable | modstat
+configGroup_where | 
+configGroup_Prepend | _modstat
+configUser_Group_Reference | mod_stat
+configUser_table_view | Table
+configUser_sAMAccount | soc_sec
+configUser_dbTable | nmmodst
+configUser_where | soc_sec in (select CN from FHC_ADStudentAccounts)
+configDataServer | fhcc-db01
+configDBCatalog | SonisWebDatabase

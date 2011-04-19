@@ -1,0 +1,32 @@
+configDataServer | fhcc-db01
+configDBCatalog | SonisWebDatabase
+configUser_adminUser | mne4d7
+configUser_adminDomain | students.fhchs.edu
+configUser_adminPassword | abc123
+configUser_user_Datasource | Active Directory
+configUser_table_view | 
+configUser_dbTable | 
+configUser_where | 
+configUser_user_ad_OU | OU=Active Students,OU=Student Accounts,DC=STUDENTS,DC=FHCHS,DC=EDU
+configUser_Lname | sn
+configUser_Fname | givenName
+configUser_MiddleName | middleName
+configUser_StuID | sAMAccountName
+configUser_password_transfer_checkbox | False
+configUser_password_short_fix_checkbox | True
+configUser_password | comment
+configUser_writeback_AD_checkbox | True
+configUser_writeback_DB_checkbox | True
+configUser_writeback_table | address
+configUser_writeback_primary_key | soc_sec
+configUser_writeback_transfer_email_checkbox | True
+configUser_writeback_where_clause | preferred = 1
+configUser_writeback_email_field | e_mail
+configUser_writeback_secondary_email_field | e_mail2
+configUser_writeback_ad_OU | OU=Active Students,OU=Student Accounts,DC=STUDENTS,DC=FHCHS,DC=EDU
+<config>
+configTempTables | True
+configLogType | 
+configLogDB | 
+configLogCatalog | 
+configLogDirectory | 

@@ -1,0 +1,25 @@
+configBaseUserOU | OU=Alumni,OU=Student Accounts,DC=STUDENTS,DC=FHCHS,DC=EDU
+configNotes | 
+configUser_Lname | sn
+configUser_Fname | givenname
+configUser_city | l
+configUser_State | st
+configUser_Zip | postalcode
+configUser_Address | streetaddress
+configUser_Mobile | phone
+configUser_table_view | View
+configUser_sAMAccount | CN
+configUser_dbTable | FHC_ADFormerStudentsWithEmail
+configUser_where | 
+configDataServer | fhcc-db01
+configDBCatalog | SonisWebDatabase
+configUniversalGroup | CN=UNIVERSAL STUDENTS,OU=ACTIVE STUDENTS,OU=STUDENT ACCOUNTS,DC=STUDENTS,DC=FHCHS,DC=EDU
+configUserHoldingTank | OU=ALUMNI,OU=STUDENT ACCOUNTS,DC=STUDENTS,DC=FHCHS,DC=EDU
+configUser_password | password
+configCustoms | comment^password^&middleName^mi^&mail^mail^
+<config>
+configTempTables | True
+configLogType | 
+configLogDB | 
+configLogCatalog | 
+configLogDirectory | 

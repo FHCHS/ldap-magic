@@ -1,0 +1,28 @@
+configSearchScope | Subtree
+configBaseUserOU | OU=FHCHS,DC=FHCHS,DC=EDU
+configNotes | update test Michael Neubrander
+configUser_Lname | sn
+configUser_Fname | givenName
+configUser_city | l
+configUser_State | st
+configUser_Zip | postalCode
+configUser_Address | streetAddress
+configUser_Mobile | mobile
+configUser_table_view | View
+configUser_sAMAccount | description
+configUser_CN | cn
+configUser_dbTable | FHC_employee_data_for_AD
+configUser_where | 
+configDataServer | fhcc-db01
+configDBCatalog | SonisWebDatabase
+configUniversalGroup | 
+configUserHoldingTank | 
+configUser_password | description
+configUser_UpdateOnly | True
+configCustoms | manager^manager^
+<config>
+configTempTables | False
+configLogType | 
+configLogDB | 
+configLogCatalog | 
+configLogDirectory | 
