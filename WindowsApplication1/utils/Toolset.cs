@@ -87,6 +87,49 @@ namespace WindowsApplication1.utils
             logwarnings = new List<string>();
         }
 
+        public DataTable toDataTableTrn()
+        {
+            DataTable returnvalue = new DataTable();
+            DataRow row;
+            int i = 0;
+            row = returnvalue.NewRow();
+            for (i = 0; i < transactions.Count; i++)
+            {
+                row[i] = transactions[i].ToString();
+            }
+            returnvalue.Rows.Add(row);
+            row = returnvalue.NewRow();
+            return returnvalue;
+        }
+        public DataTable toDataTableErr()
+        {
+            DataTable returnvalue = new DataTable();
+            DataRow row;
+            int i = 0;
+            row = returnvalue.NewRow();
+            for (i = 0; i < errors.Count; i++)
+            {
+                row[i] = errors[i].ToString();
+            }
+            returnvalue.Rows.Add(row);
+            row = returnvalue.NewRow();
+            return returnvalue;
+        }
+        public DataTable toDataTableWar()
+        {
+            DataTable returnvalue = new DataTable();
+            DataRow row;
+            int i = 0;
+            row = returnvalue.NewRow();
+            for (i = 0; i < warnings.Count; i++)
+            {
+                row[i] = warnings[i].ToString();
+            }
+            returnvalue.Rows.Add(row);
+            row = returnvalue.NewRow();
+            return returnvalue;
+        }
+
         public List<string> transactions
         {
             get
@@ -3290,12 +3333,12 @@ namespace WindowsApplication1.utils
                 if (managerADtype == false && key == "manager" && adField == 1)
                 {
                     //add code for substring of manager field
-                    compare2 = compare2 + "case when ltrim(rtrim(" + table1 + "." + compareFields1[i] + ")) <> '' then (substring(" + table2 + "." + key + ",4, charindex('ou=', " + table2 + "." + key + ")-5) COLLATE SQL_Latin1_General_CP1_CS_AS ) else '' end + ";
+                    compare2 = compare2 + "case when ltrim(rtrim(" + table2 + "." + compareFields2[i] + ")) <> '' then (substring(" + table2 + "." + key + ",4, charindex('ou=', " + table2 + "." + key + ")-5) COLLATE SQL_Latin1_General_CP1_CS_AS ) else '' end + ";
                     notnull += "case when len(ltrim(rtrim(" + table2 + "." + key + "))) > 3 then substring(" + table2 + "." + key + ",4, charindex('ou=', " + table2 + "." + key + ")-5) else '' end <> '' OR ";
                 }
                 else
                 {
-                    compare2 = compare2 + "case when ltrim(rtrim(" + table1 + "." + compareFields1[i] + ")) <> '' then (ltrim(rtrim(" + table2 + "." + key + ")) COLLATE SQL_Latin1_General_CP1_CS_AS ) else '' end + ";
+                    compare2 = compare2 + "case when ltrim(rtrim(" + table2 + "." + compareFields2[i] + ")) <> '' then (ltrim(rtrim(" + table2 + "." + key + ")) COLLATE SQL_Latin1_General_CP1_CS_AS ) else '' end + ";
                     //fields += table2 + "." + key + ", ";
                     notnull += "ltrim(rtrim(" + table2 + "." + key + ")) <> '' OR ";
                 }
@@ -3319,7 +3362,7 @@ namespace WindowsApplication1.utils
             }
             else
             {
-                sqlComm = new SqlCommand("SELECT DISTINCT " + fields + " FROM " + table1 + " LEFT JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2 + " AND (" + compare2 + ") = (" + compare1 + ") INNER JOIN " + table2 + " as [" + table2 + "temp] ON " + table1 + "." + pkey1 + " = [" + table2 + "temp]." + pkey2 + " AND " + table2 + "." + pkey2 + " IS NULL WHERE " + notnull, sqlConn);
+                sqlComm = new SqlCommand("SELECT DISTINCT " + fields + " FROM " + table1 + " LEFT JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2 + " AND (" + compare2 + ") <> (" + compare1 + ") INNER JOIN " + table2 + " as [" + table2 + "temp] ON " + table1 + "." + pkey1 + " = [" + table2 + "temp]." + pkey2 + " AND " + table2 + "." + pkey2 + " IS NOT NULL WHERE " + notnull, sqlConn);
             }
             //AND " + table2 + "." + pkey2 + " != NULL
             try
@@ -5465,93 +5508,10 @@ namespace WindowsApplication1.utils
                 // Quick check to stop adding if the update only box is checked
                 if (usersyn.UpdateOnly == false)
                 {
-
-                    //************************************************************
-                    //                          START
-                    //                   DEBUG AND TEST DATA
-                    //
-                    //************************************************************
-                    //debug = " total users from sql \n";
-                    //sqlDebugComm = new SqlCommand("select top 20 * FROM " + sqlUsersTable, sqlConn);
-                    //debugReader = sqlDebugComm.ExecuteReader();
-                    //debugFieldCount = debugReader.FieldCount;
-                    //for (i = 0; i < debugFieldCount; i++)
-                    //{
-                    //    debug += debugReader.GetName(i) + ", ";
-                    //}
-                    //debug += "\n";
-                    //while (debugReader.Read())
-                    //{
-                    //    for (i = 0; i < debugFieldCount; i++)
-                    //    {
-                    //        debug += (string)debugReader[i].ToString() + ", ";
-                    //    }
-                    //    debug += "\n";
-                    //}
-                    //sqlDebugComm = new SqlCommand("select count(sAMAccountName) FROM " + sqlUsersTable, sqlConn);
-                    //debugReader.Close();
-                    //debugRecordCount = sqlDebugComm.ExecuteScalar().ToString();
-                    //MessageBox.Show("table " + sqlUsersTable + " has " + debugRecordCount + " records \n " + debugFieldCount + " fields \n sample data" + debug);
-
-
-                    //debug = "";
-                    //debug = " total users from AD \n";
-                    //sqlDebugComm = new SqlCommand("select top 20 * FROM " + adUsersTable, sqlConn);
-                    //debugReader = sqlDebugComm.ExecuteReader();
-                    //debugFieldCount = debugReader.FieldCount;
-                    //for (i = 0; i < debugFieldCount; i++)
-                    //{
-                    //    debug += debugReader.GetName(i) + ", ";
-                    //}
-                    //debug += "\n";
-                    //while (debugReader.Read())
-                    //{
-                    //    for (i = 0; i < debugFieldCount; i++)
-                    //    {
-                    //        debug += (string)debugReader[i] + ", ";
-                    //    }
-                    //    debug += "\n";
-                    //}
-                    //sqlDebugComm = new SqlCommand("select count(" + adUsers.Columns[0].ColumnName + ") FROM " + adUsersTable, sqlConn);
-                    //debugReader.Close();
-                    //debugRecordCount = sqlDebugComm.ExecuteScalar().ToString();
-                    //MessageBox.Show("table " + adUsersTable + " has " + debugRecordCount + " records \n " + debugFieldCount + " fields \n sample data" + debug);
-                    //************************************************************
-                    //                            END
-                    //                   DEBUG AND TEST DATA
-                    //
-                    //************************************************************
-
-
-
-
-
-
-                    // compare and add/remove
+                    // compare query for the add/remove
                     add = tools.QueryNotExists(sqlUsersTable, adUsersTable, sqlConn, "sAMAccountName", adUsers.Columns[0].ColumnName, log);
 
-
-                    //debug = "Gunna Add stuff \n";
-                    //debugFieldCount = add.FieldCount;
-                    //for (i = 0; i < debugFieldCount; i++)
-                    //{
-                    //    debug += add.GetName(i) + ", ";
-                    //}
-                    //debug += "\n";
-                    //j = 0;
-                    //while (add.Read() && j < 20)
-                    //{
-                    //    for (i = 0; i < debugFieldCount; i++)
-                    //    {
-                    //        debug += (string)add[i] + ", ";
-                    //    }
-                    //    debug += "\n";
-                    //    j++;
-                    //}
-
-                    ////debugReader.Close();
-                    //MessageBox.Show("table " + adUsersTable + "\n " + debugFieldCount + " fields \n sample data \n" + debug);
-
+                    // actual add stuff
                     tools.CreateUsersAccounts(usersyn.UserHoldingTank, add, usersyn.UniversalGroup, DC, usersyn, log);
                     add.Close();
 
@@ -5562,28 +5522,8 @@ namespace WindowsApplication1.utils
 
                     if (recordCount != "0")
                     {
+                        // compare query to find records which need deletion
                         delete = tools.QueryNotExists(adUsersTable, sqlUsersTable, sqlConn, usersyn.User_sAMAccount, completeADKeys[0].ToString(), log);
-
-                        //debug = "Gunna delete stuff \n field names are \n";
-                        //debugFieldCount = delete.FieldCount;
-                        //for (i = 0; i < debugFieldCount; i++)
-                        //{
-                        //    debug += delete.GetName(i) + ", ";
-                        //}
-                        //debug += "\n data \n";
-                        ////int j = 0;
-                        //j = 0;
-                        //while (delete.Read() && j < 20)
-                        //{
-                        //    for (i = 0; i < debugFieldCount; i++)
-                        //    {
-                        //        debug += (string)delete[i] + ", ";
-                        //    }
-                        //    debug += "\n";
-                        //    j++;
-                        //}
-
-                        //MessageBox.Show(debug);
 
                         // delete users in AD
                         try
@@ -5608,26 +5548,6 @@ namespace WindowsApplication1.utils
 
                 update = tools.CheckUpdate(sqlUsersTable, adUsersTable, "sAMAccountName", "sAMAccountName", sqlUpdateKeys, adUpdateKeys, extraFieldsToReturn, 1, sqlConn, log);
 
-                //debug = "Gunna update stuff \n field names are \n";
-                //debugFieldCount = update.FieldCount;
-                //for (i = 0; i < debugFieldCount; i++)
-                //{
-                //    debug += update.GetName(i) + ", ";
-                //}
-                //debug += "\n data \n";
-                ////int j = 0;
-                //j = 0;
-                //while (update.Read() && j < 20)
-                //{
-                //    for (i = 0; i < debugFieldCount; i++)
-                //    {
-                //        debug += (string)update[i] + ", ";
-                //    }
-                //    debug += "\n";
-                //    j++;
-                //}
-
-                //MessageBox.Show(debug);
 
                 tools.UpdateUsers(update, DC, log);
                 // update users in ad
@@ -6107,7 +6027,7 @@ namespace WindowsApplication1.utils
 
 
 
-                // get list of users from gmail this may have changed when we ran the update
+                // get list of users from gmail this may have changed when we ran the update to test to see if anyone is missing nicknames
                 gmailUsers.Clear();
                 tools.DropTable(gmailUsersTable, sqlConn, log);
                 gmailUsers = tools.Get_Gmail_Users(service, gusersyn, gmailUsersTable, log);
@@ -6159,16 +6079,12 @@ namespace WindowsApplication1.utils
                     if (nicknames.Rows.Count > 0)
                     {
 
-
                         // create array lists of fields which match for updating
                         // ID field
                         nicknameKeys.Add(nicknames.Columns[0].ColumnName);
                         nicknameKeys.Add(nicknames.Columns[2].ColumnName);
                         sqlkeys.Add(gusersyn.Writeback_primary_key);
                         sqlkeys.Add(gusersyn.Writeback_email_field);
-
-
-
 
                         // check against list of nicknames in database
                         if (gusersyn.Writeback_DB_checkbox == true)
