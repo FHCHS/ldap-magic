@@ -114,6 +114,7 @@ namespace WindowsApplication1
                 try
                 {
                     SqlDataReader r = sqlComm.ExecuteReader();
+                    log.queries.Add(sqlComm.CommandText.ToString());
                     while (r.Read())
                     {
                         tableList.Add((string)r[0].ToString().Trim());
@@ -149,6 +150,7 @@ namespace WindowsApplication1
                 try
                 {
                     SqlDataReader r = sqlComm.ExecuteReader();
+                    log.queries.Add(sqlComm.CommandText.ToString());
                     while (r.Read())
                     {
                         columnList.Add((string)r[0].ToString().Trim());
@@ -214,6 +216,7 @@ namespace WindowsApplication1
                 try
                 {
                     SqlDataReader r = sqlComm.ExecuteReader();
+                    log.queries.Add(sqlComm.CommandText.ToString());
                     while (r.Read())
                     {
                         tableList.Add((string)r[0].ToString().Trim());
@@ -249,6 +252,7 @@ namespace WindowsApplication1
                 try
                 {
                     SqlDataReader r = sqlComm.ExecuteReader();
+                    log.queries.Add(sqlComm.CommandText.ToString());
                     while (r.Read())
                     {
                         columnList.Add((string)r[0].ToString().Trim());
@@ -532,59 +536,14 @@ namespace WindowsApplication1
         private void users_Execute_Click(object sender, EventArgs e)
         {
             //int i;
-            //StopWatch timer = new StopWatch();
-            //timer.Start();
+            StopWatch timer = new StopWatch();
+            timer.Start();
             groupSyncr.ExecuteUserSync(userconfig, settingsconfig, tools, log);
-            //timer.Stop();
-            //MessageBox.Show("bulk " + timer.GetElapsedTimeSecs().ToString());
-            //StringBuilder result = new StringBuilder();
-            //StringBuilder result2 = new StringBuilder();
-            //result.Append("***************************\n*                         *\n*        Transactions     *\n*                         *\n***************************");
-            //for (i = 0; i < log.transactions.Count; i++)
-            //{
-            //    result.Append(log.transactions[i].ToString() + "\n");
-            //}
-
-            //result.Append("***************************\n*                         *\n*        Warnings         *\n*                         *\n***************************");
-
-            //for (i = 0; i < log.warnings.Count; i++)
-            //{
-            //    result.Append(log.warnings[i].ToString() + "\n");
-            //}
-
-            //result.Append("***************************\n*                         *\n*        Errors           *\n*                         *\n***************************");
-            //for (i = 0; i < log.errors.Count; i++)
-            //{
-            //    result2.Append(log.errors[i].ToString() + "\n");
-            //}
-
-			// save log to disk
-            //SaveFileDialog saveFileDialog1 = new SaveFileDialog();
-            //saveFileDialog1.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
-            //saveFileDialog1.FilterIndex = 2;
-            //saveFileDialog1.RestoreDirectory = true;
-            //if (saveFileDialog1.ShowDialog() == DialogResult.OK)
-            //{
-            //    // create a file stream, where "c:\\testing.txt" is the file path
-            //    System.IO.FileStream fs = new System.IO.FileStream(saveFileDialog1.FileName, System.IO.FileMode.OpenOrCreate, System.IO.FileAccess.Write, System.IO.FileShare.ReadWrite);
-
-            //    // create a stream writer
-            //    System.IO.StreamWriter sw = new System.IO.StreamWriter(fs, System.Text.Encoding.ASCII);
-
-            //    // write to file (buffer), where textbox1 is your text box
-            //    sw.WriteLine("{0}", result2);
-            //    sw.WriteLine("{0}", result);
-
-
-            //    // flush buffer (so the text really goes into the file)
-            //    sw.Flush();
-
-            //    // close stream writer and file
-            //    sw.Close();
-            //    fs.Close();
-            //}
-			//            group_result1.AppendText(result.ToString());
-			//            group_result2.AppendText(result2.ToString());
+            tools.savelog(log, settingsconfig);
+            timer.Stop();
+            log.transactions.Add("stop time" + timer.GetElapsedTimeSecs());
+            tools.savelog(log, settingsconfig);
+     
         }
         private void users_open_Click(object sender, EventArgs e)
         {
@@ -743,6 +702,7 @@ namespace WindowsApplication1
                 try
                 {
                     SqlDataReader r = sqlComm.ExecuteReader();
+                    log.queries.Add(sqlComm.CommandText.ToString());
                     while (r.Read())
                     {
                         tableList.Add((string)r[0].ToString().Trim());
@@ -778,6 +738,7 @@ namespace WindowsApplication1
                 try
                 {
                     SqlDataReader r = sqlComm.ExecuteReader();
+                    log.queries.Add(sqlComm.CommandText.ToString());
                     while (r.Read())
                     {
                         columnList.Add((string)r[0].ToString().Trim());
@@ -841,6 +802,7 @@ namespace WindowsApplication1
                 try
                 {
                     SqlDataReader r = sqlComm.ExecuteReader();
+                    log.queries.Add(sqlComm.CommandText.ToString());
                     while (r.Read())
                     {
                         tableList.Add((string)r[0].ToString().Trim());
@@ -876,6 +838,7 @@ namespace WindowsApplication1
                 try
                 {
                     SqlDataReader r = sqlComm.ExecuteReader();
+                    log.queries.Add(sqlComm.ToString());
                     while (r.Read())
                     {
                         columnList.Add((string)r[0].ToString().Trim());
@@ -1032,6 +995,17 @@ namespace WindowsApplication1
                     sw.WriteLine("{0} | {1:C}", str, properties[str]);
                 }
 
+                // Save the config portion as well
+                sw.WriteLine("<config>");
+                properties.Clear();
+                properties = settingsconfig.ToDictionary();
+
+                c = properties.Keys;
+                i = c.Count;
+                foreach (string str in c)
+                {
+                    sw.WriteLine("{0} | {1:C}", str, properties[str]);
+                }
                 // flush buffer (so the text really goes into the file)
                 sw.Flush();
 
@@ -1117,62 +1091,14 @@ namespace WindowsApplication1
         }
         private void group_execute_now_Click(object sender, EventArgs e)
 		{
-			int i;
 			StopWatch timer = new StopWatch();
 			timer.Start();
+            log.transactions.Add("start time" + timer.GetElapsedTimeSecs());
 			groupSyncr.ExecuteGroupSync(groupconfig, settingsconfig, tools, log);
 			timer.Stop();
-			// MessageBox.Show("bulk " + timer.GetElapsedTimeSecs().ToString());
-
-			//string sqlgroupsTable = "#sqltableADTransfertesttoy";
-			//SqlConnection sqlConn = new SqlConnection("Data Source=" + groupconfig.DataServer + ";Initial Catalog=" + groupconfig.DBCatalog + ";Integrated Security=SSPI;");
-			//SqlCommand sqlComm;
-			//sqlConn.Open();
-			//sqlComm = new SqlCommand("SELECT DISTINCT RTRIM(" + groupconfig.Group_sAMAccount + ") AS " + groupconfig.Group_sAMAccount + ", RTRIM(" + groupconfig.Group_CN + ") + '" + groupconfig.Group_Append + "' AS " + groupconfig.Group_CN + " INTO " + sqlgroupsTable + " FROM " + groupconfig.Group_dbTable + " ORDER BY " + groupconfig.Group_CN, sqlConn);
-			//sqlComm.ExecuteNonQuery();
-			//SqlDataReader debugreader;
-			//StringBuilder debug = new StringBuilder();
-			//int debugfieldcount;
-			//sqlComm = new SqlCommand("select * FROM " + sqlgroupsTable, sqlConn);
-			//debugreader = sqlComm.ExecuteReader();
-			//debugfieldcount = debugreader.FieldCount;
-			//while (debugreader.Read())
-			//{
-			//    for (i = 0; i < debugfieldcount; i++)
-			//    {
-			//        debug.Append((string)debugreader[i].ToString() + ",");
-			//    }
-			//    debug.AppendLine();
-			//}
-			//debugreader.Close();
-			//group_result1.AppendText(debug.ToString());
-
-			StringBuilder result = new StringBuilder();
-			StringBuilder result2 = new StringBuilder();
-			result.Append("***************************\n*                         *\n*        Transactions     *\n*                         *\n***************************");
-			for (i = 0; i < log.transactions.Count; i++)
-			{
-				result.Append(log.transactions[i].ToString() + "\n");
-			}
-
-			result.Append("***************************\n*                         *\n*        Warnings         *\n*                         *\n***************************");
-
-			for (i = 0; i < log.warnings.Count; i++)
-			{
-				result.Append(log.warnings[i].ToString() + "\n");
-			}
-
-			result.Append("***************************\n*                         *\n*        Errors           *\n*                         *\n***************************");
-			for (i = 0; i < log.errors.Count; i++)
-			{
-				result2.Append(log.errors[i].ToString() + "\n");
-			}
-			execution_transactions_warnings_textbox.AppendText(result.ToString());
-			execution_errors_textbox.AppendText(result2.ToString());
-			// groupSyncr.execute(groupconfig, tools, log);
-			// users_result1.Text log.transactions.ToString();
-			// users_result2.Text = log.errors.ToString();
-			// MessageBox.Show("compelete");
+            log.transactions.Add("stop time" + timer.GetElapsedTimeSecs());
+            tools.savelog(log, settingsconfig);
+		
 		}
 
 		//deprecated
@@ -1293,6 +1219,7 @@ namespace WindowsApplication1
             System.Data.SqlClient.SqlDataReader r;
 
                 r = sqlComm.ExecuteReader();
+                log.queries.Add(sqlComm.CommandText.ToString());
                 while (r.Read())
                 {
                     tableList.Add((string)r[0].ToString().Trim());
@@ -1359,6 +1286,7 @@ namespace WindowsApplication1
                 try
                 {
                     SqlDataReader r = sqlComm.ExecuteReader();
+                    log.queries.Add(sqlComm.CommandText.ToString());
                     while (r.Read())
                     {
                         columnList.Add((string)r[0].ToString().Trim());
@@ -1406,6 +1334,7 @@ namespace WindowsApplication1
                 try
                 {
                     SqlDataReader r = sqlComm.ExecuteReader();
+                    log.queries.Add(sqlComm.CommandText.ToString());
                     while (r.Read())
                     {
                         tableList.Add((string)r[0].ToString().Trim());
@@ -1620,6 +1549,7 @@ namespace WindowsApplication1
                     try
                     {
                         r = sqlComm.ExecuteReader();
+                        log.queries.Add(sqlComm.CommandText.ToString());
                         while (r.Read())
                         {
                             tableList.Add((string)r[0].ToString().Trim());
@@ -1824,6 +1754,7 @@ namespace WindowsApplication1
                 try
                 {
                     SqlDataReader r = sqlComm.ExecuteReader();
+                    log.queries.Add(sqlComm.CommandText.ToString());
                     while (r.Read())
                     {
                         tableList.Add((string)r[0].ToString().Trim());
@@ -1859,6 +1790,7 @@ namespace WindowsApplication1
                 try
                 {
                     SqlDataReader r = sqlComm.ExecuteReader();
+                    log.queries.Add(sqlComm.CommandText.ToString());
                     while (r.Read())
                     {
                         columnList.Add((string)r[0].ToString().Trim());
@@ -1969,6 +1901,7 @@ namespace WindowsApplication1
                     try
                     {
                         SqlDataReader r = sqlComm.ExecuteReader();
+                        log.queries.Add(sqlComm.CommandText.ToString());
                         while (r.Read())
                         {
                             tableList.Add((string)r[0].ToString().Trim());
@@ -2039,6 +1972,7 @@ namespace WindowsApplication1
                 try
                 {
                     SqlDataReader r = sqlComm.ExecuteReader();
+                    log.queries.Add(sqlComm.CommandText.ToString());
                     while (r.Read())
                     {
                         columnList.Add((string)r[0].ToString().Trim());
@@ -2270,8 +2204,15 @@ namespace WindowsApplication1
             Form1.ActiveForm.Text = "LDAP Magic Gmail : " + openFileDialog1.FileName;			
 		}
 		private void mail_execute_Click(object sender, EventArgs e)
+
 		{
-			gmailSyncr.EmailUsersSync(guserconfig, settingsconfig, tools, log);
+            StopWatch timer = new StopWatch();
+            timer.Start();
+            log.transactions.Add("start time" + timer.GetElapsedTimeSecs());
+            gmailSyncr.EmailUsersSync(guserconfig, settingsconfig, tools, log);
+            timer.Stop();
+            log.transactions.Add("stop time" + timer.GetElapsedTimeSecs());
+            tools.savelog(log, settingsconfig);
 		}
 
         // BUTTONS FOR RESULTS TAB
@@ -2644,6 +2585,7 @@ namespace WindowsApplication1
             try
             {
                 r = sqlComm.ExecuteReader();
+                log.queries.Add(sqlComm.CommandText.ToString());
                 while(r.Read())
                 {    
                     user = (string)r[0];
@@ -2720,6 +2662,7 @@ namespace WindowsApplication1
                 System.Data.SqlClient.SqlDataReader r;
 
                 r = sqlComm.ExecuteReader();
+                log.queries.Add(sqlComm.CommandText.ToString());
                 while (r.Read())
                 {
                     tableList.Add((string)r[0].ToString().Trim());
@@ -2813,6 +2756,7 @@ namespace WindowsApplication1
                 sqlComm.CommandTimeout = 360;
                // sqlComm.CommandType = System.Data.CommandType.StoredProcedure;
                 sqlComm.ExecuteNonQuery();
+                log.queries.Add(sqlComm.CommandText.ToString());
             }
             catch (Exception ex)
             {
@@ -2828,6 +2772,7 @@ namespace WindowsApplication1
                 //sqlComm.CommandType = System.Data.CommandType.StoredProcedure;
                 sqlComm.CommandTimeout = 360;
                 sqlComm.ExecuteNonQuery();
+                log.queries.Add(sqlComm.CommandText.ToString());
             }
             catch (Exception ex)
             {

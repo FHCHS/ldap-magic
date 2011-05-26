@@ -80,11 +80,13 @@ namespace WindowsApplication1.utils
         private List<string> logtransactions;
         private List<string> logterrors;
         private List<string> logwarnings;
+        private List<string> logqueries;
         public LogFile()
         {
             logtransactions = new List<string>();
             logterrors = new List<string>();
             logwarnings = new List<string>();
+            logqueries = new List<string>();
         }
 
         public DataTable toDataTableTrn()
@@ -161,6 +163,17 @@ namespace WindowsApplication1.utils
             set
             {
                 logwarnings = value;
+            }
+        }
+        public List<string> queries
+        {
+            get
+            {
+                return logqueries;
+            }
+            set
+            {
+                logqueries = value;
             }
         }
 
@@ -1505,10 +1518,10 @@ namespace WindowsApplication1.utils
         {
             Dictionary<string, string> returnvalue = new Dictionary<string, string>();
             returnvalue.Add("configTempTables", configTempTables_checkbox.ToString());
-            returnvalue.Add("configLogType", configLogType.ToString());
-            returnvalue.Add("configLogDB", configLogDB.ToString());
-            returnvalue.Add("configLogCatalog", configLogCatalog.ToString());
-            returnvalue.Add("configLogDirectory", configLogDirectory.ToString());
+            returnvalue.Add("configLogType", (configLogType != null) ? configLogType.ToString() : "");
+            returnvalue.Add("configLogDB", (configLogDB != null) ? configLogDB.ToString() : "");
+            returnvalue.Add("configLogCatalog", (configLogCatalog != null) ? configLogCatalog.ToString() : "");
+            returnvalue.Add("configLogDirectory", (configLogDirectory != null) ? configLogDirectory.ToString() : "") ;
             return returnvalue;
         }
         public void Load(Dictionary<string, string> dictionary)
@@ -2904,6 +2917,7 @@ namespace WindowsApplication1.utils
             {
                 sqlComm.CommandTimeout = 360;
                 sqlComm.ExecuteNonQuery();
+                log.queries.Add(sqlComm.CommandText.ToString());
                 log.transactions.Add("table created " + table);
             }
             catch (Exception ex)
@@ -2952,6 +2966,7 @@ namespace WindowsApplication1.utils
             {
                 sqlComm.CommandTimeout = 360;
                 sqlComm.ExecuteNonQuery();
+                log.queries.Add(sqlComm.CommandText.ToString());
                 log.transactions.Add("table dropped " + table);
             }
             catch (Exception ex)
@@ -2981,6 +2996,7 @@ namespace WindowsApplication1.utils
             {
                 sqlComm.CommandTimeout = 360;
                 r = sqlComm.ExecuteReader();
+                log.queries.Add(sqlComm.CommandText.ToString());
                 return r;
             }
             catch (Exception ex)
@@ -3007,6 +3023,7 @@ namespace WindowsApplication1.utils
             {
                 sqlComm.CommandTimeout = 360;
                 sqlComm.ExecuteNonQuery();
+                log.queries.Add(sqlComm.CommandText.ToString());
             }
             catch (Exception ex)
             {
@@ -3033,6 +3050,7 @@ namespace WindowsApplication1.utils
             {
                 sqlComm.CommandTimeout = 360;
                 r = sqlComm.ExecuteReader();
+                log.queries.Add(sqlComm.CommandText.ToString());
                 return r;
             }
             catch (Exception ex)
@@ -3076,6 +3094,7 @@ namespace WindowsApplication1.utils
             {
                 sqlComm.CommandTimeout = 360;
                 r = sqlComm.ExecuteReader();
+                log.queries.Add(sqlComm.CommandText.ToString());
                 return r;
             }
             catch (Exception ex)
@@ -3101,6 +3120,7 @@ namespace WindowsApplication1.utils
             {
                 sqlComm.CommandTimeout = 360;
                 sqlComm.ExecuteNonQuery();
+                log.queries.Add(sqlComm.ToString());
             }
             catch (Exception ex)
             {
@@ -3155,12 +3175,12 @@ namespace WindowsApplication1.utils
             compare2 = compare2.Remove(compare2.Length - 2);
             compare1 = compare1.Remove(compare1.Length - 2);
             fields = fields.Remove(fields.Length - 2);
-            SqlCommand sqlComm = new SqlCommand("SELECT DISTINCT " + fields + " FROM " + table1 + " LEFT JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2 + " AND (" + compare2 + ") = (" + compare1 + ") INNER JOIN " + table2 + " as [" + table2 + "temp] ON " + table1 + "." + pkey1 + " = [" + table2 + "temp]." + pkey2 + " WHERE " + table2 + "." + pkey2 + " IS NULL", sqlConn);
-            //AND " + table2 + "." + pkey2 + " != NULL
+            SqlCommand sqlComm = new SqlCommand("SELECT DISTINCT " + fields + " FROM " + table1 + " LEFT JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2 + " AND (" + compare2 + ") <> (" + compare1 + ") INNER JOIN " + table2 + " as [" + table2 + "temp] ON " + table1 + "." + pkey1 + " = [" + table2 + "temp]." + pkey2 + " WHERE " + table2 + "." + pkey2 + " IS NOT NULL", sqlConn);
             try
             {
                 sqlComm.CommandTimeout = 360;
                 SqlDataReader r = sqlComm.ExecuteReader();
+                log.queries.Add(sqlComm.ToString());
                 return r;
             }
             catch (Exception ex)
@@ -3248,6 +3268,7 @@ namespace WindowsApplication1.utils
                         {
                             sqlCheck.CommandTimeout = 360;
                             checkReader = sqlCheck.ExecuteReader();
+                            log.queries.Add(sqlCheck.CommandText.ToString());
                             checkReader.Read();
                             if ((string)checkReader[0].ToString().Substring(0, 2) == "CN=")
                             {
@@ -3277,6 +3298,7 @@ namespace WindowsApplication1.utils
                         {
                             sqlCheck.CommandTimeout = 360;
                             checkReader = sqlCheck.ExecuteReader();
+                            log.queries.Add(sqlCheck.ToString());
                             checkReader.Read();
                             if ((string)checkReader[0].ToString().Substring(0, 2) == "CN=")
                             {
@@ -3358,7 +3380,7 @@ namespace WindowsApplication1.utils
             SqlCommand sqlComm;
             if (additionalFields.Count > 0)
             {
-                sqlComm = new SqlCommand("SELECT DISTINCT " /*+ compare2 + "," + compare1 + "," + table1 + "." + pkey1 + "," + table2 + "." + pkey2 + ","*/ + fields + ", " + additionalfields + " FROM " + table1 + " LEFT JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2 + " AND (" + compare2 + ") = (" + compare1 + ") INNER JOIN " + table2 + " as [" + table2 + "temp] ON " + table1 + "." + pkey1 + " = [" + table2 + "temp]." + pkey2 + " AND " + table2 + "." + pkey2 + " IS NULL WHERE " + notnull, sqlConn);
+                sqlComm = new SqlCommand("SELECT DISTINCT " /*+ compare2 + "," + compare1 + "," + table1 + "." + pkey1 + "," + table2 + "." + pkey2 + ","*/ + fields + ", " + additionalfields + " FROM " + table1 + " LEFT JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2 + " AND (" + compare2 + ") <> (" + compare1 + ") INNER JOIN " + table2 + " as [" + table2 + "temp] ON " + table1 + "." + pkey1 + " = [" + table2 + "temp]." + pkey2 + " AND " + table2 + "." + pkey2 + " IS NULL WHERE " + notnull, sqlConn);
             }
             else
             {
@@ -3369,6 +3391,7 @@ namespace WindowsApplication1.utils
             {
                 sqlComm.CommandTimeout = 360;
                 SqlDataReader r = sqlComm.ExecuteReader();
+                log.queries.Add(sqlComm.CommandText.ToString());
                 return r;
             }
             catch (Exception ex)
@@ -3431,6 +3454,7 @@ namespace WindowsApplication1.utils
             {
                 sqlComm.CommandTimeout = 360;
                 sqlComm.ExecuteNonQuery();
+                log.queries.Add(sqlComm.ToString());
             }
             catch (Exception ex)
             {
@@ -3506,6 +3530,7 @@ namespace WindowsApplication1.utils
             {
                 sqlComm.CommandTimeout = 360;
                 sqlComm.ExecuteNonQuery();
+                log.queries.Add(sqlComm.CommandText.ToString());
             }
             catch (Exception ex)
             {
@@ -3514,35 +3539,18 @@ namespace WindowsApplication1.utils
         }
         public void Levenshtein(string table1, string table2, string pkey1, string pkey2, string newTable, ArrayList selectFields, string targetField, ArrayList valueFields, SqlConnection sqlConn, LogFile log)
         {
-            //select distinct soc_sec, 
-            //(Select top 1 nickname
-            //    from FHC_TEST_gmailNicknamesTable left join FHC_TEST_sqlusersTable on FHC_TEST_gmailNicknamesTable.soc_sec = FHC_TEST_sqlusersTable.sAMAccountName
-            //    where soc_sec = a.soc_sec 
-            //    order by soc_sec, 
-            //        CHARINDEX(FHC_TEST_sqlusersTable.sn, FHC_TEST_gmailNicknamesTable.nickname) DESC,
-            //        CHARINDEX(FHC_TEST_sqlusersTable.givenName, FHC_TEST_gmailNicknamesTable.nickname) DESC,
-            //        CHARINDEX(FHC_TEST_sqlusersTable.middleName, FHC_TEST_gmailNicknamesTable.nickname) DESC
-            //)
-            //as nickname,
-            //    (Select top 1 email
-            //    from FHC_TEST_gmailNicknamesTable left join FHC_TEST_sqlusersTable on FHC_TEST_gmailNicknamesTable.soc_sec = FHC_TEST_sqlusersTable.sAMAccountName
-            //    where soc_sec = a.soc_sec 
-            //    order by soc_sec, CHARINDEX(FHC_TEST_sqlusersTable.sn, FHC_TEST_gmailNicknamesTable.nickname) DESC, CHARINDEX(FHC_TEST_sqlusersTable.givenName, FHC_TEST_gmailNicknamesTable.nickname) DESC, CHARINDEX(FHC_TEST_sqlusersTable.middleName, FHC_TEST_gmailNicknamesTable.nickname) DESC) as email
-            //FROM FHC_TEST_gmailNicknamesTable as a
-            //ORDER BY soc_sec;
+    
+            //SELECT dbo.LEVENSHTEIN((FHC_LDAP_sqlusersTable.givenName + '.' + FHC_LDAP_sqlusersTable.sn), FHC_LDAP_gmailNicknamesTable.nickname),
+            //(FHC_LDAP_sqlusersTable.givenName + '.' + FHC_LDAP_sqlusersTable.sn) as templateName,
+            //FHC_LDAP_gmailNicknamesTable.nickname,
+            //FHC_LDAP_gmailNicknamesTable.Email, 
+            //FHC_LDAP_gmailNicknamesTable.soc_sec 
+            //FROM FHC_LDAP_gmailNicknamesTable LEFT JOIN FHC_LDAP_sqlusersTable ON FHC_LDAP_gmailNicknamesTable.soc_sec = FHC_LDAP_sqlusersTable.sAMAccountName 
+            //group by FHC_LDAP_gmailNicknamesTable.soc_sec, FHC_LDAP_gmailNicknamesTable.Email, FHC_LDAP_gmailNicknamesTable.nickname, 
+            //(FHC_LDAP_sqlusersTable.givenName + '.' + FHC_LDAP_sqlusersTable.sn)
+            //order by FHC_LDAP_gmailNicknamesTable.soc_sec
 
-            // Assumes table1 holds the correct data and returns a data reader with the update fields columns from table1
-            // returns the rows which table2's concatenated update fields differ from table1's concatenated update fields
-            // eliminates rows which do not have a matching key in both tables
-            // adds convluted logic to deal with duplicates and select the one closest to the matching data from the table 2 assumed to be the correct first middle last name etc
-            //*************************************************************************************************
-            //| Table1                      | Table2                    | Returned result
-            //*************************************************************************************************
-            //| ID            Data          | ID             Data       |                   | Table1.ID     Table1.DATA
-            //| 1             a             | 1              a          | NOT RETURNED      |
-            //| 2             b             | null           null       | NOT RETURNED      |              
-            //| 3             c             | 3              null       | RETURNED          | 3             c
-            //| 4             d             | 4              e          | RETURNED          | 4             e
+            //uses levensthein to calculate the closest nickname to the first.last and returns that nickname
 
             //string table1 the table with the new nicknames
             //string table2 the table with the original names 
@@ -3581,6 +3589,7 @@ namespace WindowsApplication1.utils
             {
                 sqlComm.CommandTimeout = 360;
                 sqlComm.ExecuteNonQuery();
+                log.queries.Add(sqlComm.CommandText.ToString());
             }
             catch (Exception ex)
             {
@@ -3632,6 +3641,7 @@ namespace WindowsApplication1.utils
             {
                 sqlComm.CommandTimeout = 360;
                 sqlComm.ExecuteNonQuery();
+                log.queries.Add(sqlComm.CommandText.ToString());
             }
             catch (Exception ex)
             {
@@ -3719,6 +3729,7 @@ namespace WindowsApplication1.utils
                 {
                     sqlComm.CommandTimeout = 360;
                     sqlComm.ExecuteNonQuery();
+                    log.queries.Add(sqlComm.CommandText.ToString());
                     log.transactions.Add("DB email writeback, user " + users.Rows[i][gusersyn.Writeback_primary_key].ToString().Replace("'", "''") + ", email " + users.Rows[i][gusersyn.Writeback_email_field].ToString().Replace("'", "''"));
                 }
                 catch (Exception ex)
@@ -3777,6 +3788,7 @@ namespace WindowsApplication1.utils
                     {
                         sqlComm.CommandTimeout = 360;
                         sqlComm.ExecuteNonQuery();
+                        log.queries.Add(sqlComm.CommandText.ToString());
                         log.transactions.Add("DB email writeback, user " + users[gusersyn.Writeback_primary_key].ToString().Replace("'", "''") + ", email " + users[gusersyn.Writeback_email_field].ToString().Replace("'", "''"));
                     }
                     catch (Exception ex)
@@ -3831,6 +3843,7 @@ namespace WindowsApplication1.utils
             {
                 sqlComm.CommandTimeout = 360;
                 sqlComm.ExecuteNonQuery();
+                log.queries.Add(sqlComm.ToString());
             }
             catch (Exception ex)
             {
@@ -3880,6 +3893,7 @@ namespace WindowsApplication1.utils
             {
                 sqlComm.CommandTimeout = 360;
                 sqlComm.ExecuteNonQuery();
+                log.queries.Add(sqlComm.ToString());
             }
             catch (Exception ex)
             {
@@ -4323,6 +4337,7 @@ namespace WindowsApplication1.utils
 
                 StringBuilder sqlstring = new StringBuilder();
                 SqlConnection sqlConn = new SqlConnection("Data Source=" + settingsConfig.LogDB + ";Initial Catalog=" + settingsConfig.LogCatalog + ";Integrated Security=SSPI;Connect Timeout=360;");
+                sqlConn.Open();
                 SqlCommand sqlComm;
                 DateTime nowstamp = new DateTime();
                 nowstamp = DateTime.Now;
@@ -4330,6 +4345,20 @@ namespace WindowsApplication1.utils
                 data.Columns.Add("Message");
                 data.Columns.Add("Type");
                 data.Columns.Add("Timestamp", System.Type.GetType("System.DateTime"));
+
+                sqlstring.Append("CREATE TABLE [" + table + "]([Message] [varchar](350), [Type] [varchar](50), [Timestamp] [datetime] NULL) ON [PRIMARY]");
+                sqlComm = new SqlCommand(sqlstring.ToString(), sqlConn);
+                try
+                {
+                    sqlComm.CommandTimeout = 360;
+                    sqlComm.ExecuteNonQuery();
+                    log.queries.Add(sqlComm.CommandText.ToString());
+                    log.transactions.Add("table created " + table);                   
+                }
+                catch (Exception ex)
+                {
+                    log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                }
 
 
                 row = data.NewRow();
@@ -4341,28 +4370,32 @@ namespace WindowsApplication1.utils
                     data.Rows.Add(row);
                     row = data.NewRow();
                 }
-
-                // make the temp table
-                //sqlstring.Append("CREATE TABLE Log (");
-                //for (i = 0; i < Count; i++)
-                //{
-                //    sqlstring.Append(data.Columns[i] + " VarChar(350), ");
-                //}
-                //sqlstring.Remove((sqlstring.Length - 2), 2);
-                //sqlstring.Append(")");
-
-                sqlstring.Append("CREATE TABLE [" + table + "]([Message] [varchar](350), [Type] [varchar](50), [Timestamp] [datetime] NULL) ON [PRIMARY]");
-                sqlComm = new SqlCommand(sqlstring.ToString(), sqlConn);
-                try
+                for (i = 0; i < log.warnings.Count; i++)
                 {
-                    sqlComm.CommandTimeout = 360;
-                    sqlComm.ExecuteNonQuery();
-                    log.transactions.Add("table created " + table);
+                    row[0] = log.warnings[i].ToString();
+                    row[1] = "Warning";
+                    row[2] = nowstamp;
+                    data.Rows.Add(row);
+                    row = data.NewRow();
                 }
-                catch (Exception ex)
+                for (i = 0; i < log.errors.Count; i++)
                 {
-                    log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                    row[0] = log.errors[i].ToString();
+                    row[1] = "Errors";
+                    row[2] = nowstamp;
+                    data.Rows.Add(row);
+                    row = data.NewRow();
                 }
+                for (i = 0; i < log.queries.Count; i++)
+                {
+                    row[0] = log.queries[i].ToString();
+                    row[1] = "Query";
+                    row[2] = nowstamp;
+                    data.Rows.Add(row);
+                    row = data.NewRow();
+                }
+
+
 
                 // copy data into table
                 try
@@ -4831,6 +4864,7 @@ namespace WindowsApplication1.utils
             {
                 sqlComm.CommandTimeout = 360;
                 sqlComm.ExecuteNonQuery();
+                log.queries.Add(sqlComm.CommandText.ToString());
             }
             catch (Exception ex)
             {
@@ -5077,6 +5111,7 @@ namespace WindowsApplication1.utils
                 {
                     sqlComm.CommandTimeout = 360;
                     add = sqlComm.ExecuteReader();
+                    log.queries.Add(sqlComm.CommandText.ToString());
                     while (add.Read())
                     {
                         //i++;
@@ -5146,6 +5181,7 @@ namespace WindowsApplication1.utils
             {
                 sqlComm.CommandTimeout = 360;
                 sqlComm.ExecuteNonQuery();
+                log.queries.Add(sqlComm.CommandText.ToString());
             }
             catch (Exception ex)
             {
@@ -5161,6 +5197,7 @@ namespace WindowsApplication1.utils
                 ArrayList sqlgroupsStr = new ArrayList();
                 sqlComm.CommandTimeout = 360;
                 sqlgroups = sqlComm.ExecuteReader();
+                log.queries.Add(sqlComm.CommandText.ToString());
                 DataTable currentOu = new DataTable();
                 while (sqlgroups.Read())
                 {
@@ -5486,6 +5523,7 @@ namespace WindowsApplication1.utils
             {
                 sqlComm.CommandTimeout = 360;
                 sqlComm.ExecuteNonQuery();
+                log.queries.Add(sqlComm.CommandText.ToString());
 
             }
             catch (Exception ex)
@@ -5708,6 +5746,7 @@ namespace WindowsApplication1.utils
                 {
                     sqlComm.CommandTimeout = 360;
                     sqlComm.ExecuteNonQuery();
+                    log.queries.Add(sqlComm.CommandText.ToString());
                 }
                 catch (Exception ex)
                 {
@@ -5895,6 +5934,7 @@ namespace WindowsApplication1.utils
                     sqlComm.CommandTimeout = 360;
                     // sqlComm.CommandType = System.Data.CommandType.StoredProcedure;
                     sqlComm.ExecuteNonQuery();
+                    log.queries.Add(sqlComm.CommandText.ToString());
                 }
                 catch (Exception ex)
                 {
@@ -5910,6 +5950,7 @@ namespace WindowsApplication1.utils
                     //sqlComm.CommandType = System.Data.CommandType.StoredProcedure;
                     sqlComm.CommandTimeout = 360;
                     sqlComm.ExecuteNonQuery();
+                    log.queries.Add(sqlComm.CommandText.ToString());
                 }
                 catch (Exception ex)
                 {
@@ -5943,6 +5984,7 @@ namespace WindowsApplication1.utils
                     {
                         sqlComm.CommandTimeout = 360;
                         sqlComm.ExecuteNonQuery();
+                        log.queries.Add(sqlComm.CommandText.ToString());
                     }
                     catch (Exception ex)
                     {

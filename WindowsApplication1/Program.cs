@@ -94,9 +94,9 @@ namespace WindowsApplication1
 
                         timer.Start();
                         groupSyncr.ExecuteGroupSync(groupconfig, settingsconfig, tools, log);
-                        tools.savelog(log, settingsconfig);
                         timer.Stop();
                         log.transactions.Add("Groups " + groupconfig.Group_Append + " Setup Completion time :" + timer.GetElapsedTimeSecs().ToString());
+                        tools.savelog(log, settingsconfig);
                     }
                     catch
                     {
@@ -168,9 +168,9 @@ namespace WindowsApplication1
 
                         timer.Start();
                         groupSyncr.ExecuteUserSync(userconfig, settingsconfig, tools, log);
-                        tools.savelog(log, settingsconfig);
                         timer.Stop();
                         log.transactions.Add("Users " + userconfig.BaseUserOU + " Setup Completion time :" + timer.GetElapsedTimeSecs().ToString());
+                        tools.savelog(log, settingsconfig);
                     }
                     catch
                     {
@@ -255,10 +255,10 @@ namespace WindowsApplication1
                         settingsconfig.Load(properties);
 
                         timer.Start();
-                        gmailSyncr.EmailUsersSync(guserconfig, settingsconfig, tools, log);
-                        tools.savelog(log, settingsconfig);
+                        gmailSyncr.EmailUsersSync(guserconfig, settingsconfig, tools, log);                        
                         timer.Stop();
                         log.transactions.Add("Gmail " + guserconfig.Admin_domain + " Setup Completion time :" + timer.GetElapsedTimeSecs().ToString());
+                        tools.savelog(log, settingsconfig);
                     }
                     catch
                     {
