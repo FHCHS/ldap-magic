@@ -33,7 +33,7 @@ using WindowsApplication1.utils;
 // ensure nicknames are genereated properly
 // allow for nulls in blank fields to be matching
 // unique table naming for multiple instances running at once
-// logging not working yet its in some non activated state
+
 
 // Wish list
 // preview area
@@ -81,12 +81,50 @@ namespace WindowsApplication1.utils
         private List<string> logterrors;
         private List<string> logwarnings;
         private List<string> logqueries;
+        private DataRow row;
+        private DateTime nowstamp = new DateTime();
         public LogFile()
         {
             logtransactions = new List<string>();
             logterrors = new List<string>();
             logwarnings = new List<string>();
             logqueries = new List<string>();
+        }
+
+        private DataTable logtrn = new DataTable();
+        public void initiateTrn()
+        {
+            try
+            {
+                logtrn.Columns.Add("Message");
+                logtrn.Columns.Add("Type");
+                logtrn.Columns.Add("Timestamp", System.Type.GetType("System.DateTime"));
+            }
+            catch (Exception)
+            {
+               
+            }
+        }
+
+        public DataTable logTrns
+        {
+            get
+            {
+                return logtrn;
+            }
+            set
+            {
+                logtrn = value;
+            }
+        }
+        public void addTrn(string message, string type)
+        {
+            nowstamp = DateTime.Now;
+            row = logtrn.NewRow();
+            row[0] = message.ToString();
+            row[1] = type.ToString();
+            row[2] = nowstamp;
+            logtrn.Rows.Add(row);
         }
 
         public DataTable toDataTableTrn()
@@ -1926,7 +1964,7 @@ namespace WindowsApplication1.utils
                     {
                         try
                         {
-                            row[i] = System.Web.HttpUtility.UrlDecode(oResult.Properties[returnProperties[i].ToString()][0].ToString());
+                            row[i] = System.Web.HttpUtility.UrlDecode((Convert.IsDBNull(oResult.Properties[returnProperties[i].ToString()][0]) ? string.Empty : oResult.Properties[returnProperties[i].ToString()][0].ToString()));
                         }
                         catch
                         {
@@ -1941,7 +1979,7 @@ namespace WindowsApplication1.utils
 
             catch (Exception ex)
             {
-                log.errors.Add("Failure getting AD users exception " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                log.addTrn("Failure getting AD users exception " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Error");
             }
 
             return returnvalue;
@@ -2038,7 +2076,7 @@ namespace WindowsApplication1.utils
                 }
             catch (Exception ex)
             {
-                log.errors.Add("Failure getting AD users in a groups exception " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                log.addTrn("Failure getting AD users in a groups exception " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Error");
             }
             //foreach (object dn in group.properties["member"])
             //{
@@ -2103,7 +2141,7 @@ namespace WindowsApplication1.utils
             }
             catch (Exception ex)
             {
-                log.errors.Add("Failure getting AD groups exception " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                log.addTrn("Failure getting AD groups exception " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Error");
             }
             return returnvalue;
         }
@@ -2138,13 +2176,13 @@ namespace WindowsApplication1.utils
                 DirectoryEntry ent = new DirectoryEntry(objectDn);
                 ent.Properties[attributeName].Value = newValue;
                 ent.CommitChanges();
-                log.transactions.Add("AD set value for field " + attributeName + " for user " + objectDn + " value " + newValue);
+                log.addTrn("AD set value for field " + attributeName + " for user " + objectDn + " value " + newValue, "Transaction");
                 ent.Close();
                 ent.Dispose();
             }
             catch (Exception ex)
             {
-                log.errors.Add("failed AD set value for field " + attributeName + " for user " + objectDn + " value " + newValue + " exception " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                log.addTrn("failed AD set value for field " + attributeName + " for user " + objectDn + " value " + newValue + " exception " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Error");
             }
 
 
@@ -2202,7 +2240,7 @@ namespace WindowsApplication1.utils
             }
             catch (Exception ex)
             {
-                log.errors.Add("searcher failed " + ldapDomain + " " + objectName + " Exception " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                log.addTrn("searcher failed " + ldapDomain + " " + objectName + " Exception " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Error");
             }
 
             return distinguishedName;
@@ -2224,7 +2262,7 @@ namespace WindowsApplication1.utils
             }
             catch (System.DirectoryServices.DirectoryServicesCOMException E)
             {
-                log.errors.Add(E.Message.ToString() + " error creating OU" + ou);
+                log.addTrn(E.Message.ToString() + " error creating OU" + ou, "Error");
                 return false;
             }
         }
@@ -2250,16 +2288,16 @@ namespace WindowsApplication1.utils
                     group.Dispose();
                     entry.Close();
                     entry.Dispose();
-                    log.transactions.Add("group added | LDAP://CN=" + System.Web.HttpUtility.UrlEncode(properties["CN"].ToString()).Replace("+", " ").Replace("*", "%2A") + "," + ouPath);
+                    log.addTrn("group added | LDAP://CN=" + System.Web.HttpUtility.UrlEncode(properties["CN"].ToString()).Replace("+", " ").Replace("*", "%2A") + "," + ouPath, "Transaction");
                 }
                 else
                 {
-                    log.warnings.Add("CN=" + System.Web.HttpUtility.UrlEncode(properties["CN"].ToString()).Replace("+", " ").Replace("*", "%2A") + "," + ouPath + " group already exists from adding");
+                    log.addTrn("CN=" + System.Web.HttpUtility.UrlEncode(properties["CN"].ToString()).Replace("+", " ").Replace("*", "%2A") + "," + ouPath + " group already exists from adding", "Warning");
                 }
             }
             catch (Exception ex)
             {
-                log.errors.Add(ex.Message.ToString() + "issue create group LDAP://CN=" + System.Web.HttpUtility.UrlEncode(properties["CN"].ToString()).Replace("+", " ").Replace("*", "%2A") + "," + ouPath + "\n" + ex.StackTrace.ToString());
+                log.addTrn(ex.Message.ToString() + "issue create group LDAP://CN=" + System.Web.HttpUtility.UrlEncode(properties["CN"].ToString()).Replace("+", " ").Replace("*", "%2A") + "," + ouPath + "\n" + ex.StackTrace.ToString(), "Error");
             }
         }
         public void UpdateGroup(string ouPath, Dictionary<string, string> properties, LogFile log)
@@ -2289,17 +2327,17 @@ namespace WindowsApplication1.utils
                     group.Dispose();
                     entry.Close();
                     entry.Dispose();
-                    log.transactions.Add("updated group | LDAP://CN=" + System.Web.HttpUtility.UrlEncode(properties["CN"].ToString()).Replace("+", " ").Replace("*", "%2A") + "," + ouPath);
+                    log.addTrn("updated group | LDAP://CN=" + System.Web.HttpUtility.UrlEncode(properties["CN"].ToString()).Replace("+", " ").Replace("*", "%2A") + "," + ouPath, "Transaction");
 
                 }
                 else
                 {
-                    log.warnings.Add(ouPath + " group does not exist");
+                    log.addTrn(ouPath + " group does not exist", "Warning");
                 }
             }
             catch (Exception ex)
             {
-                log.errors.Add(ex.Message.ToString() + "issue updating group LDAP://CN=" + System.Web.HttpUtility.UrlEncode(properties["CN"].ToString()).Replace("+", " ").Replace("*", "%2A") + "," + ouPath + "\n" + ex.StackTrace.ToString());
+                log.addTrn(ex.Message.ToString() + "issue updating group LDAP://CN=" + System.Web.HttpUtility.UrlEncode(properties["CN"].ToString()).Replace("+", " ").Replace("*", "%2A") + "," + ouPath + "\n" + ex.StackTrace.ToString(), "Error");
             }
         }
         public void DeleteGroup(string ouPath, string name, LogFile log)
@@ -2316,16 +2354,16 @@ namespace WindowsApplication1.utils
                     group.Dispose();
                     entry.Close();
                     entry.Dispose();
-                    log.transactions.Add("deleted group | LDAP://CN=" + name + "," + ouPath);
+                    log.addTrn("deleted group | LDAP://CN=" + name + "," + ouPath, "Transaction");
                 }
                 catch (Exception ex)
                 {
-                    log.errors.Add(ex.Message.ToString() + " error deleting LDAP://CN=" + name + "," + ouPath + "\n" + ex.StackTrace.ToString());
+                    log.addTrn(ex.Message.ToString() + " error deleting LDAP://CN=" + name + "," + ouPath + "\n" + ex.StackTrace.ToString(), "Error");
                 }
             }
             else
             {
-                log.warnings.Add("group LDAP://CN=" + name + "," + ouPath + " does not exists cannot delete");
+                log.addTrn("group LDAP://CN=" + name + "," + ouPath + " does not exists cannot delete", "Warning");
             }
         }
         public void CreateOU(string ouPath, string name, LogFile log)
@@ -2343,17 +2381,17 @@ namespace WindowsApplication1.utils
                     OU.Dispose();
                     entry.Close();
                     entry.Dispose();
-                    log.transactions.Add("created ou | LDAP://OU=" + name + "," + ouPath);
+                    log.addTrn("created ou | LDAP://OU=" + name + "," + ouPath, "Transaction");
 
                 }
                 else
                 {
-                    log.warnings.Add("creating ou LDAP://OU=" + name + "," + ouPath + " already exists");
+                    log.addTrn("creating ou LDAP://OU=" + name + "," + ouPath + " already exists", "Warning");
                 }
             }
             catch (Exception ex)
             {
-                log.errors.Add(ex.Message.ToString() + "error creating ou LDAP://OU=" + name + "," + ouPath + "\n" + ex.StackTrace.ToString());
+                log.addTrn(ex.Message.ToString() + "error creating ou LDAP://OU=" + name + "," + ouPath + "\n" + ex.StackTrace.ToString(), "Error");
             }
         }
         public void DeleteOU(string ouPath, string name, LogFile log)
@@ -2368,17 +2406,17 @@ namespace WindowsApplication1.utils
                     entry.DeleteTree();
                     entry.Close();
                     entry.Dispose();
-                    log.transactions.Add("deleting ou | LDAP://OU=" + name + "," + ouPath + " does not exists");
+                    log.addTrn("deleting ou | LDAP://OU=" + name + "," + ouPath + " does not exists", "Transaction");
 
                 }
                 else
                 {
-                    log.warnings.Add("error deleting ou LDAP://OU=" + name + "," + ouPath + " does not exists");
+                    log.addTrn("error deleting ou LDAP://OU=" + name + "," + ouPath + " does not exists", "Warning");
                 }
             }
             catch (Exception ex)
             {
-                log.errors.Add(ex.Message.ToString() + " error deleting ou LDAP://OU=" + name + "," + ouPath + "\n" + ex.StackTrace.ToString());
+                log.addTrn(ex.Message.ToString() + " error deleting ou LDAP://OU=" + name + "," + ouPath + "\n" + ex.StackTrace.ToString(), "Error");
             }
         }
         public void AddUserToGroup(string userDn, string groupDn, bool search, string ldapDomain, LogFile log)
@@ -2393,7 +2431,7 @@ namespace WindowsApplication1.utils
                     entry.CommitChanges();
                     entry.Close();
                     entry.Dispose();
-                    log.transactions.Add("added user to group | " + userDn + " | LDAP://" + groupDn);
+                    log.addTrn("added user to group | " + userDn + " | LDAP://" + groupDn, "Transaction");
                 }
                 else
                 {
@@ -2407,11 +2445,11 @@ namespace WindowsApplication1.utils
                         entry.CommitChanges();
                         entry.Close();
                         entry.Dispose();
-                        log.transactions.Add("Had to find user and then added user to group | " + userDn + " | LDAP://" + groupDn);
+                        log.addTrn("Had to find user and then added user to group | " + userDn + " | LDAP://" + groupDn, "Transaction");
                     }
                     else
                     {
-                        log.warnings.Add(" Warning could not add user " + userDn + " to group LDAP://" + groupDn + " group did not exist");
+                        log.addTrn(" Warning could not add user " + userDn + " to group LDAP://" + groupDn + " group did not exist", "Warning");
                     }
 
                 }
@@ -2419,7 +2457,7 @@ namespace WindowsApplication1.utils
             }
             catch (System.DirectoryServices.DirectoryServicesCOMException E)
             {
-                log.errors.Add(E.Message.ToString() + " error adding user to group" + userDn + " to LDAP://" + groupDn);
+                log.addTrn(E.Message.ToString() + " error adding user to group" + userDn + " to LDAP://" + groupDn, "Error");
 
             }
         }
@@ -2431,11 +2469,11 @@ namespace WindowsApplication1.utils
                 try
                 {
                     entry.Properties["member"].Remove(userDn);
-                    log.transactions.Add("removed user from group | " + userDn + " | LDAP://" + groupDn);
+                    log.addTrn("removed user from group | " + userDn + " | LDAP://" + groupDn, "Transaction");
                 }
                 catch (System.DirectoryServices.DirectoryServicesCOMException E)
                 {
-                    log.errors.Add(E.Message.ToString() + " error removing user from group " + userDn + " from LDAP://" + groupDn + " user may not be in group");
+                    log.addTrn(E.Message.ToString() + " error removing user from group " + userDn + " from LDAP://" + groupDn + " user may not be in group", "Error");
                 }
                 entry.CommitChanges();
                 entry.Close();
@@ -2443,7 +2481,7 @@ namespace WindowsApplication1.utils
             }
             catch (System.DirectoryServices.DirectoryServicesCOMException E)
             {
-                log.warnings.Add(E.Message.ToString() + " error removing user from group " + userDn + " from LDAP://" + groupDn + " group object does not exist");
+                log.addTrn(E.Message.ToString() + " error removing user from group " + userDn + " from LDAP://" + groupDn + " group object does not exist", "Warning");
             }
         }
 
@@ -2532,11 +2570,11 @@ namespace WindowsApplication1.utils
                                 newUser.Dispose();
                                 entry.Close();
                                 entry.Dispose();
-                                log.transactions.Add("User added |" + (string)users[usersyn.User_sAMAccount] + " " + usersyn.UserHoldingTank);
+                                log.addTrn("User added |" + (string)users[usersyn.User_sAMAccount] + " " + usersyn.UserHoldingTank, "Transaction");
                             }
                             else
                             {
-                                log.errors.Add("CN=" + System.Web.HttpUtility.UrlEncode((string)users[usersyn.User_sAMAccount]).Replace("+", " ").Replace("*", "%2A") + "," + ouPath + " user already exists from adding");
+                                log.addTrn("CN=" + System.Web.HttpUtility.UrlEncode((string)users[usersyn.User_sAMAccount]).Replace("+", " ").Replace("*", "%2A") + "," + ouPath + " user already exists from adding", "Error");
                                 //MessageBox.Show("CN=" + System.Web.HttpUtility.UrlEncode((string)users["CN"]).Replace("+", " ").Replace("*", "%2A") + "," + ouPath + " user already exists from adding");
                             }
                         }
@@ -2551,7 +2589,7 @@ namespace WindowsApplication1.utils
                             debugdata += users.GetName(i) + "=" + System.Web.HttpUtility.UrlEncode((string)users[i]).Replace("+", " ").Replace("*", "%2A") + ", ";
 
                         }
-                        log.errors.Add("issue create user LDAP://CN=" + System.Web.HttpUtility.UrlEncode((string)users["CN"]).Replace("+", " ").Replace("*", "%2A") + "," + ouPath + "\n" + debugdata + " User create failed, commit error" + name + " | " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                        log.addTrn("issue create user LDAP://CN=" + System.Web.HttpUtility.UrlEncode((string)users["CN"]).Replace("+", " ").Replace("*", "%2A") + "," + ouPath + "\n" + debugdata + " User create failed, commit error" + name + " | " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Error");
                         // MessageBox.Show(e.Message.ToString() + "issue create user LDAP://CN=" + System.Web.HttpUtility.UrlEncode((string)users["CN"]).Replace("+", " ").Replace("*", "%2A") + "," + ouPath + "\n" + debugdata);
                     }
                 }
@@ -2568,12 +2606,12 @@ namespace WindowsApplication1.utils
                         debugdata += users.GetName(i) + "=" + System.Web.HttpUtility.UrlEncode((string)users[i]).Replace("+", " ").Replace("*", "%2A") + ", ";
 
                     }
-                    log.errors.Add("issue create user LDAP://CN=" + System.Web.HttpUtility.UrlEncode((string)users["CN"]).Replace("+", " ").Replace("*", "%2A") + "," + ouPath + "\n" + debugdata + " failed field maybe " + name + " | " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                    log.addTrn("issue create user LDAP://CN=" + System.Web.HttpUtility.UrlEncode((string)users["CN"]).Replace("+", " ").Replace("*", "%2A") + "," + ouPath + "\n" + debugdata + " failed field maybe " + name + " | " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Error");
                     // MessageBox.Show(e.Message.ToString() + "issue create user LDAP://CN=" + System.Web.HttpUtility.UrlEncode((string)users["CN"]).Replace("+", " ").Replace("*", "%2A") + "," + ouPath + "\n" + debugdata);
                 }
                 else
                 {
-                    log.errors.Add("issue creating users datareader is null " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                    log.addTrn("issue creating users datareader is null " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Error");
                 }
 
             }
@@ -2705,18 +2743,18 @@ namespace WindowsApplication1.utils
                         }
                     }
                     user.CommitChanges();
-                    log.transactions.Add("User updated |" + (string)users["distinguishedname"] + " ");
+                    log.addTrn("User updated |" + (string)users["distinguishedname"] + " ", "Transaction");
                 }
             }
             catch (Exception ex)
             {
                 if (users != null)
                 {
-                    log.errors.Add("issue updating user " + name + " " + System.Web.HttpUtility.UrlEncode((string)users["distinguishedname"]).Replace("+", " ").Replace("*", "%2A") + "\n" + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                    log.addTrn("issue updating user " + name + " " + System.Web.HttpUtility.UrlEncode((string)users["distinguishedname"]).Replace("+", " ").Replace("*", "%2A") + "\n" + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Error");
                 }
                 else
                 {
-                    log.errors.Add("issue updating users data reader is null " + "\n" + ex.Message.ToString());
+                    log.addTrn("issue updating users data reader is null " + "\n" + ex.Message.ToString(), "Error");
                 }
             }
         }
@@ -2732,12 +2770,12 @@ namespace WindowsApplication1.utils
                 usr.CommitChanges();
                 usr.Close();
                 usr.Dispose();
-                log.transactions.Add("diabled user account |" + userDN);
+                log.addTrn("diabled user account |" + userDN, "Transaction");
                 return true;
             }
             catch (System.DirectoryServices.DirectoryServicesCOMException E)
             {
-                log.errors.Add(E.Message.ToString() + " error disabling user " + userDN);
+                log.addTrn(E.Message.ToString() + " error disabling user " + userDN, "Error");
                 return false;
             }
 
@@ -2754,12 +2792,12 @@ namespace WindowsApplication1.utils
                 usr.CommitChanges();
                 usr.Close();
                 usr.Dispose();
-                log.transactions.Add("enabled user account |" + userDN);
+                log.addTrn("enabled user account |" + userDN, "Transaction");
                 return true;
             }
             catch (System.DirectoryServices.DirectoryServicesCOMException E)
             {
-                log.errors.Add(E.Message.ToString() + " error enabling user " + userDN);
+                log.addTrn(E.Message.ToString() + " error enabling user " + userDN, "Error");
                 return false;
             }
         }
@@ -2785,13 +2823,13 @@ namespace WindowsApplication1.utils
                 usr.CommitChanges();
                 usr.Close();
                 usr.Dispose();
-                log.transactions.Add("User expiration set |" + userDN + "|" + days);
+                log.addTrn("User expiration set |" + userDN + "|" + days, "Transaction");
 
                 return true;
             }
             catch (System.DirectoryServices.DirectoryServicesCOMException E)
             {
-                log.errors.Add(E.Message.ToString() + " error setting user expiration " + userDN + " days " + days);
+                log.addTrn(E.Message.ToString() + " error setting user expiration " + userDN + " days " + days, "Error");
                 return false;
             }
         }
@@ -2812,12 +2850,12 @@ namespace WindowsApplication1.utils
                 usr.CommitChanges();
                 usr.Close();
                 usr.Dispose();
-                log.transactions.Add("User expiration set |" + userDN + "|" + days);
+                log.addTrn("User expiration set |" + userDN + "|" + days, "Transaction");
                 return true;
             }
             catch (System.DirectoryServices.DirectoryServicesCOMException E)
             {
-                log.errors.Add(E.Message.ToString() + " error setting user expiration " + userDN + " days " + days);
+                log.addTrn(E.Message.ToString() + " error setting user expiration " + userDN + " days " + days, "Error");
                 return false;
             }
         }
@@ -2831,12 +2869,12 @@ namespace WindowsApplication1.utils
                 ent.DeleteTree();
                 ent.Close();
                 ent.Dispose();
-                log.transactions.Add("deleted user account |" + userDN);
+                log.addTrn("deleted user account |" + userDN, "Transaction");
                 return true;
             }
             catch (System.DirectoryServices.DirectoryServicesCOMException E)
             {
-                log.errors.Add(E.Message.ToString() + " error deleting user " + userDN);
+                log.addTrn(E.Message.ToString() + " error deleting user " + userDN, "Error");
                 return false;
             }
         }
@@ -2849,12 +2887,12 @@ namespace WindowsApplication1.utils
                 ent.DeleteTree();
                 ent.Close();
                 ent.Dispose();
-                log.transactions.Add("deleted user account |" + FQDN);
+                log.addTrn("deleted user account |" + FQDN, "Transaction");
                 return true;
             }
             catch (System.DirectoryServices.DirectoryServicesCOMException E)
             {
-                log.errors.Add(E.Message.ToString() + " error deleting user " + FQDN);
+                log.addTrn(E.Message.ToString() + " error deleting user " + FQDN, "Error");
                 return false;
             }
         }
@@ -2917,12 +2955,12 @@ namespace WindowsApplication1.utils
             {
                 sqlComm.CommandTimeout = 360;
                 sqlComm.ExecuteNonQuery();
-                log.queries.Add(sqlComm.CommandText.ToString());
-                log.transactions.Add("table created " + table);
+                log.addTrn(sqlComm.CommandText.ToString(), "Query");
+                log.addTrn("table created " + table, "Transaction");
             }
             catch (Exception ex)
             {
-                log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                log.addTrn("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Error");
             }
 
             // copy data into table
@@ -2936,7 +2974,7 @@ namespace WindowsApplication1.utils
             }
             catch (Exception ex)
             {
-                log.errors.Add("Failed SQL bulk copy " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                log.addTrn("Failed SQL bulk copy " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Error");
             }
             return table;
         }
@@ -2952,7 +2990,7 @@ namespace WindowsApplication1.utils
             }
             catch (Exception ex)
             {
-                log.errors.Add("failed sql table append " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                log.addTrn("failed sql table append " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Error");
                 return "failure";
             }
             return table;
@@ -2966,12 +3004,12 @@ namespace WindowsApplication1.utils
             {
                 sqlComm.CommandTimeout = 360;
                 sqlComm.ExecuteNonQuery();
-                log.queries.Add(sqlComm.CommandText.ToString());
-                log.transactions.Add("table dropped " + table);
+                log.addTrn(sqlComm.CommandText.ToString(), "Query");
+                log.addTrn("table dropped " + table, "Transaction");
             }
             catch (Exception ex)
             {
-                log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                log.addTrn("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Error");
             }
         }
         // SQL query tools
@@ -2996,12 +3034,12 @@ namespace WindowsApplication1.utils
             {
                 sqlComm.CommandTimeout = 360;
                 r = sqlComm.ExecuteReader();
-                log.queries.Add(sqlComm.CommandText.ToString());
+                log.addTrn(sqlComm.CommandText.ToString(), "Query");
                 return r;
             }
             catch (Exception ex)
             {
-                log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                log.addTrn("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Error");
             }
             return null;
         }
@@ -3023,11 +3061,11 @@ namespace WindowsApplication1.utils
             {
                 sqlComm.CommandTimeout = 360;
                 sqlComm.ExecuteNonQuery();
-                log.queries.Add(sqlComm.CommandText.ToString());
+                log.addTrn(sqlComm.CommandText.ToString(), "Query");
             }
             catch (Exception ex)
             {
-                log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                log.addTrn("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Error");
             }
 
 
@@ -3050,12 +3088,12 @@ namespace WindowsApplication1.utils
             {
                 sqlComm.CommandTimeout = 360;
                 r = sqlComm.ExecuteReader();
-                log.queries.Add(sqlComm.CommandText.ToString());
+                log.addTrn(sqlComm.CommandText.ToString(), "Query");
                 return r;
             }
             catch (Exception ex)
             {
-                log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                log.addTrn("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Error");
             }
             return null;
         }
@@ -3094,12 +3132,12 @@ namespace WindowsApplication1.utils
             {
                 sqlComm.CommandTimeout = 360;
                 r = sqlComm.ExecuteReader();
-                log.queries.Add(sqlComm.CommandText.ToString());
+                log.addTrn(sqlComm.CommandText.ToString(), "Query");
                 return r;
             }
             catch (Exception ex)
             {
-                log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                log.addTrn("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Error");
             }
             return null;
         }
@@ -3120,11 +3158,11 @@ namespace WindowsApplication1.utils
             {
                 sqlComm.CommandTimeout = 360;
                 sqlComm.ExecuteNonQuery();
-                log.queries.Add(sqlComm.ToString());
+                log.addTrn(sqlComm.CommandText.ToString(), "Query");
             }
             catch (Exception ex)
             {
-                log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                log.addTrn("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Error");
             }
         }
         public SqlDataReader CheckUpdate(string table1, string table2, string pkey1, string pkey2, ArrayList compareFields1, ArrayList compareFields2, SqlConnection sqlConn, LogFile log)
@@ -3180,12 +3218,12 @@ namespace WindowsApplication1.utils
             {
                 sqlComm.CommandTimeout = 360;
                 SqlDataReader r = sqlComm.ExecuteReader();
-                log.queries.Add(sqlComm.ToString());
+                log.addTrn(sqlComm.CommandText.ToString(), "Query");
                 return r;
             }
             catch (Exception ex)
             {
-                log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                log.addTrn("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Error");
             }
             return null;
         }
@@ -3268,7 +3306,7 @@ namespace WindowsApplication1.utils
                         {
                             sqlCheck.CommandTimeout = 360;
                             checkReader = sqlCheck.ExecuteReader();
-                            log.queries.Add(sqlCheck.CommandText.ToString());
+                            log.addTrn(sqlCheck.CommandText.ToString(), "Query");
                             checkReader.Read();
                             if ((string)checkReader[0].ToString().Substring(0, 2) == "CN=")
                             {
@@ -3278,7 +3316,7 @@ namespace WindowsApplication1.utils
                         }
                         catch (Exception ex)
                         {
-                            log.errors.Add("Failed SQL command " + sqlCheck.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                            log.addTrn("Failed SQL command " + sqlCheck.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Error");
                         }
                         
                     }
@@ -3298,7 +3336,7 @@ namespace WindowsApplication1.utils
                         {
                             sqlCheck.CommandTimeout = 360;
                             checkReader = sqlCheck.ExecuteReader();
-                            log.queries.Add(sqlCheck.ToString());
+                            log.addTrn(sqlCheck.ToString(), "Query");
                             checkReader.Read();
                             if ((string)checkReader[0].ToString().Substring(0, 2) == "CN=")
                             {
@@ -3308,7 +3346,7 @@ namespace WindowsApplication1.utils
                         }
                         catch (Exception ex)
                         {
-                            log.errors.Add("Failed SQL command " + sqlCheck.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                            log.addTrn("Failed SQL command " + sqlCheck.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Error");
                         }
                     }
                 }
@@ -3391,12 +3429,12 @@ namespace WindowsApplication1.utils
             {
                 sqlComm.CommandTimeout = 360;
                 SqlDataReader r = sqlComm.ExecuteReader();
-                log.queries.Add(sqlComm.CommandText.ToString());
+                log.addTrn(sqlComm.CommandText.ToString(), "Query");
                 return r;
             }
             catch (Exception ex)
             {
-                log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                log.addTrn("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Error");
             }
             return null;
         }
@@ -3454,11 +3492,11 @@ namespace WindowsApplication1.utils
             {
                 sqlComm.CommandTimeout = 360;
                 sqlComm.ExecuteNonQuery();
-                log.queries.Add(sqlComm.ToString());
+                log.addTrn(sqlComm.CommandText.ToString(), "Query");
             }
             catch (Exception ex)
             {
-                log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                log.addTrn("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Error");
             }
         }
         public void SelectNicknamesClosestToActualNameIntoNewTable(string table1, string table2, string pkey1, string pkey2, string newTable, ArrayList selectFields, string targetField, ArrayList valueFields, SqlConnection sqlConn, LogFile log)
@@ -3530,11 +3568,11 @@ namespace WindowsApplication1.utils
             {
                 sqlComm.CommandTimeout = 360;
                 sqlComm.ExecuteNonQuery();
-                log.queries.Add(sqlComm.CommandText.ToString());
+                log.addTrn(sqlComm.CommandText.ToString(), "Query");
             }
             catch (Exception ex)
             {
-                log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                log.addTrn("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Error");
             }
         }
         public void Levenshtein(string table1, string table2, string pkey1, string pkey2, string newTable, ArrayList selectFields, string targetField, ArrayList valueFields, SqlConnection sqlConn, LogFile log)
@@ -3589,11 +3627,11 @@ namespace WindowsApplication1.utils
             {
                 sqlComm.CommandTimeout = 360;
                 sqlComm.ExecuteNonQuery();
-                log.queries.Add(sqlComm.CommandText.ToString());
+                log.addTrn(sqlComm.CommandText.ToString(), "Query");
             }
             catch (Exception ex)
             {
-                log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                log.addTrn("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Error");
             }
         }
 
@@ -3641,11 +3679,11 @@ namespace WindowsApplication1.utils
             {
                 sqlComm.CommandTimeout = 360;
                 sqlComm.ExecuteNonQuery();
-                log.queries.Add(sqlComm.CommandText.ToString());
+                log.addTrn(sqlComm.CommandText.ToString(), "Query");
             }
             catch (Exception ex)
             {
-                log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                log.addTrn("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Error");
             }
         }
 
@@ -3729,12 +3767,12 @@ namespace WindowsApplication1.utils
                 {
                     sqlComm.CommandTimeout = 360;
                     sqlComm.ExecuteNonQuery();
-                    log.queries.Add(sqlComm.CommandText.ToString());
-                    log.transactions.Add("DB email writeback, user " + users.Rows[i][gusersyn.Writeback_primary_key].ToString().Replace("'", "''") + ", email " + users.Rows[i][gusersyn.Writeback_email_field].ToString().Replace("'", "''"));
+                    log.addTrn(sqlComm.CommandText.ToString(), "Query");
+                    log.addTrn("DB email writeback, user " + users.Rows[i][gusersyn.Writeback_primary_key].ToString().Replace("'", "''") + ", email " + users.Rows[i][gusersyn.Writeback_email_field].ToString().Replace("'", "''"), "Transaction");
                 }
                 catch (Exception ex)
                 {
-                    log.errors.Add("DB email writeback failure, user " + users.Rows[i][gusersyn.Writeback_primary_key].ToString().Replace("'", "''") + ", email " + users.Rows[i][gusersyn.Writeback_email_field].ToString().Replace("'", "''") + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                    log.addTrn("DB email writeback failure, user " + users.Rows[i][gusersyn.Writeback_primary_key].ToString().Replace("'", "''") + ", email " + users.Rows[i][gusersyn.Writeback_email_field].ToString().Replace("'", "''") + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Error");
                 }
             }
 
@@ -3788,19 +3826,19 @@ namespace WindowsApplication1.utils
                     {
                         sqlComm.CommandTimeout = 360;
                         sqlComm.ExecuteNonQuery();
-                        log.queries.Add(sqlComm.CommandText.ToString());
-                        log.transactions.Add("DB email writeback, user " + users[gusersyn.Writeback_primary_key].ToString().Replace("'", "''") + ", email " + users[gusersyn.Writeback_email_field].ToString().Replace("'", "''"));
+                        log.addTrn(sqlComm.CommandText.ToString(), "Query");
+                        log.addTrn("DB email writeback, user " + users[gusersyn.Writeback_primary_key].ToString().Replace("'", "''") + ", email " + users[gusersyn.Writeback_email_field].ToString().Replace("'", "''"), "Transaction");
                     }
                     catch (Exception ex)
                     {
-                        log.errors.Add("DB email writeback failure, user " + users[gusersyn.Writeback_primary_key].ToString().Replace("'", "''") + ", email " + users[gusersyn.Writeback_email_field].ToString().Replace("'", "''") + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                        log.addTrn("DB email writeback failure, user " + users[gusersyn.Writeback_primary_key].ToString().Replace("'", "''") + ", email " + users[gusersyn.Writeback_email_field].ToString().Replace("'", "''") + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Error");
                     }
                     sqlComm.Dispose();
                 }
             }
             catch (Exception ex)
             {
-                log.errors.Add("Issue in DB writeback datareader is null " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                log.addTrn("Issue in DB writeback datareader is null " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Error");
             }
 
 
@@ -3821,7 +3859,6 @@ namespace WindowsApplication1.utils
             //WHERE address.preferred = 1
 
             string columnValues = "";
-            string query = "";
             int sourceCount = sourceColumns.Count;
             int i = 0;
             for (i = 0; i < sourceCount; i++)
@@ -3843,11 +3880,11 @@ namespace WindowsApplication1.utils
             {
                 sqlComm.CommandTimeout = 360;
                 sqlComm.ExecuteNonQuery();
-                log.queries.Add(sqlComm.ToString());
+                log.addTrn(sqlComm.CommandText.ToString(), "Query");
             }
             catch (Exception ex)
             {
-                log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                log.addTrn("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Error");
             }
         }
         public void Mass_Email_Shift(GmailUsers gusersyn, string sourceTable, string targetTable, string sourcePimaryKey, string targetPrimaryKey, ArrayList sourceColumnsAndTable, ArrayList targetColumnsAndTable, string whereClause, SqlConnection sqlConn, LogFile log)
@@ -3893,11 +3930,11 @@ namespace WindowsApplication1.utils
             {
                 sqlComm.CommandTimeout = 360;
                 sqlComm.ExecuteNonQuery();
-                log.queries.Add(sqlComm.ToString());
+                log.addTrn(sqlComm.CommandText.ToString(), "Query");
             }
             catch (Exception ex)
             {
-                log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                log.addTrn("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Error");
             }
         }
 
@@ -3960,7 +3997,7 @@ namespace WindowsApplication1.utils
                     }
                     i++;
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     //MessageBox.Show("Nickname issue " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
                     i++;
@@ -4041,22 +4078,22 @@ namespace WindowsApplication1.utils
                             returnvalue.Rows.Add(row);
                             row = returnvalue.NewRow();
 
-                            log.transactions.Add("Added Gmail user " + studentID + "@" + gusersyn.Admin_domain + " Aliased as " + userNickName + "@" + gusersyn.Admin_domain);
+                            log.addTrn("Added Gmail user " + studentID + "@" + gusersyn.Admin_domain + " Aliased as " + userNickName + "@" + gusersyn.Admin_domain, "Transaction");
                        // }
                     }
                     catch (AppsException e)
                     {
-                        log.errors.Add("Failed adding Gmail user " + studentID + "@" + gusersyn.Admin_domain + " Aliased as " + userNickName + "@" + gusersyn.Admin_domain + " failed " + e.Message.ToString() + " reason " + e.Reason.ToString());
+                        log.addTrn("Failed adding Gmail user " + studentID + "@" + gusersyn.Admin_domain + " Aliased as " + userNickName + "@" + gusersyn.Admin_domain + " failed " + e.Message.ToString() + " reason " + e.Reason.ToString(), "Error");
                     }
                     catch (Exception ex)
                     {
-                        log.errors.Add("Failed adding Gmail user " + studentID + "@" + gusersyn.Admin_domain + " Aliased as " + userNickName + "@" + gusersyn.Admin_domain + " failed " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                        log.addTrn("Failed adding Gmail user " + studentID + "@" + gusersyn.Admin_domain + " Aliased as " + userNickName + "@" + gusersyn.Admin_domain + " failed " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Error");
                     }
                 }
             }
             catch (Exception ex)
             {
-                log.errors.Add("Issue adding gmail users datareader is null " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                log.addTrn("Issue adding gmail users datareader is null " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Error");
             }
             return returnvalue;
 
@@ -4069,7 +4106,7 @@ namespace WindowsApplication1.utils
             }
             catch (Exception ex)
             {
-                log.errors.Add("Failed Delete gmail account " + userID + " exception " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                log.addTrn("Failed Delete gmail account " + userID + " exception " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Error");
             }
 
 
@@ -4091,24 +4128,24 @@ namespace WindowsApplication1.utils
                         gmailUser.Name.GivenName = usersToUpdate[gusersyn.User_Fname].ToString().Replace("<", "%3c").Replace(">", "%3e").Replace("=", "%3d").Replace("%", "%25");
                         middlename = usersToUpdate[gusersyn.User_Mname].ToString().Replace("<", "%3c").Replace(">", "%3e").Replace("=", "%3d").Replace("%", "%25");
                         service.UpdateUser(gmailUser);
-                        log.transactions.Add("Updated " + System.Web.HttpUtility.UrlEncode(usersToUpdate[gusersyn.User_StuID].ToString()).Replace("+", " ").Replace("*", "%2A") + " because of name change. New Name is " + gmailUser.Name.FamilyName.ToString() + ", " + gmailUser.Name.GivenName.ToString());
+                        log.addTrn("Updated " + System.Web.HttpUtility.UrlEncode(usersToUpdate[gusersyn.User_StuID].ToString()).Replace("+", " ").Replace("*", "%2A") + " because of name change. New Name is " + gmailUser.Name.FamilyName.ToString() + ", " + gmailUser.Name.GivenName.ToString(), "Transaction");
                        // if (gusersyn.Levenshtein == true)
                        // {
                             userNickName = GetNewUserNickname(service, gmailUser.Login.UserName, gmailUser.Name.GivenName, middlename, gmailUser.Name.FamilyName, 0, false);
-                            log.transactions.Add("Added New Alias for " + gmailUser.Login.UserName + "@" + gusersyn.Admin_domain + " Aliased as " + userNickName + "@" + gusersyn.Admin_domain);
+                            log.addTrn("Added New Alias for " + gmailUser.Login.UserName + "@" + gusersyn.Admin_domain + " Aliased as " + userNickName + "@" + gusersyn.Admin_domain, "Transaction");
                        // }
                         
                     }
                     catch (Exception ex)
                     {
-                        log.errors.Add("Failed update gmail account " + System.Web.HttpUtility.UrlEncode(usersToUpdate[gusersyn.User_StuID].ToString()).Replace("+", " ").Replace("*", "%2A").Replace("!", "%21").Replace("(", "%28").Replace(")", "%29").Replace("'", "%27").Replace("_", "%5f").Replace(" ", "%20").Replace("%", "_") + " exception " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                        log.addTrn("Failed update gmail account " + System.Web.HttpUtility.UrlEncode(usersToUpdate[gusersyn.User_StuID].ToString()).Replace("+", " ").Replace("*", "%2A").Replace("!", "%21").Replace("(", "%28").Replace(")", "%29").Replace("'", "%27").Replace("_", "%5f").Replace(" ", "%20").Replace("%", "_") + " exception " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Error");
                     }
 
                 }
             }
             catch (Exception ex)
             {
-                log.errors.Add("Issue updating gmail users datareader is null " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                log.addTrn("Issue updating gmail users datareader is null " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Error");
             }
         }
         public void CreateSendAs(GmailUsers gusersyn, SqlDataReader userNicknames, string sendASFieldName, string replyToFieldName, LogFile log)
@@ -4123,17 +4160,17 @@ namespace WindowsApplication1.utils
                     try
                     {
                         gmailSettings.CreateSendAs((string)userNicknames[gusersyn.User_StuID], (string)userNicknames[gusersyn.User_Fname] + " " + (string)userNicknames[gusersyn.User_Lname], (string)userNicknames[sendASFieldName], (string)userNicknames[replyToFieldName], "true");
-                        log.transactions.Add("Created send as alias " + (string)userNicknames[sendASFieldName] + " for userlogin " + (string)userNicknames[gusersyn.User_StuID]);
+                        log.addTrn("Created send as alias " + (string)userNicknames[sendASFieldName] + " for userlogin " + (string)userNicknames[gusersyn.User_StuID], "Transaction");
                     }
                     catch (Exception ex)
                     {
-                        log.errors.Add("Failed user send as creation " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                        log.addTrn("Failed user send as creation " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Error");
                     }
                 }
             }
             catch (Exception ex)
             {
-                log.errors.Add("Issue creating send as datareader is null " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                log.addTrn("Issue creating send as datareader is null " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Error");
             }
         }
 
@@ -4179,7 +4216,7 @@ namespace WindowsApplication1.utils
             }
             catch (Exception ex)
             {
-                log.errors.Add("failed to pull gmail user list exception " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                log.addTrn("failed to pull gmail user list exception " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Error");
             }
             return returnvalue;
         }
@@ -4222,7 +4259,7 @@ namespace WindowsApplication1.utils
             }
             catch (Exception ex)
             {
-                log.errors.Add("failed to pull gmail nickname list exception " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                log.addTrn("failed to pull gmail nickname list exception " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Error");
             }
             return returnvalue;
         }
@@ -4283,6 +4320,7 @@ namespace WindowsApplication1.utils
             return returnvalue;
         }
 
+
         // Log file utilities
         public void savelog(LogFile log, ConfigSettings settingsConfig)
         {
@@ -4295,26 +4333,26 @@ namespace WindowsApplication1.utils
                 // create a stream writer
                 System.IO.StreamWriter sw = new System.IO.StreamWriter(fs, System.Text.Encoding.ASCII);
 
-
                 StringBuilder result = new StringBuilder();
-                int i = 0;
-                result.Append("\n" + DateTime.Now.ToString() + "\n");
-                result.Append("\n***************************\n*                         *\n*        Transactions     *\n*                         *\n***************************\n");
-                for (i = 0; i < log.transactions.Count; i++)
-                {
-                    result.Append(log.transactions[i].ToString() + "\n");
-                }
-                result.Append("\n***************************\n*                         *\n*        Warnings         *\n*                         *\n***************************\n");
 
-                for (i = 0; i < log.warnings.Count; i++)
+                foreach (DataColumn dc in log.logTrns.Columns)
                 {
-                    result.Append(log.warnings[i].ToString() + "\n");
+                    result.AppendFormat("{0}\t\t\t\t", dc.ColumnName);
                 }
-                result.Append("\n***************************\n*                         *\n*        Errors           *\n*                         *\n***************************\n");
-                for (i = 0; i < log.errors.Count; i++)
+
+                result.Append("\r\n");
+
+                foreach (DataRow dr in log.logTrns.Rows)
                 {
-                    result.Append(log.errors[i].ToString() + "\n");
+                    foreach (DataColumn dc in log.logTrns.Columns)
+                    {
+                        result.AppendFormat("{0}\t\t\t\t", (Convert.IsDBNull(dr[dc.ColumnName]) ? string.Empty : dr[dc.ColumnName].ToString()));
+                    }
+
+                    result.Append("\r\n");
                 }
+
+
 
                 sw.Write(result.ToString());
 
@@ -4329,88 +4367,43 @@ namespace WindowsApplication1.utils
             {
                 //create sql for log file if it does not exist
                 // sqlConn must be an open connection
-                int i;
-                int Count;
                 string table = "FHC_LOG_ldap_magic";
                 DataTable data = new DataTable();
-                DataRow row;
+                log.initiateTrn();
+
 
                 StringBuilder sqlstring = new StringBuilder();
                 SqlConnection sqlConn = new SqlConnection("Data Source=" + settingsConfig.LogDB + ";Initial Catalog=" + settingsConfig.LogCatalog + ";Integrated Security=SSPI;Connect Timeout=360;");
                 sqlConn.Open();
                 SqlCommand sqlComm;
-                DateTime nowstamp = new DateTime();
-                nowstamp = DateTime.Now;
-                SqlDateTime datetimestamp = new SqlDateTime(nowstamp);
-                data.Columns.Add("Message");
-                data.Columns.Add("Type");
-                data.Columns.Add("Timestamp", System.Type.GetType("System.DateTime"));
 
-                sqlstring.Append("CREATE TABLE [" + table + "]([Message] [varchar](350), [Type] [varchar](50), [Timestamp] [datetime] NULL) ON [PRIMARY]");
+                sqlstring.Append("CREATE TABLE [" + table + "]([Message] [text], [Type] [varchar](50), [Timestamp] [datetime] NULL) ON [PRIMARY]");
                 sqlComm = new SqlCommand(sqlstring.ToString(), sqlConn);
                 try
                 {
                     sqlComm.CommandTimeout = 360;
                     sqlComm.ExecuteNonQuery();
-                    log.queries.Add(sqlComm.CommandText.ToString());
-                    log.transactions.Add("table created " + table);                   
+                    log.addTrn(sqlComm.CommandText.ToString(), "Query");
+                    log.addTrn("table created " + table, "Transaction");
                 }
                 catch (Exception ex)
                 {
-                    log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                    log.addTrn("Table already exists or Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Error");
+                    //log.addTrn("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
                 }
-
-
-                row = data.NewRow();
-                for (i = 0; i < log.transactions.Count; i++)
-                {
-                    row[0] = log.transactions[i].ToString();
-                    row[1] = "Transaction";
-                    row[2] = nowstamp;
-                    data.Rows.Add(row);
-                    row = data.NewRow();
-                }
-                for (i = 0; i < log.warnings.Count; i++)
-                {
-                    row[0] = log.warnings[i].ToString();
-                    row[1] = "Warning";
-                    row[2] = nowstamp;
-                    data.Rows.Add(row);
-                    row = data.NewRow();
-                }
-                for (i = 0; i < log.errors.Count; i++)
-                {
-                    row[0] = log.errors[i].ToString();
-                    row[1] = "Errors";
-                    row[2] = nowstamp;
-                    data.Rows.Add(row);
-                    row = data.NewRow();
-                }
-                for (i = 0; i < log.queries.Count; i++)
-                {
-                    row[0] = log.queries[i].ToString();
-                    row[1] = "Query";
-                    row[2] = nowstamp;
-                    data.Rows.Add(row);
-                    row = data.NewRow();
-                }
-
-
 
                 // copy data into table
                 try
                 {
                     SqlBulkCopy sbc = new SqlBulkCopy(sqlConn);
                     sbc.DestinationTableName = table;
-                    sbc.WriteToServer(data);
-
+                    sbc.WriteToServer(log.logTrns);
                     sbc.Close();
                 }
                 catch (Exception ex)
                 {
-                    log.errors.Add("Failed SQL bulk copy " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                    log.addTrn("Failed SQL bulk copy " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Error");
                 }
-
                 //create datatable with log information
                 //use append table to sql bulk copy to table
                 //optionally create blank table and use copy into/merge to get records into existing table
@@ -4436,7 +4429,7 @@ namespace WindowsApplication1.utils
             }
             catch (Exception ex)
             {
-                log.errors.Add("failed to move ad object from " + objectLocation + " to " + newLocation + " exception " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                log.addTrn("failed to move ad object from " + objectLocation + " to " + newLocation + " exception " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Error");
             }
 
         }
@@ -4452,7 +4445,7 @@ namespace WindowsApplication1.utils
             }
             catch
             {
-                log.errors.Add("failed to pull " + attributeName + " on object " + objectDn);
+                log.addTrn("failed to pull " + attributeName + " on object " + objectDn, "Error");
                 return null;
             }
             return strValue;
@@ -4536,7 +4529,7 @@ namespace WindowsApplication1.utils
             }
             catch (Exception ex)
             {
-                log.errors.Add("Failure to create AD user account " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                log.addTrn("Failure to create AD user account " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Error");
 
                 return false;
             }
@@ -4606,7 +4599,7 @@ namespace WindowsApplication1.utils
                     return false;
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 //MessageBox.Show(ex.Message.ToString() + "issue create user LDAP://CN=" + System.Web.HttpUtility.UrlEncode(properties["CN"].ToString()).Replace("+", " ").Replace("*", "%2A") + "," + ouPath + "\n" + ex.StackTrace.ToString());
                 return false;
@@ -4756,12 +4749,12 @@ namespace WindowsApplication1.utils
                             else
                             {
                                 service.DeleteNickname(nicknameEntry.Nickname.Name.ToString());
-                                log.transactions.Add("Deleting user nickname " + nicknameEntry.Nickname.Name.ToString());
+                                log.addTrn("Deleting user nickname " + nicknameEntry.Nickname.Name.ToString(), "Transaction");
                             }
                         }
                         catch
                         {
-                            log.errors.Add("Error deleting user nickname " + nicknames[userNicknameField].ToString());
+                            log.addTrn("Error deleting user nickname " + nicknames[userNicknameField].ToString(), "Error");
                         }
                     }
                     // if the nickname is not found create the new nickname
@@ -4770,11 +4763,11 @@ namespace WindowsApplication1.utils
                         try
                         {
                             service.CreateNickname(nicknames[usernameFieldName].ToString(), nicknames[userNicknameField].ToString());
-                            log.transactions.Add("Creating user nickname " + nicknames[userNicknameField].ToString() + " for user " + nicknames[usernameFieldName].ToString());
+                            log.addTrn("Creating user nickname " + nicknames[userNicknameField].ToString() + " for user " + nicknames[usernameFieldName].ToString(), "Transaction");
                         }
                         catch
                         {
-                            log.errors.Add("Error adding user nickname " + nicknames[userNicknameField].ToString() + " for user " + nicknames[usernameFieldName].ToString());
+                            log.addTrn("Error adding user nickname " + nicknames[userNicknameField].ToString() + " for user " + nicknames[usernameFieldName].ToString(), "Error");
                         }
                     }
                     // reset all variables
@@ -4785,7 +4778,7 @@ namespace WindowsApplication1.utils
             }
             catch (Exception ex)
             {
-                log.errors.Add("Issue updating nicknames datareader is null " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                log.addTrn("Issue updating nicknames datareader is null " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Error");
             }
         }
     }
@@ -4796,13 +4789,7 @@ namespace WindowsApplication1.utils
     {
         public void ExecuteGroupSync(GroupSynch groupsyn, ConfigSettings settingsConfig, ToolSet tools, LogFile log)
         {
-            //string debug = "";
-            //SqlDataReader debugreader;
-            //ArrayList debuglist = new ArrayList();
-            //int debugfieldcount;
-            //string debugrecourdcount;
-            //SqlCommand sqldebugComm;
-            //int i;
+
             StopWatch time = new StopWatch();
 
             string groupapp = groupsyn.Group_Append;
@@ -4839,16 +4826,20 @@ namespace WindowsApplication1.utils
 
             sqlConn.Open();
             // Setup the OU for the program
+            log.addTrn("Setup OU for the groups", "Info");
             tools.CreateOURecursive("OU=" + groupapp + "," + groupOU, log);
 
             // A little house cleaning to empty out tables
+            
             if (settingsConfig.TempTables == false)
             {
+                log.addTrn("Clear out tables for use", "Info");
                 tools.DropTable(adGroupsTable, sqlConn, log);
                 tools.DropTable(sqlgroupsTable, sqlConn, log);
             }
 
             // grab list of groups from SQL insert into a temp table
+            log.addTrn("Get groups from SQL", "Info");
             SqlCommand sqlComm = new SqlCommand();
             if (groupsyn.Group_where == "")
             {
@@ -4864,27 +4855,14 @@ namespace WindowsApplication1.utils
             {
                 sqlComm.CommandTimeout = 360;
                 sqlComm.ExecuteNonQuery();
-                log.queries.Add(sqlComm.CommandText.ToString());
+                log.addTrn(sqlComm.CommandText.ToString(), "Query");
             }
             catch (Exception ex)
             {
-                log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                log.addTrn("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Error");
                 throw;
             }
 
-
-            //sqldebugComm = new SqlCommand("select count(" + groupsyn.Group_sAMAccount + ") FROM " + sqlgroupsTable, sqlConn);
-            //debugreader = sqldebugComm.ExecuteReader();
-            //debugfieldcount = debugreader.FieldCount;
-            //while (debugreader.Read())
-            //{
-            //    for (i = 0; i < debugfieldcount; i++)
-            //    {
-            //        debug += (string)debugreader[0].ToString();
-            //    }
-            //}
-            //MessageBox.Show(debug);
-            //debugreader.Close();
 
 
             // generate a list of fields to ask from AD
@@ -4893,100 +4871,24 @@ namespace WindowsApplication1.utils
 
 
             // grab groups from AD
-            //time.Start();
+            log.addTrn("Get groups from AD", "Info");
             groupsDataTable = tools.EnumerateGroupsInOUDataTable("OU=" + groupapp + "," + groupOU, adUpdateKeys, adGroupsTable, log);
-            //time.Stop();
 
-            //MessageBox.Show("got " + groupsLinkedList.Count + "groups from ou in " + time.GetElapsedTime());
             // insert groups from AD into a temp table
             if (groupsDataTable.Rows.Count > 0)
             {
-                //time.Start();
+
                 groupsTable = tools.Create_Table(groupsDataTable, adGroupsTable, sqlConn, log);
-                //time.Stop();
-                //MessageBox.Show("temp table loaded " + groupsLinkedList.Count + " in " + time.GetElapsedTime());
 
-
-                //debug = " groups table  data import from AD \n";
-                //sqldebugComm = new SqlCommand("select top 20 * FROM " + groupsTable, sqlConn);
-                //debugreader = sqldebugComm.ExecuteReader();
-                //debugfieldcount = debugreader.FieldCount;
-                ////debugrecourdcount = debugreader.RecordsAffected.ToString();
-                //for (i = 0; i < debugfieldcount; i++)
-                //{
-                //    debug += debugreader.GetName(i);
-                //}
-                //debug += "\n";
-                //while (debugreader.Read())
-                //{
-                //    for (i = 0; i < debugfieldcount; i++)
-                //    {
-                //        debug += (string)debugreader[i] + ",";
-                //    }
-                //    debug += "\n";
-                //}
-                //sqldebugComm = new SqlCommand("select count(" + debugreader.GetName(1) + ") FROM " + groupsTable, sqlConn);
-                //debugreader.Close();
-                //debugrecourdcount = sqldebugComm.ExecuteScalar().ToString(); 
-                //MessageBox.Show("table " + groupsTable + " has " + debugrecourdcount + " records \n " + debugfieldcount + " fields \n sample data" + debug);
-
-
-
-                //debug = " groups from SQL to compare against AD \n";
-                //sqldebugComm = new SqlCommand("select top 20 * FROM " + sqlgroupsTable, sqlConn);
-                //debugreader = sqldebugComm.ExecuteReader();
-                //debugfieldcount = debugreader.FieldCount;
-                ////debugrecourdcount = debugreader.RecordsAffected.ToString();
-                //for (i = 0; i < debugfieldcount; i++)
-                //{
-                //    debug += debugreader.GetName(i);
-                //}
-                //debug += "\n";
-                //while (debugreader.Read())
-                //{
-                //    for (i = 0; i < debugfieldcount; i++)
-                //    {
-                //        debug += (string)debugreader[i] + ",";
-                //    }
-                //    debug += "\n";
-                //}
-                //sqldebugComm = new SqlCommand("select count(" + debugreader.GetName(1) + ") FROM " + sqlgroupsTable, sqlConn);
-                //debugreader.Close();
-                //debugrecourdcount = sqldebugComm.ExecuteScalar().ToString();
-                //MessageBox.Show("table " + sqlgroupsTable + " has " + debugrecourdcount + " records \n " + debugfieldcount + " fields \n sample data" + debug);
-
-
-                // does not get columns from a temp table as they are not in the system objects database
-                //debuglist = tools.GetColumns(groupsyn.DataServer, groupsyn.DBCatalog, sqlgroupsTable, sqlConn);
-                //debug = " columns \n";
-                //foreach (string a in debuglist)
-                //{
-                //    debug += a + "\n";
-                //}
-                //MessageBox.Show(debug);
-
-
-
-                //time.Start();
 
                 //Find groups that we need to create
+                log.addTrn("Query to find groups that need to be created", "Info");
                 add = tools.QueryNotExists(sqlgroupsTable, groupsTable, sqlConn, groupsyn.Group_CN, adUpdateKeys[1].ToString(), log);
 
-                //time.Stop();
-                //MessageBox.Show("add query" + time.GetElapsedTime());
-                //debug = "cols to add \n";
-                //while (add.Read())
-                //{
-                //    debug += (string)add[0] + "\n";
-                //}
-                //MessageBox.Show(debug);
 
-                // add nodes to AD
-
-                //time.Start();
-                // i = 0;
 
                 // Create groups
+                log.addTrn("Creating groups", "Info");
                 while (add.Read())
                 {
                     //i++;
@@ -4996,41 +4898,23 @@ namespace WindowsApplication1.utils
                     groupObject.Add("CN", sAMAccountName);
                     groupObject.Add("description", description);
                     tools.CreateGroup("OU=" + groupapp + "," + groupOU, groupObject, log);
-                    // log.transactions.Add("Group added ;" + sAMAccountName + ",OU=" + groupapp + "," + groupOU + ";" + description);
-                    //if (i % 1000 == 0)
-                    //{
-                    //    // FORGET the real progress bar for now groupsyn.progress = i;
-                    //    gui.group_result1.Text = "Adding cause im still ALIVE !!!" + i;
-                    //    gui.Refresh();
-                    //    //MessageBox.Show("adding now at item " + i);
-                    //}
                     groupObject.Clear();
                 }
-                //time.Stop();
-                //MessageBox.Show("add " + i + " objects " + time.GetElapsedTime());
+
                 add.Close();
 
 
                 //time.Start();
+                log.addTrn("Query to find groups to delete", "Info");
                 delete = tools.QueryNotExists(groupsTable, sqlgroupsTable, sqlConn, adUpdateKeys[1].ToString(), groupsyn.Group_CN, log);
                 // delete groups in AD
                 // i = 0;
+                log.addTrn("Deleting groups", "Info");
                 while (delete.Read())
                 {
-                    // i++;
                     tools.DeleteGroup("OU=" + groupapp + "," + groupOU, (string)delete[adUpdateKeys[1].ToString()].ToString().Trim(), log);
-                    // log.transactions.Add("Group deleted ;" + (string)delete[adUpdateKeys[1].ToString()].ToString().Trim() + ",OU=" + groupapp + groupOU);
-                    //if (i % 1000 == 0)
-                    //{
-                    //    // FORGET the real progress bar for now groupsyn.progress = i;
-                    //    gui.group_result1.Text = "Deleting cause im still ALIVE !!!" + i;
-                    //    gui.Refresh();
-                    //    //MessageBox.Show("Deleting now at item " + i);
-                    //}
                 }
                 delete.Close();
-                //time.Stop();
-                //MessageBox.Show("Delete " + i + " objects " + time.GetElapsedTime());
 
 
                 // Get columns from sqlgroupsTable temp table in database get columns deprcated in favor of manual building due to cannot figure out how to get the columns of a temporary table
@@ -5038,32 +4922,17 @@ namespace WindowsApplication1.utils
                 // make the list of fields for the sql to check when updating note these fields must be in the same order as the AD update keys
                 sqlUpdateKeys.Add(groupsyn.Group_sAMAccount);
                 sqlUpdateKeys.Add(groupsyn.Group_CN);
-                //time.Start();
-                // update assumes the both ADupdateKeys and SQLupdateKeys have the same fields, listed in the same order check  call to EnumerateGroupsInOU if this is wrong should be sAMAccountName, CN matching the SQL order
-                update = tools.CheckUpdate(sqlgroupsTable, groupsTable, groupsyn.Group_CN, adUpdateKeys[1].ToString(), sqlUpdateKeys, adUpdateKeys, sqlConn, log);
-                //time.Stop();
-                //MessageBox.Show("update query" + time.GetElapsedTime());
 
-                //int  j = 0;
-                //debug = "Records to Update ";
-                //while (update.Read() && j < 30)
-                //{
-                //    j++;
-                //    for (i = 0; i < update.FieldCount; i++)
-                //    {
-                //        debug += (string)update[i].ToString() + ",";
-                //    }
-                //    debug += "\n";
-                //}
-                //debug += update.RecordsAffected;
-                //MessageBox.Show(debug);
+                // update assumes the both ADupdateKeys and SQLupdateKeys have the same fields, listed in the same order check  call to EnumerateGroupsInOU if this is wrong should be sAMAccountName, CN matching the SQL order
+                log.addTrn("Query to find groups which need to be updated", "Info");
+                update = tools.CheckUpdate(sqlgroupsTable, groupsTable, groupsyn.Group_CN, adUpdateKeys[1].ToString(), sqlUpdateKeys, adUpdateKeys, sqlConn, log);
+
 
 
 
                 // update groups in ad
-                //time.Start();
-                // i = 0;
                 // last record which matches the primary key is the one which gets inserted into the database
+                log.addTrn("Updating groups", "Info");
                 while (update.Read())
                 {
                     // any duplicate records will attempt to be updated if slow runtimes are a problem this might be an issue
@@ -5078,7 +4947,7 @@ namespace WindowsApplication1.utils
                     {
                         // group exists in place just needs updating
                         tools.UpdateGroup("OU=" + groupapp + "," + groupOU, groupObject, log);
-                        // log.transactions.Add("Group update ; " + sAMAccountName + ",OU=" + groupapp + "," + groupOU + ";" + description);
+                        // log.addTrn("Group update ; " + sAMAccountName + ",OU=" + groupapp + "," + groupOU + ";" + description);
                     }
                     else
                     {
@@ -5088,30 +4957,23 @@ namespace WindowsApplication1.utils
                         // groups needs to be moved and updated
                         // tools.MoveADObject(groupDN, "LDAP://OU=" + groupapp + ',' + groupOU);
                         // tools.UpdateGroup("OU=" + groupapp + "," + groupOU, groupObject);
-                        log.errors.Add("Group cannot be updated user probabally should be in ; " + "OU=" + groupapp + "," + groupOU + " ; but was found in ; " + groupDN);
+                        log.addTrn("Group cannot be updated user probabally should be in ; " + "OU=" + groupapp + "," + groupOU + " ; but was found in ; " + groupDN, "Error");
                     }
-                    //if (i % 1000 == 0)
-                    //{
-                    //    // FORGET the real progress bar for now groupsyn.progress = i;
-                    //    gui.group_result1.Text = "updating cause im still ALIVE !!!" + i;
-                    //    gui.Refresh();
-                    //    //MessageBox.Show("updating now at item " + i);
-                    //}
                     groupObject.Clear();
                 }
                 update.Close();
-                //time.Stop();
-                //MessageBox.Show("update objects somehow found " + i + " objects to finished in "  + time.GetElapsedTime());
             }
             // we didn't find any records in AD so there is no need for the Update or delete logic to run
             else
             {
+                log.addTrn("Query to get list of groups to add", "Info");
                 sqlComm = new SqlCommand("SELECT * FROM " + sqlgroupsTable, sqlConn);
                 try
                 {
                     sqlComm.CommandTimeout = 360;
                     add = sqlComm.ExecuteReader();
-                    log.queries.Add(sqlComm.CommandText.ToString());
+                    log.addTrn(sqlComm.CommandText.ToString(), "Query");
+                    log.addTrn("Adding groups", "Info");
                     while (add.Read())
                     {
                         //i++;
@@ -5119,30 +4981,16 @@ namespace WindowsApplication1.utils
                         groupObject.Add("CN", (string)add[1]);
                         groupObject.Add("description", (string)add[0]);
                         tools.CreateGroup("OU=" + groupapp + "," + groupOU, groupObject, log);
-                        // log.transactions.Add("Group added ;" + groupObject["sAMAccountName"] + ",OU=" + groupapp + "," + groupOU + ";" + groupObject["description"]);
-
                         groupObject.Clear();
-                        //if (i % 500 == 0)
-                        //{
-                        //    // FORGET the real progress bar for now groupsyn.progress = i;
-                        //    gui.group_result1.AppendText("add cause im still ALIVE !!!" + i);
-                        //    gui.Refresh();
-                        //    // MessageBox.Show("avoiding message pumping add progress now at item " + i);
-                        //}
                     }
-                    //time.Stop();
-                    //MessageBox.Show("initial add objects " + i + " time taken" + time.GetElapsedTime());
                     add.Close();
                 }
                 catch (Exception ex)
                 {
-                    log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                    log.addTrn("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Error");
                 }
 
-                //time.Start();
-                // i = 0;
-
-            }
+           }
 
             // users section
             string sqlgroupMembersTable = "#FHC_GROUPS_sqlusersTable";
@@ -5162,6 +5010,7 @@ namespace WindowsApplication1.utils
 
 
             // A little house cleaning to empty out tables
+            log.addTrn("Clear out tables for usage", "Info");
             if (settingsConfig.TempTables == false)
             {
                 tools.DropTable(sqlgroupMembersTable, sqlConn, log);
@@ -5169,6 +5018,7 @@ namespace WindowsApplication1.utils
             }
 
             // grab users data from sql
+            log.addTrn("Get users from SQL", "Info");
             if (groupsyn.User_where == "")
             {
                 sqlComm = new SqlCommand("SELECT DISTINCT 'CN=' + RTRIM(" + groupsyn.User_sAMAccount + ") + '," + groupsyn.BaseUserOU + "' AS " + groupsyn.User_sAMAccount + ", RTRIM(" + groupsyn.User_Group_Reference + ") + '" + groupapp + "' AS " + groupsyn.User_Group_Reference + " INTO " + sqlgroupMembersTable + " FROM " + groupsyn.User_dbTable, sqlConn);
@@ -5181,23 +5031,24 @@ namespace WindowsApplication1.utils
             {
                 sqlComm.CommandTimeout = 360;
                 sqlComm.ExecuteNonQuery();
-                log.queries.Add(sqlComm.CommandText.ToString());
+                log.addTrn(sqlComm.CommandText.ToString(), "Query");
             }
             catch (Exception ex)
             {
-                log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                log.addTrn("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Error");
             }
 
 
 
             // populate datatable with users from AD groups by looping thru the list of groups from SQL and loading the cross referenced AD group members
+            log.addTrn("Get users from AD by looping through groups from SQL and appending results to a table", "Info");
             sqlComm = new SqlCommand("SELECT " + groupsyn.Group_CN + " FROM " + sqlgroupsTable, sqlConn);
             try
             {
                 ArrayList sqlgroupsStr = new ArrayList();
                 sqlComm.CommandTimeout = 360;
                 sqlgroups = sqlComm.ExecuteReader();
-                log.queries.Add(sqlComm.CommandText.ToString());
+                log.addTrn(sqlComm.CommandText.ToString(), "Query");
                 DataTable currentOu = new DataTable();
                 while (sqlgroups.Read())
                 {
@@ -5227,74 +5078,23 @@ namespace WindowsApplication1.utils
             }
             catch (Exception ex)
             {
-                log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                log.addTrn("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Error");
             }
 
 
-
-
-
-
-            //debug = " total users in groups from SQL \n";
-            //sqldebugComm = new SqlCommand("select top 20 * FROM " + sqlgroupMembersTable, sqlConn);
-            //debugreader = sqldebugComm.ExecuteReader();
-            //debugfieldcount = debugreader.FieldCount;
-            //for (i = 0; i < debugfieldcount; i++)
-            //{
-            //    debug += debugreader.GetName(i);
-            //}
-            //debug += "\n";
-            //while (debugreader.Read())
-            //{
-            //    for (i = 0; i < debugfieldcount; i++)
-            //    {
-            //        debug += (string)debugreader[i] + ",";
-            //    }
-            //    debug += "\n";
-            //}
-            //sqldebugComm = new SqlCommand("select count(" + ADusers.Columns[0].ColumnName + ") FROM " + sqlgroupMembersTable, sqlConn);
-            //debugreader.Close();
-            //debugrecourdcount = sqldebugComm.ExecuteScalar().ToString();
-            //MessageBox.Show("table " + sqlgroupMembersTable + " has " + debugrecourdcount + " records \n " + debugfieldcount + " fields \n sample data" + debug);
-
-            //debug = " total users in groups from AD \n";
-            //sqldebugComm = new SqlCommand("select top 20 * FROM " + ADgroupMembersTable, sqlConn);
-            //debugreader = sqldebugComm.ExecuteReader();
-            //debugfieldcount = debugreader.FieldCount;
-            //for (i = 0; i < debugfieldcount; i++)
-            //{
-            //    debug += debugreader.GetName(i);
-            //}
-            //debug += "\n";
-            //while (debugreader.Read())
-            //{
-            //    for (i = 0; i < debugfieldcount; i++)
-            //    {
-            //        debug += (string)debugreader[i] + ",";
-            //    }
-            //    debug += "\n";
-            //}
-            //sqldebugComm = new SqlCommand("select count(" + ADusers.Columns[0].ColumnName + ") FROM " + ADgroupMembersTable, sqlConn);
-            //debugreader.Close();
-            //debugrecourdcount = sqldebugComm.ExecuteScalar().ToString();
-            //MessageBox.Show("table " + ADgroupMembersTable + " has " + debugrecourdcount + " records \n " + debugfieldcount + " fields \n sample data" + debug);
-
-
-
             // compare and add/remove
+            log.addTrn("Query to find the users to add ", "Info");
             add = tools.QueryNotExists(sqlgroupMembersTable, ADgroupMembersTable, sqlConn, groupsyn.User_sAMAccount, ADusers.Columns[0].ColumnName, log);
             try
             {
                 while (add.Read())
                 {
                     tools.AddUserToGroup((string)add[0], "CN=" + (string)add[1] + ",OU=" + groupapp + "," + groupOU, false, dc, log);
-                    // log.transactions.Add("User added ;" + (string)add[0] + ",OU=" + groupapp + "," + groupOU + ";" + (string)add[1]);
-                    // groupObject.Clear(); moved outside loop for optimisation
                 }
             }
             catch (Exception ex)
             {
-                log.errors.Add("Issue adding group datareader is null " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                log.addTrn("Issue adding group datareader is null " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Error");
             }
             groupObject.Clear();
             add.Close();
@@ -5315,16 +5115,16 @@ namespace WindowsApplication1.utils
                 sqlUpdateKeys.Add(ADusers.Columns[1].ColumnName);
                 sqlUpdateKeys.Add(ADusers.Columns[0].ColumnName);
 
-                // get list of keys which have differed. We will delete them and then next time they will be readded as the correct key
+                // get list of keys which have differed. We will delete them and then next time they will be readded as the correct key\
+                // users which need to be updated just get deleted and recreadted later where they need to be
+                log.addTrn("Query to see which users need to be deleted", "Info");
                 delete = tools.CheckUpdate(ADgroupMembersTable, sqlgroupMembersTable, ADusers.Columns[0].ColumnName, groupsyn.User_sAMAccount, adUpdateKeys, sqlUpdateKeys, sqlConn, log);
                 // delete = tools.QueryNotExists(ADgroupMembersTable, sqlgroupMembersTable, sqlConn, ADusers.Columns[1].ColumnName, groupsyn.User_Group_Reference, log);
                 // delete groups in AD
+                log.addTrn("Deleteing users", "Info");
                 while (delete.Read())
                 {
-
                     tools.RemoveUserFromGroup((string)delete[1], "CN=" + (string)delete[0] + ",OU=" + groupapp + "," + groupOU, log);
-                    // log.transactions.Add("User removed ;" + (string)delete[adUpdateKeys[1].ToString()].ToString().Trim() + ",OU=" + groupapp + groupOU);
-
                 }
                 delete.Close();
             }
@@ -5332,12 +5132,6 @@ namespace WindowsApplication1.utils
         }
         public void ExecuteUserSync(UserSynch usersyn, ConfigSettings settingsConfig, ToolSet tools, LogFile log)
         {
-            string debug = "";
-            SqlDataReader debugReader;
-            int debugFieldCount;
-            string debugRecordCount;
-            SqlCommand sqlDebugComm;
-            int j;
             int i;
             ArrayList debugList = new ArrayList();
             StopWatch time = new StopWatch();
@@ -5391,6 +5185,7 @@ namespace WindowsApplication1.utils
 
             sqlConn.Open();
             //housecleaning
+            log.addTrn("Cleaning out tables", "Info");
             if (settingsConfig.TempTables == false)
             {
                 tools.DropTable(sqlUsersTable, sqlConn, log);
@@ -5400,6 +5195,7 @@ namespace WindowsApplication1.utils
             //if were only updating it doesnt matter where we want ot put new users
             if (usersyn.UpdateOnly == false)
             {
+                log.addTrn("Initial setup of OUs and Groups", "Info");
                 // create initial ou's; will log a warning out if they already exist
                 tools.CreateOURecursive(usersyn.BaseUserOU, log);
                 tools.CreateOURecursive(usersyn.UserHoldingTank, log);
@@ -5486,6 +5282,7 @@ namespace WindowsApplication1.utils
             }
 
             // grab users data from sql
+            log.addTrn("Get users from SQL tables", "Info");
             if (usersyn.User_where == "")
             {
                 sqlComm = new SqlCommand("SELECT DISTINCT RTRIM(" + usersyn.User_sAMAccount + ") AS sAMAccountName" +
@@ -5523,12 +5320,12 @@ namespace WindowsApplication1.utils
             {
                 sqlComm.CommandTimeout = 360;
                 sqlComm.ExecuteNonQuery();
-                log.queries.Add(sqlComm.CommandText.ToString());
+                log.addTrn(sqlComm.CommandText.ToString(), "Query");
 
             }
             catch (Exception ex)
             {
-                log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                log.addTrn("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Error");
                 throw;
             }
             if (usersyn.SearchScope == "Subtree")
@@ -5537,19 +5334,23 @@ namespace WindowsApplication1.utils
             }
                     
             // go grab all the users from AD
+            log.addTrn("Get users from active directory", "Info");
             adUsers = tools.EnumerateUsersInOUDataTable(usersyn.BaseUserOU, completeADKeys, adUsersTable, scope, log);
             if (adUsers.Rows.Count > 0)
             {
                 // make the temp table for ou comparisons
+
                 tools.Create_Table(adUsers, adUsersTable, sqlConn, log);
 
                 // Quick check to stop adding if the update only box is checked
                 if (usersyn.UpdateOnly == false)
                 {
                     // compare query for the add/remove
+                    log.addTrn("Query to find users to add", "Info");
                     add = tools.QueryNotExists(sqlUsersTable, adUsersTable, sqlConn, "sAMAccountName", adUsers.Columns[0].ColumnName, log);
 
                     // actual add stuff
+                    log.addTrn("Adding users", "Info");
                     tools.CreateUsersAccounts(usersyn.UserHoldingTank, add, usersyn.UniversalGroup, DC, usersyn, log);
                     add.Close();
 
@@ -5561,21 +5362,23 @@ namespace WindowsApplication1.utils
                     if (recordCount != "0")
                     {
                         // compare query to find records which need deletion
+                        log.addTrn("Query to find users to delete", "Info");
                         delete = tools.QueryNotExists(adUsersTable, sqlUsersTable, sqlConn, usersyn.User_sAMAccount, completeADKeys[0].ToString(), log);
 
                         // delete users in AD
+                        log.addTrn("Deleting users", "Info");
                         try
                         {
                             while (delete.Read())
                             {
 
                                 tools.DeleteUserAccount((string)delete["distinguishedname"], log);
-                                // log.transactions.Add("User removed ;" + (string)delete[adUpdateKeys[1].ToString()].ToString().Trim()); 
+                                // log.addTrn("User removed ;" + (string)delete[adUpdateKeys[1].ToString()].ToString().Trim()); 
                             }
                         }
                         catch (Exception ex)
                         {
-                            log.errors.Add("Issue deleting AD users datareader is null " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                            log.addTrn("Issue deleting AD users datareader is null " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Error");
                         }
                         delete.Close();
                     }
@@ -5584,28 +5387,14 @@ namespace WindowsApplication1.utils
                 // add the extra fields in form ".field ,"
                 extraFieldsToReturn.Add(adUsersTable + ".distinguishedname ,");
 
+                log.addTrn("Query to find users to update", "Info");
                 update = tools.CheckUpdate(sqlUsersTable, adUsersTable, "sAMAccountName", "sAMAccountName", sqlUpdateKeys, adUpdateKeys, extraFieldsToReturn, 1, sqlConn, log);
 
-
-                tools.UpdateUsers(update, DC, log);
                 // update users in ad
                 // last record which matches the primary key is the one which gets inserted into the database
-                //while (update.Read())
-                //{
-                //    // any duplicate records will attempt to be updated if slow runtimes are a problem this might be an issue
-                //    if (tools.Exists((string)update["distinguishedName"].ToString().Trim()) == true)
-                //    {
-                //        // user exists in place just needs updating
-                //        tools.UpdateGroup("OU=" + groupapp + "," + groupOU, groupObject, log);
-                //    }
-                //    else
-                //    {
-                //        // find it its on the server somewhere we will log the exception
-                //        userDN = tools.GetObjectDistinguishedName(objectClass.user, returnType.distinguishedName, (string)update["sAMAccountName"].ToString().Trim(), dc);
-                //        log.errors.Add("User could not be updated user probabally should be in ; " + "OU=" + groupapp + "," + groupOU + " ; but was found in ; " + userDN);
-                //    }
+                log.addTrn("Updating users", "Info");
+                tools.UpdateUsers(update, DC, log);
 
-                //}
                 update.Close();
             }
             // did not find any records in AD we are only adding users
@@ -5616,7 +5405,9 @@ namespace WindowsApplication1.utils
                 {
                     // add the users without doing additional checks
                     tools.Create_Table(adUsers, adUsersTable, sqlConn, log);
+                    log.addTrn("Query to find users to add", "Info");
                     add = tools.QueryNotExists(sqlUsersTable, adUsersTable, sqlConn, "sAMAccountName", adUsers.Columns[0].ColumnName, log);
+                    log.addTrn("Add all users", "Info");
                     tools.CreateUsersAccounts(usersyn.UserHoldingTank, add, usersyn.UniversalGroup, DC, usersyn, log);
                     add.Close();
                 }
@@ -5631,7 +5422,6 @@ namespace WindowsApplication1.utils
             // MessageBox.Show("gmail " + gusersyn.Admin_password + " " + gusersyn.Admin_domain + " " + gusersyn.Admin_user + " " + gusersyn.DataServer + " " + gusersyn.DBCatalog + " " + gusersyn.User_ad_OU + " " + gusersyn.User_Datasource + " " + gusersyn.User_dbTable + " " + gusersyn.User_Fname + " " + gusersyn.User_Lname + " " + gusersyn.User_Mname + " " + gusersyn.User_password + " " + gusersyn.User_password_short_fix_checkbox.ToString() + " " + gusersyn.User_password_generate_checkbox.ToString() + " " + gusersyn.User_StuID + " " + gusersyn.User_table_view + " " + gusersyn.User_where + " " + gusersyn.Writeback_AD_checkbox.ToString() + " " + gusersyn.Writeback_ad_OU + " " + gusersyn.Writeback_DB_checkbox.ToString() + " " + gusersyn.Writeback_email_field + " " + gusersyn.Writeback_primary_key + " " + gusersyn.Writeback_secondary_email_field + " " + gusersyn.Writeback_table + " " + gusersyn.Writeback_transfer_email_checkbox.ToString() + " " + gusersyn.Writeback_where_clause);
             // Email addresses are static so only the names can be updated. passwords will be ignored
             // appservice variables will come from a config designed ot hold its data (sql and Gmail login)
-            int i = 0;
             string userDN = "";
             AppsService service = new AppsService(gusersyn.Admin_domain, gusersyn.Admin_user + "@" + gusersyn.Admin_domain, gusersyn.Admin_password);
             ArrayList completeSqlKeys = new ArrayList();
@@ -5650,6 +5440,8 @@ namespace WindowsApplication1.utils
             string sqlNicknamesTable = "#FHC_LDAP_sqlNicknamesTable";
             string nicknamesToUpdateDBTable = "#FHC_LDAP_nicknamesToUpdateDB";
             string nicknamesFilteredForDuplicatesTable = "#FHC_LDAP_nicknamesFilteredDuplicates";
+            string nicknamesFromGmailTable2 = "#FHC_LDAP_gmailNicknamesTable2";
+            string gmailUsersTableWB = "#FHC_LDAP_gmailusersTableWB";
 
 
             SqlDataReader add;
@@ -5657,9 +5449,6 @@ namespace WindowsApplication1.utils
             SqlDataReader update;
             SqlConnection sqlConn = new SqlConnection("Data Source=" + gusersyn.DataServer + ";Initial Catalog=" + gusersyn.DBCatalog + ";Integrated Security=SSPI;Connect Timeout=360;");
 
-
-            //string sqlUsersTable = "#sqlusersTable";
-            //string gmailUsersTable = "#gmailusersTable";
 
             if (settingsConfig.TempTables == true)
             {
@@ -5678,8 +5467,6 @@ namespace WindowsApplication1.utils
             DataTable gmailUsers = new DataTable();
             DataTable adUsers = new DataTable();
             DataTable writeback = new DataTable();
-
-
 
 
             // set up fields to pull back from SQL or AD if the flag is checked both must contain the same data
@@ -5713,6 +5500,7 @@ namespace WindowsApplication1.utils
             sqlConn.Open();
 
             //housecleaning
+            log.addTrn("Clear out tables for use", "Info");
             if (settingsConfig.TempTables == false)
             {
                 tools.DropTable(sqlUsersTable, sqlConn, log);
@@ -5720,9 +5508,11 @@ namespace WindowsApplication1.utils
             }
 
             // this statement picks the datasource SQL vs AD and sets up the temp table
+            
             if (gusersyn.User_Datasource == "database")
             {
                 // grab users data from sql
+                log.addTrn("Get users from SQL", "Info");
                 if (gusersyn.User_where == "")
                 {
                     sqlComm = new SqlCommand("SELECT DISTINCT RTRIM(" + gusersyn.User_StuID + ")" +
@@ -5746,23 +5536,25 @@ namespace WindowsApplication1.utils
                 {
                     sqlComm.CommandTimeout = 360;
                     sqlComm.ExecuteNonQuery();
-                    log.queries.Add(sqlComm.CommandText.ToString());
+                    log.addTrn(sqlComm.CommandText.ToString(), "Query");
                 }
                 catch (Exception ex)
                 {
-                    log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                    log.addTrn("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Error");
                     // If we add deletion we need to fail out if this is blank
                     //throw;
                 }
             }
             else
             {
+                log.addTrn("Get users from AD", "Info");
                 adUsers = tools.EnumerateUsersInOUDataTable(gusersyn.User_ad_OU, completeSqlKeys, sqlUsersTable, SearchScope.OneLevel, log);
                 // build the database temp table from the users retrieved into adUsers
                 tools.Create_Table(adUsers, sqlUsersTable, sqlConn, log);
             }
 
             // go grab all the users from Gmail from the database
+            log.addTrn("Get users from Gmail for comparison", "Info");
             gmailUsers = tools.Get_Gmail_Users(service, gusersyn, gmailUsersTable, log);
             // make the temp table for ou comparisons
             tools.Create_Table(gmailUsers, gmailUsersTable, sqlConn, log);
@@ -5770,33 +5562,10 @@ namespace WindowsApplication1.utils
 
 
             // compare and add/remove
+            log.addTrn("Query to find the users who need to be created", "Info");
             add = tools.QueryNotExists(sqlUsersTable, gmailUsersTable, sqlConn, gusersyn.User_StuID, gmailUsers.Columns[0].ColumnName, log);
 
-            //SqlDataReader debugReader;
-            //string debug = "";
-            //int debugFieldCount = 0;
-
-            //debug = "Gunna Add stuff \n";
-            //debugFieldCount = add.FieldCount;
-            //for (i = 0; i < debugFieldCount; i++)
-            //{
-            //    debug += add.GetName(i) + ", ";
-            //}
-            //debug += "\n";
-            //int j = 0;
-            //while (add.Read() && j < 20)
-            //{
-            //    for (i = 0; i < debugFieldCount; i++)
-            //    {
-            //        debug += (string)add[i] + ", ";
-            //    }
-            //    debug += "\n";
-            //    j++;
-            //}
-
-            // debugReader.Close();
-            // MessageBox.Show("Gmail users to add \n " + debugFieldCount + " fields \n sample data" + debug);
-
+            log.addTrn("Adding users", "Info");
             tools.Create_Gmail_Users(service, gusersyn, add, log);
             add.Close();
 
@@ -5809,42 +5578,10 @@ namespace WindowsApplication1.utils
             //}
             //delete.Close();
 
+            log.addTrn("Query to find users to update", "Info");
             update = tools.CheckUpdate(sqlUsersTable, gmailUsersTable, gusersyn.User_StuID, gmailUsers.Columns[0].ColumnName, sqlUpdateKeys, gmailUpdateKeys, additionalKeys, 0, sqlConn, log);
 
-
-            //SqlDataReader debugReader;
-            //string debug = "";
-            //int debugFieldCount = 0;
-
-            //debug = "Gunna update stuff \n";
-            //debugFieldCount = update.FieldCount;
-            //for (i = 0; i < debugFieldCount; i++)
-            //{
-            //    debug += update.GetName(i) + ", ";
-            //}
-            //debug += "\n";
-            //int j = 0;
-            //try
-            //{
-            //    while (update.Read() && j < 20)
-            //    {
-            //        for (i = 0; i < debugFieldCount; i++)
-            //        {
-            //            debug += (string)update[i] + ", ";
-            //        }
-            //        debug += "\n";
-            //        j++;
-            //    }
-            //}
-            //catch (Exception ex)
-            //{
-            //    log.warnings.Add("Issue creating debug data " + ex.Message.ToString());
-            //}
-
-            ////debugReader.Close();
-            //MessageBox.Show("Gmail users to update \n " + debugFieldCount + " fields \n sample data" + debug);
-
-
+            log.addTrn("Updating users", "Info");
             tools.UpdateGmailUser(service, gusersyn, update, log);
             update.Close();
 
@@ -5857,12 +5594,6 @@ namespace WindowsApplication1.utils
             // ***********************************
 
 
-            //string nicknamesFromGmailTable = "#gmailNicknamesTable";
-            //string loginWithoutNicknamesTable = "#loginsWONicknamesTable";
-            //string adNicknamesTable = "#adNicknamesTable";
-            //string sqlNicknamesTable = "#sqlNicknamesTable";
-            //string nicknamesToUpdateDBTable = "#nicknamesToUpdateDB";
-
 
             if (settingsConfig.TempTables == true)
             {
@@ -5872,6 +5603,8 @@ namespace WindowsApplication1.utils
                 sqlNicknamesTable = "#FHC_LDAP_sqlNicknamesTable";
                 nicknamesToUpdateDBTable = "#FHC_LDAP_nicknamesToUpdateDB";
                 nicknamesFilteredForDuplicatesTable = "#FHC_LDAP_nicknamesFilteredDuplicates";
+                nicknamesFromGmailTable2 = "#FHC_LDAP_gmailNicknamesTable2";
+                gmailUsersTableWB = "#FHC_LDAP_gmailusersTableWB";
             }
             else
             {
@@ -5881,11 +5614,12 @@ namespace WindowsApplication1.utils
                 sqlNicknamesTable = "FHC_LDAP_sqlNicknamesTable";
                 nicknamesToUpdateDBTable = "FHC_LDAP_nicknamesToUpdateDB";
                 nicknamesFilteredForDuplicatesTable = "FHC_LDAP_nicknamesFilteredDuplicates";
+                nicknamesFromGmailTable2 = "FHC_LDAP_gmailNicknamesTable2";
+                gmailUsersTableWB = "FHC_LDAP_gmailusersTableWB";
             }
 
             string dc = gusersyn.Writeback_ad_OU.Substring(gusersyn.Writeback_ad_OU.IndexOf("DC"));
             string userNickName = "";
-            SqlDataReader nicknamesToAddToDatabase;
             SqlDataReader nicknamesToAddToAD;
             SqlDataReader lostNicknames;
             ArrayList nicknameKeys = new ArrayList();
@@ -5894,13 +5628,14 @@ namespace WindowsApplication1.utils
             ArrayList adMailUpdateKeys = new ArrayList();
             ArrayList nicknameKeysAndTable = new ArrayList();
             ArrayList sqlkeysAndTable = new ArrayList();
-            ArrayList keywordFields = new ArrayList(); //fields fror checking against nickname to see how close it is to the real data
+            ArrayList keywordFields = new ArrayList(); //fields for checking against nickname to see how close it is to the real data
             ArrayList selectFields = new ArrayList(); //fields from nicknamesFromGmailTable to bring back
             DataTable nicknames = new DataTable();
             SqlDataReader sendAsAliases;
 
 
             // housecleaning
+            log.addTrn("Clear out tables for use", "Info");
 //            if (settingsConfig.TempTables == false)
 //            {
                 tools.DropTable(nicknamesFromGmailTable, sqlConn, log);
@@ -5909,9 +5644,12 @@ namespace WindowsApplication1.utils
                 tools.DropTable(sqlNicknamesTable, sqlConn, log);
                 tools.DropTable(nicknamesToUpdateDBTable, sqlConn, log);
                 tools.DropTable(nicknamesFilteredForDuplicatesTable, sqlConn, log);
+                tools.DropTable(nicknamesFromGmailTable2, sqlConn, log);
+                tools.DropTable(gmailUsersTableWB, sqlConn, log);
 //            }
 
             // install levenstein if bulid nicknames checked
+            log.addTrn("Add levenshtein", "Info");
             if (gusersyn.Levenshtein == true)
             {
                 string sqlcmd = "CREATE function LEVENSHTEIN( @s varchar(50), @t varchar(50) ) \n --Returns the Levenshtein Distance between strings s1 and s2. \n " +
@@ -5934,11 +5672,11 @@ namespace WindowsApplication1.utils
                     sqlComm.CommandTimeout = 360;
                     // sqlComm.CommandType = System.Data.CommandType.StoredProcedure;
                     sqlComm.ExecuteNonQuery();
-                    log.queries.Add(sqlComm.CommandText.ToString());
+                    log.addTrn(sqlComm.CommandText.ToString(), "Query");
                 }
                 catch (Exception ex)
                 {
-                    log.errors.Add("Failed to install levenstein SQL command or levenstein already installed" + sqlComm.CommandText.ToString() + " error " + ex + "\n" + ex.StackTrace.ToString());
+                    log.addTrn("Failed to install levenstein SQL command or levenstein already installed" + sqlComm.CommandText.ToString() + " error " + ex + "\n" + ex.StackTrace.ToString(), "Error");
                 }
                 // install min3
                 sqlcmd = "CREATE function MIN3(@a int,@b int,@c int ) \n --Returns the smallest of 3 numbers. \n" +
@@ -5950,11 +5688,11 @@ namespace WindowsApplication1.utils
                     //sqlComm.CommandType = System.Data.CommandType.StoredProcedure;
                     sqlComm.CommandTimeout = 360;
                     sqlComm.ExecuteNonQuery();
-                    log.queries.Add(sqlComm.CommandText.ToString());
+                    log.addTrn(sqlComm.CommandText.ToString(), "Query");
                 }
                 catch (Exception ex)
                 {
-                    log.errors.Add("Failed to install min3 SQL command or min3 already installed" + sqlComm.CommandText.ToString() + " error " + ex + "\n" + ex.StackTrace.ToString());
+                    log.addTrn("Failed to install min3 SQL command or min3 already installed" + sqlComm.CommandText.ToString() + " error " + ex + "\n" + ex.StackTrace.ToString(), "Error");
                 }
             }
 
@@ -5965,6 +5703,7 @@ namespace WindowsApplication1.utils
                 // Make preperations to pull all data into seperate tables
                 // build sql to run to get gmail user nicknames
                 // execute data pull for SQL nicknames used in writeback to SQL database
+                log.addTrn("Pull SQL data fro writeback of emails", "Info");
                 if (gusersyn.Writeback_DB_checkbox == true)
                 {
                     if (gusersyn.Writeback_where_clause == "")
@@ -5984,11 +5723,11 @@ namespace WindowsApplication1.utils
                     {
                         sqlComm.CommandTimeout = 360;
                         sqlComm.ExecuteNonQuery();
-                        log.queries.Add(sqlComm.CommandText.ToString());
+                        log.addTrn(sqlComm.CommandText.ToString(), "Query");
                     }
                     catch (Exception ex)
                     {
-                        log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex + "\n" + ex.StackTrace.ToString());
+                        log.addTrn("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex + "\n" + ex.StackTrace.ToString(), "Error");
                     }
                 }
 
@@ -6062,6 +5801,7 @@ namespace WindowsApplication1.utils
 
 
                 // clear our previous data
+                log.addTrn("Get AD user data for nickname comparison", "Info");
                 adUsers.Clear();
                 adUsers = tools.EnumerateUsersInOUDataTable(gusersyn.User_ad_OU, adPullKeys, adNicknamesTable, SearchScope.OneLevel, log);
                 tools.Create_Table(adUsers, adNicknamesTable, sqlConn, log);
@@ -6070,13 +5810,14 @@ namespace WindowsApplication1.utils
 
 
                 // get list of users from gmail this may have changed when we ran the update to test to see if anyone is missing nicknames
+                log.addTrn("Get Gmail user data for user comparison", "Info");
                 gmailUsers.Clear();
-                tools.DropTable(gmailUsersTable, sqlConn, log);
-                gmailUsers = tools.Get_Gmail_Users(service, gusersyn, gmailUsersTable, log);
-                tools.Create_Table(gmailUsers, gmailUsersTable, sqlConn, log);
+                gmailUsers = tools.Get_Gmail_Users(service, gusersyn, gmailUsersTableWB, log);
+                tools.Create_Table(gmailUsers, gmailUsersTableWB, sqlConn, log);
                 if (gmailUsers.Rows.Count > 0)
                 {
                     // get list of nicknames from gmail
+                    log.addTrn("Get Gmail nickname data for nickname comparison", "Info");
                     nicknames.Clear();
                     nicknames = tools.Get_Gmail_Nicknames(service, gusersyn, nicknamesFromGmailTable, log);
                     tools.Create_Table(nicknames, nicknamesFromGmailTable, sqlConn, log);
@@ -6084,39 +5825,43 @@ namespace WindowsApplication1.utils
                     // if we did not get any nicknames there will be problems
                     if (nicknames.Rows.Count > 0)
                     {
-                        // check which nicknames do not have a an associated user with them 
+                        // check which user do not have a an associated nickname with them 
                         // cross reference for null userID's in nickname service.RetrieveAllNicknames table with list of all userlogin userID's from gmail service.RetrieveAllUsers
-                        tools.QueryNotExistsIntoNewTable(gmailUsersTable, nicknamesFromGmailTable, loginWithoutNicknamesTable, sqlConn, gusersyn.User_StuID, nicknames.Columns[0].ColumnName, log);
+                        log.addTrn("Query to find users which do not have a nickname", "Info");
+                        tools.QueryNotExistsIntoNewTable(gmailUsersTableWB, nicknamesFromGmailTable, loginWithoutNicknamesTable, sqlConn, gusersyn.User_StuID, nicknames.Columns[0].ColumnName, log);
 
 
                         // use retrieved list of users without nicknames and check for updates against list of users in main datasource
+                        // we dont want ot add nicknames to people wo aren't in the primary datasource
                         // use the datatable from the view/table as the primary data source
                         // this table is generated above during the user account addition and update section
                         // sqlUsersTable will have AD or SQL no matter which we checked, there was only on variable used
                         // Pulls back the account infromation from the add/update section for users without a nickname
                         // loginWithoutNicknamesTable inherits key from from #gmailuserstable during QueryNotExistsIntoNewTable due to only pulling data from the gmailuserstable
-
+                        log.addTrn("Query to cross reference the primary datasource to find the users who need a nickname", "Info");
                         lostNicknames = tools.QueryInnerJoin(sqlUsersTable, loginWithoutNicknamesTable, gusersyn.User_StuID, gusersyn.User_StuID, sqlConn, log);
                         // iterate lostnicknames and create nicknames
                         try
                         {
+                            log.addTrn("Creating new nicknames", "Info");
                             while (lostNicknames.Read())
                             {
                                 userNickName = tools.GetNewUserNickname(service, lostNicknames[gusersyn.User_StuID.ToString()].ToString(), lostNicknames[gusersyn.User_Fname.ToString()].ToString(), lostNicknames[gusersyn.User_Mname.ToString()].ToString(), lostNicknames[gusersyn.User_Lname.ToString()].ToString(), 0, false);
-                                log.transactions.Add("Added Gmail user " + lostNicknames[gusersyn.User_StuID.ToString()].ToString() + "@" + gusersyn.Admin_domain + " Aliased as " + userNickName + "@" + gusersyn.Admin_domain);
+                                log.addTrn("Added Gmail user " + lostNicknames[gusersyn.User_StuID.ToString()].ToString() + "@" + gusersyn.Admin_domain + " Aliased as " + userNickName + "@" + gusersyn.Admin_domain, "Transaction");
                             }
                         }
                         catch (Exception ex)
                         {
-                            log.errors.Add("Issue creating new nicknames datareader is null " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                            log.addTrn("Issue creating new nicknames datareader is null " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Error");
                         }
 
                         lostNicknames.Close();
-                        // get list of nicknames from gmail it may have changed in the last update. Need to clear teh temp table or we will get an error
-                        tools.DropTable(nicknamesFromGmailTable, sqlConn, log);
+
                     }
-                    nicknames = tools.Get_Gmail_Nicknames(service, gusersyn, nicknamesFromGmailTable, log);
-                    tools.Create_Table(nicknames, nicknamesFromGmailTable, sqlConn, log);
+                    // get list of nicknames from gmail it may have changed in the last update.
+                    log.addTrn("Get nicknames to compare for who need new nicknames", "Info");
+                    nicknames = tools.Get_Gmail_Nicknames(service, gusersyn, nicknamesFromGmailTable2, log);
+                    tools.Create_Table(nicknames, nicknamesFromGmailTable2, sqlConn, log);
                     // check if we got nicknames or else it will be a problem
                     if (nicknames.Rows.Count > 0)
                     {
@@ -6166,9 +5911,11 @@ namespace WindowsApplication1.utils
                             else
                             {
                                 // Filter nicknames for duplicates into new table */
-                                tools.SelectNicknamesClosestToActualNameIntoNewTable(nicknamesFromGmailTable, sqlUsersTable, nicknames.Columns[0].ColumnName, gusersyn.User_StuID, nicknamesFilteredForDuplicatesTable, selectFields, nicknames.Columns[1].ColumnName, keywordFields, sqlConn, log);
+                                log.addTrn("Query to find most likely nickname", "Info");
+                                tools.SelectNicknamesClosestToActualNameIntoNewTable(nicknamesFromGmailTable2, sqlUsersTable, nicknames.Columns[0].ColumnName, gusersyn.User_StuID, nicknamesFilteredForDuplicatesTable, selectFields, nicknames.Columns[1].ColumnName, keywordFields, sqlConn, log);
                             // }
                             // Check filtered nicknames against the sql data to see which emails need updating and put into a table for the next operation
+                            log.addTrn("Query to see if most likely nickname matches the primary datasource", "Info");
                             tools.CheckEmailUpdateIntoNewTable(nicknames.Columns[2].ColumnName, gusersyn.Writeback_email_field, nicknamesFilteredForDuplicatesTable, sqlNicknamesTable, nicknames.Columns[0].ColumnName, gusersyn.Writeback_primary_key, nicknamesToUpdateDBTable, nicknameKeys, sqlkeys, sqlConn, log);
 
 
@@ -6182,16 +5929,16 @@ namespace WindowsApplication1.utils
                             adMailUpdateKeys.Add("mail");
                             if (gusersyn.Writeback_transfer_email_checkbox == true)
                             {
-
-
                                 //UPDATE a1 SET a1.e_mail = a2.gmail FROM address as a1 INNER JOIN address as a2 ON a1.soc_sec = a2.soc_sec where a2.gmail <> ' '
 
                                 nicknameKeysAndTable.Add(gusersyn.Writeback_table + "." + gusersyn.Writeback_email_field); // source table and column
                                 sqlkeysAndTable.Add(gusersyn.Writeback_table + "." + gusersyn.Writeback_secondary_email_field); // target table and column
 
                                 //UNTESTED WILL MOST LIKELY FAIL
+                                log.addTrn("Query to mass move the primary email field to secondary email field in primary datasource", "Info");
                                 tools.Mass_Email_Shift(gusersyn, nicknamesToUpdateDBTable, gusersyn.Writeback_table, nicknames.Columns[0].ColumnName, gusersyn.Writeback_primary_key, nicknameKeysAndTable, sqlkeysAndTable, gusersyn.Writeback_where_clause, sqlConn, log);
                             }
+                            log.addTrn("Query to mass populate the email field with new aliases", "Info");
                             tools.Mass_Table_update(nicknamesToUpdateDBTable, gusersyn.Writeback_table, nicknames.Columns[0].ColumnName, gusersyn.Writeback_primary_key, nicknameKeys, sqlkeys, gusersyn.Writeback_where_clause, sqlConn, log);
                         }
 
@@ -6208,10 +5955,11 @@ namespace WindowsApplication1.utils
                         if (gusersyn.Writeback_AD_checkbox == true)
                         {
                             // find nicknames missing in AD
+                            log.addTrn("Query to find AD users that need their nickname updated", "Info");
                             nicknamesToAddToAD = tools.CheckUpdate(nicknamesFilteredForDuplicatesTable, adNicknamesTable, nicknames.Columns[0].ColumnName, adPullKeys[0].ToString(), nicknameKeys, adMailUpdateKeys, sqlConn, log);
                             //nicknamesToAddToAD = tools.QueryNotExists(nicknamesFromGmailTable, adNicknamesTable, sqlConn, nicknames.Columns[0].ColumnName, adPullKeys[0].ToString(), log);
                             // interate and update mail fields
-
+                            log.addTrn("Updating nicknames in AD", "Info");
                             try
                             {
                                 while (nicknamesToAddToAD.Read())
@@ -6222,7 +5970,7 @@ namespace WindowsApplication1.utils
                             }
                             catch (Exception ex)
                             {
-                                log.errors.Add("Issue writing nickname to AD datareader is null " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                                log.addTrn("Issue writing nickname to AD datareader is null " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Error");
                             }
                             nicknamesToAddToAD.Close();
                         }
@@ -6232,22 +5980,15 @@ namespace WindowsApplication1.utils
 
                         additionalKeys.Clear();
                         additionalKeys.Add(nicknamesFilteredForDuplicatesTable + "." + nicknames.Columns[2].ColumnName + ", ");
+                        log.addTrn("Query to find new send as aliases", "Info");
                         sendAsAliases = tools.QueryInnerJoin(sqlUsersTable, nicknamesFilteredForDuplicatesTable, gusersyn.User_StuID, nicknames.Columns[0].ColumnName, additionalKeys, sqlConn, log);
                         // tools.CreateSendAs(gusersyn, sendAsAliases, nicknames.Columns[2].ColumnName, nicknames.Columns[2].ColumnName, log);
 
-
-                        //tools.DropTable(nicknamesFromGmailTable, sqlConn, log);
-                        //tools.DropTable(loginWithoutNicknamesTable, sqlConn, log);
-                        //tools.DropTable(adNicknamesTable, sqlConn, log);
-                        //tools.DropTable(sqlNicknamesTable, sqlConn, log);
-                        //tools.DropTable(nicknamesToUpdateDBTable, sqlConn, log);
-                        //tools.DropTable(nicknamesFilteredForDuplicatesTable, sqlConn, log);
                     }
                 }
             }
-            //tools.DropTable(sqlUsersTable, sqlConn, log);
-            //tools.DropTable(gmailUsersTable, sqlConn, log);
-            //nicknamesToAddToDatabase.Close();
+
+
             sqlConn.Close();
         }
     }

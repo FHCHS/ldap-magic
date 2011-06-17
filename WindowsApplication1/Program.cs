@@ -20,7 +20,7 @@ namespace WindowsApplication1
             Arguments CommandLine = new Arguments(args);
             string operation = "";
             string file = "";
-            if (CommandLine["F"] != null)
+             if (CommandLine["F"] != null)
             {
                 file = CommandLine["F"];
             }
@@ -62,6 +62,7 @@ namespace WindowsApplication1
                 ObjectADSqlsyncGroup groupSyncr = new ObjectADSqlsyncGroup();
                 ObjectADGoogleSync gmailSyncr = new ObjectADGoogleSync();
                 StopWatch timer = new StopWatch();
+                log.initiateTrn();
 
                 // perform operations based on the data input from the user fro groups users, OU's and gmail
                 if (operation == "group")
@@ -91,11 +92,11 @@ namespace WindowsApplication1
                         re.Close();
                         settingsconfig.Load(properties);
 
-
+                        log.addTrn("Start Groups Syncs", "Info");
                         timer.Start();
                         groupSyncr.ExecuteGroupSync(groupconfig, settingsconfig, tools, log);
                         timer.Stop();
-                        log.transactions.Add("Groups " + groupconfig.Group_Append + " Setup Completion time :" + timer.GetElapsedTimeSecs().ToString());
+                        log.addTrn("Groups " + groupconfig.Group_Append + " Setup Completion time :" + timer.GetElapsedTimeSecs().ToString(), "Transaction");
                         tools.savelog(log, settingsconfig);
                     }
                     catch
@@ -165,68 +166,18 @@ namespace WindowsApplication1
                         }
                         re.Close();
                         settingsconfig.Load(properties);
-
+                        log.addTrn("Start User Synch", "Info");
                         timer.Start();
                         groupSyncr.ExecuteUserSync(userconfig, settingsconfig, tools, log);
                         timer.Stop();
-                        log.transactions.Add("Users " + userconfig.BaseUserOU + " Setup Completion time :" + timer.GetElapsedTimeSecs().ToString());
+                        log.addTrn("Users " + userconfig.BaseUserOU + " Setup Completion time :" + timer.GetElapsedTimeSecs().ToString(), "Transaction");
                         tools.savelog(log, settingsconfig);
                     }
                     catch
                     {
                         Console.Write("Failed to load save file");
                     }
-                    //}
 
-                    // Load values into text boxes
-                    // reload properties each time as they are overwritten with the combo object trigger events
-
-                    //MessageBox.Show("complete");
-                    //StringBuilder result = new StringBuilder();
-                    //int i = 0;
-                    //result.Append("***************************\n*                         *\n*        Transactions     *\n*                         *\n***************************");
-                    //for (i = 0; i < log.transactions.Count; i++)
-                    //{
-                    //    result.Append(log.transactions[i].ToString() + "\n");
-                    //}
-                    //result.Append("***************************\n*                         *\n*        Warnings         *\n*                         *\n***************************");
-
-                    //for (i = 0; i < log.warnings.Count; i++)
-                    //{
-                    //    result.Append(log.warnings[i].ToString() + "\n");
-                    //}
-                    //result.Append("***************************\n*                         *\n*        Errors           *\n*                         *\n***************************");
-                    //for (i = 0; i < log.errors.Count; i++)
-                    //{
-                    //    result.Append(log.errors[i].ToString() + "\n");
-                    //}
-                    //MessageBox.Show(result.ToString());
-
-                    //// save log to disk
-                    //SaveFileDialog saveFileDialog1 = new SaveFileDialog();
-                    //saveFileDialog1.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
-                    //saveFileDialog1.FilterIndex = 2;
-                    //saveFileDialog1.RestoreDirectory = true;
-                    //if (saveFileDialog1.ShowDialog() == DialogResult.OK)
-                    //{
-                    //    // create a file stream, where "c:\\testing.txt" is the file path
-                    //    System.IO.FileStream fs = new System.IO.FileStream(saveFileDialog1.FileName, System.IO.FileMode.OpenOrCreate, System.IO.FileAccess.Write, System.IO.FileShare.ReadWrite);
-
-                    //    // create a stream writer
-                    //    System.IO.StreamWriter sw = new System.IO.StreamWriter(fs, System.Text.Encoding.ASCII);
-
-                    //    // write to file (buffer), where textbox1 is your text box
-                    //    sw.WriteLine("{0}", result2);
-                    //    sw.WriteLine("{0}", result);
-
-
-                    //    // flush buffer (so the text really goes into the file)
-                    //    sw.Flush();
-
-                    //    // close stream writer and file
-                    //    sw.Close();
-                    //    fs.Close();
-                    //}
                 }
                 if (operation == "gmail")
                 {
@@ -253,11 +204,11 @@ namespace WindowsApplication1
                         }
                         re.Close();
                         settingsconfig.Load(properties);
-
+                        log.addTrn("Start Gmail Synch", "Info");
                         timer.Start();
                         gmailSyncr.EmailUsersSync(guserconfig, settingsconfig, tools, log);                        
                         timer.Stop();
-                        log.transactions.Add("Gmail " + guserconfig.Admin_domain + " Setup Completion time :" + timer.GetElapsedTimeSecs().ToString());
+                        log.addTrn("Gmail " + guserconfig.Admin_domain + " Setup Completion time :" + timer.GetElapsedTimeSecs().ToString(), "Transaction");
                         tools.savelog(log, settingsconfig);
                     }
                     catch

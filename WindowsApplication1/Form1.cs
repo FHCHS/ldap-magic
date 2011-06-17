@@ -70,22 +70,25 @@ namespace WindowsApplication1
 {
     public partial class Form1 : Form
     {
+        // create objects to hold save data
+        GroupSynch groupconfig = new GroupSynch();
+        UserSynch userconfig = new UserSynch();
+        GmailUsers guserconfig = new GmailUsers();
+        ConfigSettings settingsconfig = new ConfigSettings();
+        executionOrder execution = new executionOrder();
+        UserStateChange usermapping = new UserStateChange();
+        ToolSet tools = new ToolSet();
+        LogFile log = new LogFile();
+        ObjectADSqlsyncGroup groupSyncr = new ObjectADSqlsyncGroup();
+        ObjectADGoogleSync gmailSyncr = new ObjectADGoogleSync();
 
         public Form1()
         {
             InitializeComponent();
+            log.initiateTrn();
         }
-        // create objects to hold save data
-        GroupSynch groupconfig = new GroupSynch();
-        UserSynch userconfig = new UserSynch();
-		GmailUsers guserconfig = new GmailUsers();
-        ConfigSettings settingsconfig = new ConfigSettings();
-        executionOrder execution = new executionOrder();
-        UserStateChange usermapping = new UserStateChange();                          
-        ToolSet tools = new ToolSet();
-        LogFile log = new LogFile();
-        ObjectADSqlsyncGroup groupSyncr = new ObjectADSqlsyncGroup();
-		ObjectADGoogleSync gmailSyncr = new ObjectADGoogleSync();
+
+        
 
 
         // UI DIALOG  DATA ENTRY EVENTS FOR USER MAPPING TAB
@@ -114,7 +117,7 @@ namespace WindowsApplication1
                 try
                 {
                     SqlDataReader r = sqlComm.ExecuteReader();
-                    log.queries.Add(sqlComm.CommandText.ToString());
+                    log.addTrn(sqlComm.CommandText.ToString(), "Query");
                     while (r.Read())
                     {
                         tableList.Add((string)r[0].ToString().Trim());
@@ -123,7 +126,7 @@ namespace WindowsApplication1
                 }
                 catch (Exception ex)
                 {
-                    log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                    log.addTrn("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Query");
                 } 
 
                 sqlConn.Close();
@@ -150,7 +153,7 @@ namespace WindowsApplication1
                 try
                 {
                     SqlDataReader r = sqlComm.ExecuteReader();
-                    log.queries.Add(sqlComm.CommandText.ToString());
+                    log.addTrn(sqlComm.CommandText.ToString(), "Query");
                     while (r.Read())
                     {
                         columnList.Add((string)r[0].ToString().Trim());
@@ -159,7 +162,7 @@ namespace WindowsApplication1
                 }
                 catch (Exception ex)
                 {
-                    log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                    log.addTrn("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Query");
                 }
 
                 sqlConn.Close();
@@ -216,7 +219,7 @@ namespace WindowsApplication1
                 try
                 {
                     SqlDataReader r = sqlComm.ExecuteReader();
-                    log.queries.Add(sqlComm.CommandText.ToString());
+                    log.addTrn(sqlComm.CommandText.ToString(), "Query");
                     while (r.Read())
                     {
                         tableList.Add((string)r[0].ToString().Trim());
@@ -225,7 +228,7 @@ namespace WindowsApplication1
                 }
                 catch (Exception ex)
                 {
-                    log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                    log.addTrn("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Query");
                 } 
 
                 sqlConn.Close();
@@ -252,7 +255,7 @@ namespace WindowsApplication1
                 try
                 {
                     SqlDataReader r = sqlComm.ExecuteReader();
-                    log.queries.Add(sqlComm.CommandText.ToString());
+                    log.addTrn(sqlComm.CommandText.ToString(), "Query");
                     while (r.Read())
                     {
                         columnList.Add((string)r[0].ToString().Trim());
@@ -261,7 +264,7 @@ namespace WindowsApplication1
                 }
                 catch (Exception ex)
                 {
-                    log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                    log.addTrn("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Query");
                 } 
 
                 sqlConn.Close();
@@ -537,11 +540,11 @@ namespace WindowsApplication1
         {
             //int i;
             StopWatch timer = new StopWatch();
+            log.addTrn("Start User Synch", "Info");
             timer.Start();
             groupSyncr.ExecuteUserSync(userconfig, settingsconfig, tools, log);
-            tools.savelog(log, settingsconfig);
             timer.Stop();
-            log.transactions.Add("stop time" + timer.GetElapsedTimeSecs());
+            log.addTrn("Users " + userconfig.BaseUserOU + " Synch Completion time :" + timer.GetElapsedTimeSecs().ToString(), "Info");
             tools.savelog(log, settingsconfig);
      
         }
@@ -702,7 +705,7 @@ namespace WindowsApplication1
                 try
                 {
                     SqlDataReader r = sqlComm.ExecuteReader();
-                    log.queries.Add(sqlComm.CommandText.ToString());
+                    log.addTrn(sqlComm.CommandText.ToString(), "Query");
                     while (r.Read())
                     {
                         tableList.Add((string)r[0].ToString().Trim());
@@ -711,7 +714,7 @@ namespace WindowsApplication1
                 }
                 catch (Exception ex)
                 {
-                    log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                    log.addTrn("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Query");
                 } 
 
                 sqlConn.Close();
@@ -738,7 +741,7 @@ namespace WindowsApplication1
                 try
                 {
                     SqlDataReader r = sqlComm.ExecuteReader();
-                    log.queries.Add(sqlComm.CommandText.ToString());
+                    log.addTrn(sqlComm.CommandText.ToString(), "Query");
                     while (r.Read())
                     {
                         columnList.Add((string)r[0].ToString().Trim());
@@ -747,7 +750,7 @@ namespace WindowsApplication1
                 }
                 catch (Exception ex)
                 {
-                    log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                    log.addTrn("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Query");
                 } 
 
                 sqlConn.Close();
@@ -802,7 +805,7 @@ namespace WindowsApplication1
                 try
                 {
                     SqlDataReader r = sqlComm.ExecuteReader();
-                    log.queries.Add(sqlComm.CommandText.ToString());
+                    log.addTrn(sqlComm.CommandText.ToString(), "Query");
                     while (r.Read())
                     {
                         tableList.Add((string)r[0].ToString().Trim());
@@ -811,7 +814,7 @@ namespace WindowsApplication1
                 }
                 catch (Exception ex)
                 {
-                    log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                    log.addTrn("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Query");
                 } 
 
                 sqlConn.Close();
@@ -838,7 +841,7 @@ namespace WindowsApplication1
                 try
                 {
                     SqlDataReader r = sqlComm.ExecuteReader();
-                    log.queries.Add(sqlComm.ToString());
+                    log.addTrn(sqlComm.CommandText.ToString(), "Query");
                     while (r.Read())
                     {
                         columnList.Add((string)r[0].ToString().Trim());
@@ -847,7 +850,7 @@ namespace WindowsApplication1
                 }
                 catch (Exception ex)
                 {
-                    log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                    log.addTrn("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Query");
                 } 
 
                 sqlConn.Close();
@@ -1093,10 +1096,10 @@ namespace WindowsApplication1
 		{
 			StopWatch timer = new StopWatch();
 			timer.Start();
-            log.transactions.Add("start time" + timer.GetElapsedTimeSecs());
+            log.addTrn("Group Synch Start ", "Info");
 			groupSyncr.ExecuteGroupSync(groupconfig, settingsconfig, tools, log);
 			timer.Stop();
-            log.transactions.Add("stop time" + timer.GetElapsedTimeSecs());
+            log.addTrn("Group " + groupconfig.Group_Append + " Synch Completion time :" + timer.GetElapsedTimeSecs().ToString(), "Info");
             tools.savelog(log, settingsconfig);
 		
 		}
@@ -1219,7 +1222,7 @@ namespace WindowsApplication1
             System.Data.SqlClient.SqlDataReader r;
 
                 r = sqlComm.ExecuteReader();
-                log.queries.Add(sqlComm.CommandText.ToString());
+                log.addTrn(sqlComm.CommandText.ToString(), "Query");
                 while (r.Read())
                 {
                     tableList.Add((string)r[0].ToString().Trim());
@@ -1286,7 +1289,7 @@ namespace WindowsApplication1
                 try
                 {
                     SqlDataReader r = sqlComm.ExecuteReader();
-                    log.queries.Add(sqlComm.CommandText.ToString());
+                    log.addTrn(sqlComm.CommandText.ToString(), "Query");
                     while (r.Read())
                     {
                         columnList.Add((string)r[0].ToString().Trim());
@@ -1295,7 +1298,7 @@ namespace WindowsApplication1
                 }
                 catch (Exception ex)
                 {
-                    log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                    log.addTrn("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Query");
                 } 
 
                 sqlConn.Close();
@@ -1334,7 +1337,7 @@ namespace WindowsApplication1
                 try
                 {
                     SqlDataReader r = sqlComm.ExecuteReader();
-                    log.queries.Add(sqlComm.CommandText.ToString());
+                    log.addTrn(sqlComm.CommandText.ToString(), "Query");
                     while (r.Read())
                     {
                         tableList.Add((string)r[0].ToString().Trim());
@@ -1343,7 +1346,7 @@ namespace WindowsApplication1
                 }
                 catch (Exception ex)
                 {
-                    log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                    log.addTrn("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Query");
                 }
 
                 sqlConn.Close();
@@ -1549,7 +1552,7 @@ namespace WindowsApplication1
                     try
                     {
                         r = sqlComm.ExecuteReader();
-                        log.queries.Add(sqlComm.CommandText.ToString());
+                        log.addTrn(sqlComm.CommandText.ToString(), "Query");
                         while (r.Read())
                         {
                             tableList.Add((string)r[0].ToString().Trim());
@@ -1558,7 +1561,7 @@ namespace WindowsApplication1
                     }
                     catch (Exception ex)
                     {
-                        log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                        log.addTrn("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Query");
                     }
 
 
@@ -1754,7 +1757,7 @@ namespace WindowsApplication1
                 try
                 {
                     SqlDataReader r = sqlComm.ExecuteReader();
-                    log.queries.Add(sqlComm.CommandText.ToString());
+                    log.addTrn(sqlComm.CommandText.ToString(), "Query");
                     while (r.Read())
                     {
                         tableList.Add((string)r[0].ToString().Trim());
@@ -1763,7 +1766,7 @@ namespace WindowsApplication1
                 }
                 catch (Exception ex)
                 {
-                    log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                    log.addTrn("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Query");
                 }
 
                 sqlConn.Close();
@@ -1790,7 +1793,7 @@ namespace WindowsApplication1
                 try
                 {
                     SqlDataReader r = sqlComm.ExecuteReader();
-                    log.queries.Add(sqlComm.CommandText.ToString());
+                    log.addTrn(sqlComm.CommandText.ToString(), "Query");
                     while (r.Read())
                     {
                         columnList.Add((string)r[0].ToString().Trim());
@@ -1799,7 +1802,7 @@ namespace WindowsApplication1
                 }
                 catch (Exception ex)
                 {
-                    log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                    log.addTrn("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Query");
                 } 
 
                 sqlConn.Close();
@@ -1901,7 +1904,7 @@ namespace WindowsApplication1
                     try
                     {
                         SqlDataReader r = sqlComm.ExecuteReader();
-                        log.queries.Add(sqlComm.CommandText.ToString());
+                        log.addTrn(sqlComm.CommandText.ToString(), "Query");
                         while (r.Read())
                         {
                             tableList.Add((string)r[0].ToString().Trim());
@@ -1910,7 +1913,7 @@ namespace WindowsApplication1
                     }
                     catch (Exception ex)
                     {
-                        log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                        log.addTrn("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Query");
                     }
 
 					sqlConn.Close();
@@ -1972,7 +1975,7 @@ namespace WindowsApplication1
                 try
                 {
                     SqlDataReader r = sqlComm.ExecuteReader();
-                    log.queries.Add(sqlComm.CommandText.ToString());
+                    log.addTrn(sqlComm.CommandText.ToString(), "Query");
                     while (r.Read())
                     {
                         columnList.Add((string)r[0].ToString().Trim());
@@ -1981,7 +1984,7 @@ namespace WindowsApplication1
                 }
                 catch (Exception ex)
                 {
-                    log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                    log.addTrn("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Query");
                 }
 	
 				sqlConn.Close();
@@ -2208,10 +2211,10 @@ namespace WindowsApplication1
 		{
             StopWatch timer = new StopWatch();
             timer.Start();
-            log.transactions.Add("start time" + timer.GetElapsedTimeSecs());
+            log.addTrn("Start Gmail Synch", "Info");
             gmailSyncr.EmailUsersSync(guserconfig, settingsconfig, tools, log);
             timer.Stop();
-            log.transactions.Add("stop time" + timer.GetElapsedTimeSecs());
+            log.addTrn("Gmail " + guserconfig.Admin_domain + " Setup Completion time :" + timer.GetElapsedTimeSecs().ToString(), "Info");
             tools.savelog(log, settingsconfig);
 		}
 
@@ -2253,15 +2256,15 @@ namespace WindowsApplication1
 
 		private void outlook_magic_Click(object sender, EventArgs e)
 		{
-            int i;
-            int Count;
-            string table = "FHC_Test_Log";
+            //int i;
+            //int Count;
+            //string table = "FHC_Test_Log";
             DataTable data = new DataTable();
             DataRow row;
 
             StringBuilder sqlstring = new StringBuilder();
             //SqlConnection sqlConn = new SqlConnection("Data Source=" + settingsConfig.LogDB + ";Initial Catalog=" + settingsConfig.LogCatalog + ";Integrated Security=SSPI;Connect Timeout=360;");
-            SqlCommand sqlComm;
+            //SqlCommand sqlComm;
             DateTime nowstamp = new DateTime();
             nowstamp = DateTime.Now;
             SqlDateTime datetimestamp = new SqlDateTime(nowstamp);
@@ -2585,7 +2588,7 @@ namespace WindowsApplication1
             try
             {
                 r = sqlComm.ExecuteReader();
-                log.queries.Add(sqlComm.CommandText.ToString());
+                log.addTrn(sqlComm.CommandText.ToString(), "Query");
                 while(r.Read())
                 {    
                     user = (string)r[0];
@@ -2601,14 +2604,14 @@ namespace WindowsApplication1
                     }
                     catch
                     {
-                        log.transactions.Add("deletiing failed " + user);
+                        log.addTrn("deletiing failed " + user, "Transaction");
                     }
-                    log.transactions.Add("deleted nickname " + user);
+                    log.addTrn("deleted nickname " + user, "Transaction");
                 }
             }
             catch (Exception ex)
             {
-                log.errors.Add("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
+                log.addTrn("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Query");
             }
 
 
@@ -2662,7 +2665,7 @@ namespace WindowsApplication1
                 System.Data.SqlClient.SqlDataReader r;
 
                 r = sqlComm.ExecuteReader();
-                log.queries.Add(sqlComm.CommandText.ToString());
+                log.addTrn(sqlComm.CommandText.ToString(), "Query");
                 while (r.Read())
                 {
                     tableList.Add((string)r[0].ToString().Trim());
@@ -2730,59 +2733,53 @@ namespace WindowsApplication1
 
         private void button7_Click(object sender, EventArgs e)
         {
-            SqlConnection sqlConn = new SqlConnection("Data Source=" + userconfig.DataServer + ";Initial Catalog=" + userconfig.DBCatalog + ";Integrated Security=SSPI;Connect Timeout=360;");
+            //create sql for log file if it does not exist
+            // sqlConn must be an open connection
+
+            string table = "FHC_LOG_ldap_magic";
+            DataTable data = new DataTable();
+
+            log.initiateTrn();
+            
+
+            StringBuilder sqlstring = new StringBuilder();
+            SqlConnection sqlConn = new SqlConnection("Data Source=" + settingsconfig.LogDB + ";Initial Catalog=" + settingsconfig.LogCatalog + ";Integrated Security=SSPI;Connect Timeout=360;");
             sqlConn.Open();
             SqlCommand sqlComm;
-
-
-
-            string sqlcmd = "CREATE function LEVENSHTEIN( @s varchar(50), @t varchar(50) ) \n --Returns the Levenshtein Distance between strings s1 and s2. \n " +
-                "--Original developer: Michael Gilleland    http://www.merriampark.com/ld.htm \n --Translated to TSQL by Joseph Gama \n returns varchar(50) \n " +
-                "as \n BEGIN \n DECLARE @d varchar(2500), @LD int, @m int, @n int, @i int, @j int, \n @s_i char(1), @t_j char(1),@cost int \n --Step 1 \n SET @n=LEN(@s) \n" +
-                " SET @m=LEN(@t) \n SET @d=replicate(CHAR(0),2500) \n If @n = 0 \n BEGIN \n SET @LD = @m \n GOTO done \n END \n If @m = 0 \n BEGIN \n	SET @LD = @n \n" +
-                "	GOTO done \n END \n --Step 2 \n SET @i=0 \n WHILE @i<=@n \n	BEGIN \n SET @d=STUFF(@d,@i+1,1,CHAR(@i))--d(i, 0) = i \n SET @i=@i+1 \n END \n" +
-                " SET @i=0 \n WHILE @i<=@m \n BEGIN \n SET @d=STUFF(@d,@i*(@n+1)+1,1,CHAR(@i))--d(0, j) = j \n SET @i=@i+1 \n	END \n --goto done \n --Step 3 \n" +
-                " SET @i=1 \n WHILE @i<=@n \n BEGIN \n SET @s_i=(substring(@s,@i,1)) \n --Step 4 \n SET @j=1 \n	WHILE @j<=@m \n	BEGIN \n SET @t_j=(substring(@t,@j,1)) \n" +
-                " --Step 5 \n If @s_i = @t_j \n	SET @cost=0 \n ELSE \n SET @cost=1 \n --Step 6 \n SET @d=STUFF(@d,@j*(@n+1)+@i+1,1,CHAR(dbo.MIN3( \n" +
-                " ASCII(substring(@d,@j*(@n+1)+@i-1+1,1))+1, \n ASCII(substring(@d,(@j-1)*(@n+1)+@i+1,1))+1, \n ASCII(substring(@d,(@j-1)*(@n+1)+@i-1+1,1))+@cost) \n )) \n" +
-                " SET @j=@j+1 \n END \n SET @i=@i+1 \n END \n --Step 7 \n SET @LD = ASCII(substring(@d,@n*(@m+1)+@m+1,1)) \n done: \n --RETURN @LD \n" +
-                " --I kept this code that can be used to display the matrix with all calculated values \n --From Query Analyser it provides a nice way to check the algorithm in action \n" +
-                " -- \n RETURN @LD \n --declare @z varchar(8000) \n --set @z='' \n --SET @i=0 \n --WHILE @i<=@n \n --	BEGIN \n --	SET @j=0 \n --	WHILE @j<=@m \n --		BEGIN \n" +
-                " --		set @z=@z+CONVERT(char(3),ASCII(substring(@d,@i*(@m+1 )+@j+1 ,1))) \n --		SET @j=@j+1  \n --		END \n --	SET @i=@i+1 \n --	END \n --print dbo.wrap(@z,3*(@n+1)) \n END \n";
-            sqlComm = new SqlCommand(sqlcmd, sqlConn);
-
+         
+            sqlstring.Append("CREATE TABLE [" + table + "]([Message] [text], [Type] [varchar](50), [Timestamp] [datetime] NULL) ON [PRIMARY]");
+            sqlComm = new SqlCommand(sqlstring.ToString(), sqlConn);
             try
             {
                 sqlComm.CommandTimeout = 360;
-               // sqlComm.CommandType = System.Data.CommandType.StoredProcedure;
                 sqlComm.ExecuteNonQuery();
-                log.queries.Add(sqlComm.CommandText.ToString());
+                log.addTrn(sqlComm.CommandText.ToString(),"Query");
+                log.addTrn("table created " + table,"Transaction");
             }
             catch (Exception ex)
             {
-                log.errors.Add("Failed to install levenstein SQL command or levenstein already installed" + sqlComm.CommandText.ToString() + " error " + ex + "\n" + ex.StackTrace.ToString());
+                log.addTrn("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Error");
+                //log.addTrn("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
             }
-            // install min3
-            sqlcmd = "CREATE function MIN3(@a int,@b int,@c int ) \n --Returns the smallest of 3 numbers. \n" +
-                "returns int \n as \n BEGIN \n declare @temp int \n if (@a < @b)  AND (@a < @c) \n select @temp=@a \n else \n if (@b < @a)  AND (@b < @c) \n select @temp=@b \n else \n" +
-                "select @temp=@c \n return @temp \n END";
-            sqlComm = new SqlCommand(sqlcmd, sqlConn);
+
+
+
+           
+
+
+
+            // copy data into table
             try
             {
-                //sqlComm.CommandType = System.Data.CommandType.StoredProcedure;
-                sqlComm.CommandTimeout = 360;
-                sqlComm.ExecuteNonQuery();
-                log.queries.Add(sqlComm.CommandText.ToString());
+                SqlBulkCopy sbc = new SqlBulkCopy(sqlConn);
+                sbc.DestinationTableName = table;
+                sbc.WriteToServer(log.logTrns);
+                sbc.Close();
             }
             catch (Exception ex)
             {
-                log.errors.Add("Failed to install min3 SQL command or min3 already installed" + sqlComm.CommandText.ToString() + " error " + ex + "\n" + ex.StackTrace.ToString());
+                log.addTrn("Failed SQL bulk copy " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Query");
             }
-            /*
-            string user = tools.GetObjectDistinguishedName(objectClass.user, returnType.distinguishedName, execution_transactions_warnings_textbox.Text, userconfig.BaseUserOU.Substring(userconfig.BaseUserOU.IndexOf("DC")), log);
-            execution_errors_textbox.Text = user;
-            tools.SetAttributeValuesSingleString("manager", user.Substring(user.IndexOf("CN")), "LDAP://CN=Michael Neubrander,OU=Information Technology Admins,OU=FHCHS,DC=FHCHS,DC=EDU", log);
-             */
         }
 
 
