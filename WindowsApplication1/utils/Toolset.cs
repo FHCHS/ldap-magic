@@ -2650,7 +2650,7 @@ namespace WindowsApplication1.utils
                 TRUSTED_TO_AUTH_FOR_DELEGATION 0x1000000
              * */
         }
-        public void UpdateUsers(SqlDataReader users, string ldapDomain, LogFile log)
+        public void UpdateUsers(SqlDataReader users, string ldapDomain, UserSynch usersyn, LogFile log)
         {
             // requires distinguished name to be a field
             // all field names must be valid AD field names
@@ -2706,6 +2706,24 @@ namespace WindowsApplication1.utils
                                     {
                                         fdqn = GetObjectDistinguishedName(objectClass.user, returnType.distinguishedName, System.Web.HttpUtility.UrlEncode((string)users[name]).Replace("+", " ").Replace("*", "%2A"), ldapDomain, log);
                                         user.Properties["manager"].Value = fdqn.Substring(fdqn.IndexOf("CN"));
+                                    }
+                                    break;
+                                case "sn":
+                                    if ((string)users[name] != "")
+                                    {
+                                        user.Properties[name].Value = System.Web.HttpUtility.UrlEncode((string)users[name]).Replace("+", " ").Replace("*", "%2A");
+                                        user.Properties["displayName"].Value = System.Web.HttpUtility.UrlEncode((string)users[usersyn.User_Lname]).Replace("+", " ").Replace("*", "%2A") + ", " + System.Web.HttpUtility.UrlEncode((string)users[usersyn.User_Fname]).Replace("+", " ").Replace("*", "%2A");
+                                        user.Properties["description"].Value = System.Web.HttpUtility.UrlEncode((string)users[usersyn.User_Lname]).Replace("+", " ").Replace("*", "%2A") + ", " + System.Web.HttpUtility.UrlEncode((string)users[usersyn.User_Fname]).Replace("+", " ").Replace("*", "%2A");
+
+                                    }
+                                    break;
+                                case "givenName":
+                                    if ((string)users[name] != "")
+                                    {
+                                        user.Properties[name].Value = System.Web.HttpUtility.UrlEncode((string)users[name]).Replace("+", " ").Replace("*", "%2A");
+                                        user.Properties["displayName"].Value = System.Web.HttpUtility.UrlEncode((string)users[usersyn.User_Lname]).Replace("+", " ").Replace("*", "%2A") + ", " + System.Web.HttpUtility.UrlEncode((string)users[usersyn.User_Fname]).Replace("+", " ").Replace("*", "%2A");
+                                        user.Properties["description"].Value = System.Web.HttpUtility.UrlEncode((string)users[usersyn.User_Lname]).Replace("+", " ").Replace("*", "%2A") + ", " + System.Web.HttpUtility.UrlEncode((string)users[usersyn.User_Fname]).Replace("+", " ").Replace("*", "%2A");
+
                                     }
                                     break;
                                 default:
@@ -5393,7 +5411,7 @@ namespace WindowsApplication1.utils
                 // update users in ad
                 // last record which matches the primary key is the one which gets inserted into the database
                 log.addTrn("Updating users", "Info");
-                tools.UpdateUsers(update, DC, log);
+                tools.UpdateUsers(update, DC, usersyn, log);
 
                 update.Close();
             }
