@@ -3201,7 +3201,8 @@ namespace WindowsApplication1.utils
 
             string compare1 = "";
             string compare2 = "";
-            string fields = "";
+            string fields1 = "";
+            string fields2 = "";
             // need a comand builder and research on the best way to compare all fields in a row
             // this basically will just issue a concatenation sql query to the DB for each field to compare
             foreach (string key in compareFields1)
@@ -3214,7 +3215,7 @@ namespace WindowsApplication1.utils
                 {
                     compare1 = compare1 + "ltrim(rtrim(" + table1 + "." + key + ")) COLLATE SQL_Latin1_General_CP1_CS_AS + ";
                 }
-                fields += table1 + "." + key + ", ";
+                fields1 += table1 + "." + key + ", ";
             }
             foreach (string key in compareFields2)
             {
@@ -3226,12 +3227,27 @@ namespace WindowsApplication1.utils
                 {
                     compare2 = compare2 + "ltrim(rtrim(" + table2 + "." + key + ")) COLLATE SQL_Latin1_General_CP1_CS_AS + ";
                 }
+
+                fields2 += table2 + "." + key + ", ";
             }
+            
             // remove trailing comma and + 
             compare2 = compare2.Remove(compare2.Length - 2);
             compare1 = compare1.Remove(compare1.Length - 2);
-            fields = fields.Remove(fields.Length - 2);
-            SqlCommand sqlComm = new SqlCommand("SELECT DISTINCT " + fields + " FROM " + table1 + " LEFT JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2 + " AND (" + compare2 + ") <> (" + compare1 + ") INNER JOIN " + table2 + " as [" + table2 + "temp] ON " + table1 + "." + pkey1 + " = [" + table2 + "temp]." + pkey2 + " WHERE " + table2 + "." + pkey2 + " IS NOT NULL", sqlConn);
+            fields1 = fields1.Remove(fields1.Length - 2);
+            fields2 = fields2.Remove(fields2.Length - 2);
+
+            SqlCommand sqlComm = new SqlCommand(    "SELECT " + fields1 +
+                                                    " FROM " + table1 +
+                                                    " INNER JOIN " + table2 + " ON " + compare1 + " = " + compare2 +
+                                                    " GROUP BY " + fields1 +
+                                                    " EXCEPT " +
+                                                    " SELECT " + fields2 + " FROM " + table2, sqlConn);
+
+            
+      
+            //SqlCommand sqlComm = new SqlCommand("SELECT DISTINCT " + fields1 + " FROM " + table1 + " LEFT JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2 + " AND (" + compare2 + ") <> (" + compare1 + ") INNER JOIN " + table2 + " as [" + table2 + "temp] ON " + table1 + "." + pkey1 + " = [" + table2 + "temp]." + pkey2 + " WHERE " + table2 + "." + pkey2 + " IS NOT NULL", sqlConn);
+            
             try
             {
                 sqlComm.CommandTimeout = 360;

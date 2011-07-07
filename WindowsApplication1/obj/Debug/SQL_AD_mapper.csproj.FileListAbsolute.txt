@@ -14,3 +14,15 @@ C:\git\.Net\SQL_AD_mapper\WindowsApplication1\obj\Debug\ResolveAssemblyReference
 C:\git\.Net\SQL_AD_mapper\WindowsApplication1\obj\Debug\WindowsApplication1.Form1.resources
 C:\git\.Net\SQL_AD_mapper\WindowsApplication1\obj\Debug\WindowsApplication1.Properties.Resources.resources
 C:\git\.Net\SQL_AD_mapper\WindowsApplication1\obj\Debug\SQL_AD_mapper.csproj.GenerateResource.Cache
+C:\Users\arrc29\Documents\Working Folder\working_copy\.Net\SQL_AD_mapper\WindowsApplication1\bin\Debug\WindowsApplication1.exe.config
+C:\Users\arrc29\Documents\Working Folder\working_copy\.Net\SQL_AD_mapper\WindowsApplication1\bin\Debug\WindowsApplication1.exe
+C:\Users\arrc29\Documents\Working Folder\working_copy\.Net\SQL_AD_mapper\WindowsApplication1\bin\Debug\WindowsApplication1.pdb
+C:\Users\arrc29\Documents\Working Folder\working_copy\.Net\SQL_AD_mapper\WindowsApplication1\bin\Debug\Interop.ActiveDs.dll
+C:\Users\arrc29\Documents\Working Folder\working_copy\.Net\SQL_AD_mapper\WindowsApplication1\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\arrc29\Documents\Working Folder\working_copy\.Net\SQL_AD_mapper\WindowsApplication1\obj\Debug\Interop.ActiveDs.dll
+C:\Users\arrc29\Documents\Working Folder\working_copy\.Net\SQL_AD_mapper\WindowsApplication1\obj\Debug\SQL_AD_mapper.csproj.ResolveComReference.cache
+C:\Users\arrc29\Documents\Working Folder\working_copy\.Net\SQL_AD_mapper\WindowsApplication1\obj\Debug\WindowsApplication1.Form1.resources
+C:\Users\arrc29\Documents\Working Folder\working_copy\.Net\SQL_AD_mapper\WindowsApplication1\obj\Debug\WindowsApplication1.Properties.Resources.resources
+C:\Users\arrc29\Documents\Working Folder\working_copy\.Net\SQL_AD_mapper\WindowsApplication1\obj\Debug\SQL_AD_mapper.csproj.GenerateResource.Cache
+C:\Users\arrc29\Documents\Working Folder\working_copy\.Net\SQL_AD_mapper\WindowsApplication1\obj\Debug\WindowsApplication1.exe
+C:\Users\arrc29\Documents\Working Folder\working_copy\.Net\SQL_AD_mapper\WindowsApplication1\obj\Debug\WindowsApplication1.pdb
