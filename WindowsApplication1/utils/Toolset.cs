@@ -2705,7 +2705,14 @@ namespace WindowsApplication1.utils
                                     if ((string)users[name] != "")
                                     {
                                         fdqn = GetObjectDistinguishedName(objectClass.user, returnType.distinguishedName, System.Web.HttpUtility.UrlEncode((string)users[name]).Replace("+", " ").Replace("*", "%2A"), ldapDomain, log);
-                                        user.Properties["manager"].Value = fdqn.Substring(fdqn.IndexOf("CN"));
+                                        if (!fdqn.Contains("CN"))
+                                        {
+                                            log.addTrn("Issue Updating User: " + (string)users["distinguishedname"] + " Invalid Manager selected. ", "Error");
+                                        }
+                                        else
+                                        {
+                                            user.Properties["manager"].Value = fdqn.Substring(fdqn.IndexOf("CN"));
+                                        }
                                     }
                                     break;
                                 case "sn":
