@@ -2681,12 +2681,12 @@ namespace WindowsApplication1.utils
                                     if ((string)users[name] != "")
                                     {
                                         // check to see if mail field has illegal characters
-                                        string hi = (System.Web.HttpUtility.UrlEncode((string)users[name]).Replace("+", " ").Replace("*", "%2A").Replace("%40", "@"));
+                                        string hi = (System.Web.HttpUtility.UrlEncode((string)users[name]).Replace("+", " ").Replace("*", "%2A").Replace("%40", "@").Replace("%5f", "_"));
                                         string hi3 = (string)users[name];
-                                        if (System.Web.HttpUtility.UrlEncode((string)users[name]).Replace("+", " ").Replace("*", "%2A").Replace("%40", "@") == (string)users[name])
+                                        if (System.Web.HttpUtility.UrlEncode((string)users[name]).Replace("+", " ").Replace("*", "%2A").Replace("%40", "@").Replace("%5f", "_") == (string)users[name])
                                         {
                                             // no illegal characters input the value into AD
-                                            user.Properties[name].Value = System.Web.HttpUtility.UrlEncode((string)users[name]).Replace("+", " ").Replace("*", "%2A").Replace("!", "%21").Replace("(", "%28").Replace(")", "%29").Replace("'", "%27").Replace("_", "%5f").Replace(" ", "%20").Replace("%40", "@");
+                                            user.Properties[name].Value = System.Web.HttpUtility.UrlEncode((string)users[name]).Replace("+", " ").Replace("*", "%2A").Replace("!", "%21").Replace("(", "%28").Replace(")", "%29").Replace("'", "%27").Replace("%5f", "_").Replace(" ", "%20").Replace("%40", "@");
                                         }
                                         else
                                         {
