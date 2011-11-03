@@ -1,0 +1,22 @@
+configBaseGroupOU | OU=Active Students,OU=Student Accounts,DC=STUDENTS,DC=FHCHS,DC=EDU
+configBaseUserOU | OU=All Non Active Students,OU=Student Accounts,DC=STUDENTS,DC=FHCHS,DC=EDU
+configNotes | Groups for differintiating Campus
+configGroup_CN | camp_cod
+configGroup_table_view | Table
+configGroup_sAMAccount | camp_txt
+configGroup_dbTable | campus
+configGroup_where | 
+configGroup_Prepend | campus
+configUser_Group_Reference | camp_cod
+configUser_table_view | Table
+configUser_sAMAccount | soc_sec
+configUser_dbTable | name
+configUser_where | soc_sec in (select CN from FHC_ADAlumAppOldAccounts)
+configDataServer | fhcc-db01
+configDBCatalog | SonisWebDatabase
+<config>
+configTempTables | False
+configLogType | Database
+configLogDB | FHCC-DB01
+configLogCatalog | SonisWebDatabase
+configLogDirectory |
