@@ -39,63 +39,63 @@ namespace WindowsApplication1
                 }
             }
             
-	         // Check for tests first
-	         // If tests are desired, skip normal opretaions
-	         if( CommandLine["T"] != null ){
+         // Check for tests first
+         // If tests are desired, skip normal opretaions
+         if( CommandLine["T"] != null ){
 
-	            // Collection of Class objects
-	            // Each class needs to have a runTests() method
-	            GroupSynch groupconfig = new GroupSynch();
-	                UserSynch userconfig = new UserSynch();
-	                GmailUsers guserconfig = new GmailUsers();
-	                executionOrder execution = new executionOrder();
-	                UserStateChange usermapping = new UserStateChange();
-	                ConfigSettings settingsconfig = new ConfigSettings();
-	                utils.ToolSet tools = new ToolSet();
-	                LogFile log = new LogFile();
-	                ObjectADSqlsyncGroup groupSyncr = new ObjectADSqlsyncGroup();
-	                ObjectADGoogleSync gmailSyncr = new ObjectADGoogleSync();
-	                StopWatch timer = new StopWatch();
-	                log.initiateTrn();
+            // Collection of Class objects
+            // Each class needs to have a runTests() method
+            GroupSynch groupconfig = new GroupSynch();
+            UserSynch userconfig = new UserSynch();
+            GmailUsers guserconfig = new GmailUsers();
+            executionOrder execution = new executionOrder();
+            UserStateChange usermapping = new UserStateChange();
+            ConfigSettings settingsconfig = new ConfigSettings();
+            utils.ToolSet tools = new ToolSet();
+            LogFile log = new LogFile();
+            ObjectADSqlsyncGroup groupSyncr = new ObjectADSqlsyncGroup();
+            ObjectADGoogleSync gmailSyncr = new ObjectADGoogleSync();
+            StopWatch timer = new StopWatch();
+            log.initiateTrn();
 
-	            // We can run tests on specific operations (via CLI)
-	            // or all operations
-	            operation = (opertaion!="") ? operation:"all";
+            // We can run tests on specific operations (via CLI)
+            // or all operations
+            operation = (opertaion!="") ? operation:"all";
 
-	            // Sift through are different tests
-	            switch(opertaion)
-	            {
-	               // Run tests specific to users sync
-	               case "users":
-	                  // userconfig.runTests();
-	                  break;
+            // Sift through are different tests
+            switch(opertaion)
+            {
+               // Run tests specific to users sync
+               case "users":
+                  // userconfig.runTests();
+                  break;
 
-	               // Run tests specific to group sync
-	               case "groups":
-	                  // groupconfig.runTests();
-	                  break;
+               // Run tests specific to group sync
+               case "groups":
+                  // groupconfig.runTests();
+                  break;
 
-	               // Run tests specific to OUmap sync
-	               case "OUmap":
-	                  // Not sure how this operation is used
-	                  break;
+               // Run tests specific to OUmap sync
+               case "OUmap":
+                  // Not sure how this operation is used
+                  break;
 
-	               // Run tests specifc to gmail sync
-	               case "gmail":
-	                  // guserconfig.runTests();
-	                  break;
+               // Run tests specifc to gmail sync
+               case "gmail":
+                  // guserconfig.runTests();
+                  break;
 
-	               // Run all tests
-	               default:
-	               case "all":
-	                  // userconfig.runTests();
-	                  // groupconfig.runTests();
-	                  // guserconfig.runTests();
-	                  break;
-	               }
-	            }
-	            // MessageBox.Show("operation is " + operation + " file is " + file);
-	            else if (file != "" && operation != "")
+               // Run all tests
+               default:
+               case "all":
+                  // userconfig.runTests();
+                  // groupconfig.runTests();
+                  // guserconfig.runTests();
+                  break;
+               }
+            }
+            // MessageBox.Show("operation is " + operation + " file is " + file);
+            else if (file != "" && operation != "")
             {
 
                 // woot halleluijah we have input from the user time to execute
