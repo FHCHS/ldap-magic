@@ -58,12 +58,8 @@ namespace WindowsApplication1
             StopWatch timer = new StopWatch();
             log.initiateTrn();
 
-            // We can run tests on specific operations (via CLI)
-            // or all operations
-            operation = (opertaion!="") ? operation:"all";
-
             // Sift through are different tests
-            switch(opertaion)
+            switch(CommandLine["T"])
             {
                // Run tests specific to users sync
                case "users":
