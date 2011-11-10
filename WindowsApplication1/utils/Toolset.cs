@@ -5160,7 +5160,7 @@ namespace WindowsApplication1.utils
                 // get list of keys which have differed. We will delete them and then next time they will be readded as the correct key\
                 // users which need to be updated just get deleted and recreadted later where they need to be
                 log.addTrn("Query to see which users need to be deleted", "Info");
-                delete = tools.CheckUpdate(ADgroupMembersTable, sqlgroupMembersTable, ADusers.Columns[0].ColumnName, groupsyn.User_sAMAccount, adUpdateKeys, sqlUpdateKeys, sqlConn, log);
+                delete = tools.CheckUpdate( sqlgroupMembersTable, ADgroupMembersTable, groupsyn.User_sAMAccount, ADusers.Columns[0].ColumnName, sqlUpdateKeys, adUpdateKeys, sqlConn, log);
                 // delete = tools.QueryNotExists(ADgroupMembersTable, sqlgroupMembersTable, sqlConn, ADusers.Columns[1].ColumnName, groupsyn.User_Group_Reference, log);
                 // delete groups in AD
                 log.addTrn("Deleteing users", "Info");
