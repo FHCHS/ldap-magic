@@ -32,6 +32,11 @@ obj/
 [Dd]ebug*/
 [Rr]elease*/
 Ankh.NoLoad
+WindowsApplication1/bin/Debug/WindowsApplication1.pdb
+WindowsApplication1/obj/Debug/SQL_AD_mapper.csproj.FileListAbsolute.txt
+WindowsApplication1/obj/Debug/SQL_AD_mapper.csproj.GenerateResource.Cache
+WindowsApplication1/obj/Debug/WindowsApplication1.exe
+WindowsApplication1/obj/Debug/WindowsApplication1.pdb
 
 #Tooling
 _ReSharper*/
