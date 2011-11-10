@@ -3215,27 +3215,10 @@ namespace WindowsApplication1.utils
             // this basically will just issue a concatenation sql query to the DB for each field to compare
             foreach (string key in compareFields1)
             {
-                if (key == "sAMAccountName")
-                {
-                    compare1 = compare1 + "ltrim(rtrim(" + table1 + "." + key + ")) +";
-                }
-                else 
-                {
-                    compare1 = compare1 + "ltrim(rtrim(" + table1 + "." + key + ")) COLLATE SQL_Latin1_General_CP1_CS_AS + ";
-                }
                 fields1 += table1 + "." + key + ", ";
             }
             foreach (string key in compareFields2)
             {
-                if (key == "sAMAccountName")
-                {
-                    compare2 = compare2 + "ltrim(rtrim(" + table2 + "." + key + ")) +";
-                }
-                else
-                {
-                    compare2 = compare2 + "ltrim(rtrim(" + table2 + "." + key + ")) COLLATE SQL_Latin1_General_CP1_CS_AS + ";
-                }
-
                 fields2 += table2 + "." + key + ", ";
             }
             
@@ -3247,7 +3230,7 @@ namespace WindowsApplication1.utils
 
             SqlCommand sqlComm = new SqlCommand(    "SELECT " + fields1 +
                                                     " FROM " + table1 +
-                                                    " INNER JOIN " + table2 + " ON " + compare1 + " = " + compare2 +
+                                                    " INNER JOIN " + table2 + " ON " + table1 + "." + pkey1 + " = " + table2 + "." + pkey2 +
                                                     " GROUP BY " + fields1 +
                                                     " EXCEPT " +
                                                     " SELECT " + fields2 + " FROM " + table2, sqlConn);
@@ -5160,8 +5143,8 @@ namespace WindowsApplication1.utils
                 // get list of keys which have differed. We will delete them and then next time they will be readded as the correct key\
                 // users which need to be updated just get deleted and recreadted later where they need to be
                 log.addTrn("Query to see which users need to be deleted", "Info");
-                // delete = tools.CheckUpdate( sqlgroupMembersTable, ADgroupMembersTable, groupsyn.User_sAMAccount, ADusers.Columns[0].ColumnName, sqlUpdateKeys, adUpdateKeys, sqlConn, log);
-                delete = tools.QueryNotExists(ADgroupMembersTable, sqlgroupMembersTable, sqlConn, ADusers.Columns[1].ColumnName, groupsyn.User_Group_Reference, log);
+                delete = tools.CheckUpdate( sqlgroupMembersTable, ADgroupMembersTable, groupsyn.User_sAMAccount, ADusers.Columns[0].ColumnName, sqlUpdateKeys, adUpdateKeys, sqlConn, log);
+                // delete = tools.QueryNotExists(ADgroupMembersTable, sqlgroupMembersTable, sqlConn, ADusers.Columns[1].ColumnName, groupsyn.User_Group_Reference, log);
                 // delete groups in AD
                 log.addTrn("Deleteing users", "Info");
                 while (delete.Read())
