@@ -3038,6 +3038,48 @@ namespace WindowsApplication1.utils
             }
         }
         // SQL query tools
+        public SqlDataReader QueryNotExistsUsers(string table1, string table2, SqlConnection sqlConn, string pkey1, string pkey2, LogFile log)
+        {
+            // Array list of pkeys is for use when the primary key is clustered (multiple columns are required to get a unique identification on the row)
+            // finds items in table1 who do not exist in table2 and returns the data fields table 1 for these rows
+            //*************************************************************************************************
+            //| Table1                      | Table2                    | Returned result
+            //*************************************************************************************************
+            //| ID            Data          | ID             Data       |                   | Table1.ID     Table1.DATA
+            //| 1             a             | 1              a          | NOT RETURNED      |
+            //| 2             b             | null           null       | RETURNED          | 2             b
+            //| 3             c             | 3              null       | NOT RETURNED      |
+            //| 4             d             | 4              e          | NOT RETURNED      |
+            //
+            // SqlCommand sqlComm = new SqlCommand("Select Table1.* Into #Table3ADTransfer From " + Table1 + " AS Table1, " + Table2 + " AS Table2 Where Table1." + pkey1 + " = Table2." + pkey2 + " And Table2." + pkey2 + " is null", sqlConn);
+            //SqlCommand sqlComm = new SqlCommand("SELECT DISTINCT uptoDate.* FROM " + table1 + " uptoDate LEFT OUTER JOIN " + table2 + " outofDate ON outofDate." + pkey2 + " = uptoDate." + pkey1 + " WHERE outofDate." + pkey2 + " IS NULL;", sqlConn);
+            
+            // Actual query
+            SqlCommand sqlComm = new SqlCommand("SELECT * "+
+                                                "FROM "+ table1 +
+                                                " WHERE CN in ( SELECT "+
+                                                                pkey1 +
+                                                            " FROM " + table1 +
+			                                                " EXCEPT "+
+			                                                " SELECT "+
+                                                                pkey2 +
+                                                            " FROM " + table2 + " )", sqlConn);
+            // create the command object
+            SqlDataReader r;
+            try
+            {
+                sqlComm.CommandTimeout = 360;
+                r = sqlComm.ExecuteReader();
+                log.addTrn(sqlComm.CommandText.ToString(), "Query");
+                return r;
+            }
+            catch (Exception ex)
+            {
+                log.addTrn("Failed SQL command " + sqlComm.CommandText.ToString() + " error " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Error");
+            }
+            return null;
+        }
+
         public SqlDataReader QueryNotExists(string table1, string table2, SqlConnection sqlConn, string pkey1, string pkey2, LogFile log)
         {
             // Array list of pkeys is for use when the primary key is clustered (multiple columns are required to get a unique identification on the row)
@@ -5370,7 +5412,7 @@ namespace WindowsApplication1.utils
                 {
                     // compare query for the add/remove
                     log.addTrn("Query to find users to add", "Info");
-                    add = tools.QueryNotExists(sqlUsersTable, adUsersTable, sqlConn, "sAMAccountName", adUsers.Columns[0].ColumnName, log);
+                    add = tools.QueryNotExistsUsers(sqlUsersTable, adUsersTable, sqlConn, "sAMAccountName", adUsers.Columns[0].ColumnName, log);
 
                     // actual add stuff
                     log.addTrn("Adding users", "Info");
@@ -5386,7 +5428,7 @@ namespace WindowsApplication1.utils
                     {
                         // compare query to find records which need deletion
                         log.addTrn("Query to find users to delete", "Info");
-                        delete = tools.QueryNotExists(adUsersTable, sqlUsersTable, sqlConn, usersyn.User_sAMAccount, completeADKeys[0].ToString(), log);
+                        delete = tools.QueryNotExistsUsers(adUsersTable, sqlUsersTable, sqlConn, usersyn.User_sAMAccount, completeADKeys[0].ToString(), log);
 
                         // delete users in AD
                         log.addTrn("Deleting users", "Info");
