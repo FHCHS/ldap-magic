@@ -3038,7 +3038,7 @@ namespace WindowsApplication1.utils
             }
         }
         // SQL query tools
-        public SqlDataReader QueryNotExistsUsers(string table1, string table2, SqlConnection sqlConn, string pkey1, string pkey2, LogFile log)
+        public SqlDataReader QueryNotExistsByPkey(string table1, string table2, SqlConnection sqlConn, string pkey1, string pkey2, LogFile log)
         {
             // Array list of pkeys is for use when the primary key is clustered (multiple columns are required to get a unique identification on the row)
             // finds items in table1 who do not exist in table2 and returns the data fields table 1 for these rows
@@ -3057,7 +3057,7 @@ namespace WindowsApplication1.utils
             // Actual query
             SqlCommand sqlComm = new SqlCommand("SELECT * "+
                                                 "FROM "+ table1 +
-                                                " WHERE CN in ( SELECT "+
+                                                " WHERE " + pkey1 + " in ( SELECT " +
                                                                 pkey1 +
                                                             " FROM " + table1 +
 			                                                " EXCEPT "+
@@ -3079,8 +3079,7 @@ namespace WindowsApplication1.utils
             }
             return null;
         }
-
-        public SqlDataReader QueryNotExists(string table1, string table2, SqlConnection sqlConn, string pkey1, string pkey2, LogFile log)
+        public SqlDataReader QueryNotExistsAllFields(string table1, string table2, SqlConnection sqlConn, string pkey1, string pkey2, LogFile log)
         {
             // Array list of pkeys is for use when the primary key is clustered (multiple columns are required to get a unique identification on the row)
             // finds items in table1 who do not exist in table2 and returns the data fields table 1 for these rows
@@ -3095,17 +3094,8 @@ namespace WindowsApplication1.utils
             //
             // SqlCommand sqlComm = new SqlCommand("Select Table1.* Into #Table3ADTransfer From " + Table1 + " AS Table1, " + Table2 + " AS Table2 Where Table1." + pkey1 + " = Table2." + pkey2 + " And Table2." + pkey2 + " is null", sqlConn);
             // SqlCommand sqlComm = new SqlCommand("SELECT DISTINCT uptoDate.* FROM " + table1 + " uptoDate LEFT OUTER JOIN " + table2 + " outofDate ON outofDate." + pkey2 + " = uptoDate." + pkey1 + " WHERE outofDate." + pkey2 + " IS NULL;", sqlConn);
-            // SqlCommand sqlComm = new SqlCommand("SELECT * FROM " + table1 + " uptoDate EXCEPT  SELECT * FROM " + table2 + " AS outofDate", sqlConn);
-            // Actual query
-            SqlCommand sqlComm = new SqlCommand("SELECT * " +
-                                                "FROM " + table1 +
-                                                " WHERE " + pkey1 + " in ( SELECT " +
-                                                                pkey1 +
-                                                            " FROM " + table1 +
-                                                            " EXCEPT " +
-                                                            " SELECT " +
-                                                                pkey2 +
-                                                            " FROM " + table2 + " )", sqlConn);
+            SqlCommand sqlComm = new SqlCommand("SELECT * FROM " + table1 + " uptoDate EXCEPT  SELECT * FROM " + table2 + " AS outofDate", sqlConn);
+           
             // create the command object
             SqlDataReader r;
             try
@@ -4958,7 +4948,7 @@ namespace WindowsApplication1.utils
 
                 //Find groups that we need to create
                 log.addTrn("Query to find groups that need to be created", "Info");
-                add = tools.QueryNotExists(sqlgroupsTable, groupsTable, sqlConn, groupsyn.Group_CN, adUpdateKeys[1].ToString(), log);
+                add = tools.QueryNotExistsAllFields(sqlgroupsTable, groupsTable, sqlConn, groupsyn.Group_CN, adUpdateKeys[1].ToString(), log);
 
 
 
@@ -4981,7 +4971,7 @@ namespace WindowsApplication1.utils
 
                 //time.Start();
                 log.addTrn("Query to find groups to delete", "Info");
-                delete = tools.QueryNotExists(groupsTable, sqlgroupsTable, sqlConn, adUpdateKeys[1].ToString(), groupsyn.Group_CN, log);
+                delete = tools.QueryNotExistsAllFields(groupsTable, sqlgroupsTable, sqlConn, adUpdateKeys[1].ToString(), groupsyn.Group_CN, log);
                 // delete groups in AD
                 // i = 0;
                 log.addTrn("Deleting groups", "Info");
@@ -5159,7 +5149,7 @@ namespace WindowsApplication1.utils
 
             // compare and add/remove
             log.addTrn("Query to find the users to add ", "Info");
-            add = tools.QueryNotExists(sqlgroupMembersTable, ADgroupMembersTable, sqlConn, groupsyn.User_sAMAccount, ADusers.Columns[0].ColumnName, log);
+            add = tools.QueryNotExistsAllFields(sqlgroupMembersTable, ADgroupMembersTable, sqlConn, groupsyn.User_sAMAccount, ADusers.Columns[0].ColumnName, log);
             try
             {
                 while (add.Read())
@@ -5194,7 +5184,7 @@ namespace WindowsApplication1.utils
                 // users which need to be updated just get deleted and recreadted later where they need to be
                 log.addTrn("Query to see which users need to be deleted", "Info");
                 delete = tools.CheckUpdate( ADgroupMembersTable, sqlgroupMembersTable, ADusers.Columns[0].ColumnName,  groupsyn.User_sAMAccount, adUpdateKeys, sqlUpdateKeys, sqlConn, log);
-                // delete = tools.QueryNotExists(ADgroupMembersTable, sqlgroupMembersTable, sqlConn, ADusers.Columns[1].ColumnName, groupsyn.User_Group_Reference, log);
+                // delete = tools.QueryNotExistsAllFields(ADgroupMembersTable, sqlgroupMembersTable, sqlConn, ADusers.Columns[1].ColumnName, groupsyn.User_Group_Reference, log);
                 // delete groups in AD
                 log.addTrn("Deleteing users", "Info");
                 while (delete.Read())
@@ -5422,7 +5412,7 @@ namespace WindowsApplication1.utils
                 {
                     // compare query for the add/remove
                     log.addTrn("Query to find users to add", "Info");
-                    add = tools.QueryNotExistsUsers(sqlUsersTable, adUsersTable, sqlConn, "sAMAccountName", adUsers.Columns[0].ColumnName, log);
+                    add = tools.QueryNotExistsByPkey(sqlUsersTable, adUsersTable, sqlConn, "sAMAccountName", adUsers.Columns[0].ColumnName, log);
 
                     // actual add stuff
                     log.addTrn("Adding users", "Info");
@@ -5438,7 +5428,7 @@ namespace WindowsApplication1.utils
                     {
                         // compare query to find records which need deletion
                         log.addTrn("Query to find users to delete", "Info");
-                        delete = tools.QueryNotExistsUsers(adUsersTable, sqlUsersTable, sqlConn, usersyn.User_sAMAccount, completeADKeys[0].ToString(), log);
+                        delete = tools.QueryNotExistsByPkey(adUsersTable, sqlUsersTable, sqlConn, usersyn.User_sAMAccount, completeADKeys[0].ToString(), log);
 
                         // delete users in AD
                         log.addTrn("Deleting users", "Info");
@@ -5481,7 +5471,7 @@ namespace WindowsApplication1.utils
                     // add the users without doing additional checks
                     tools.Create_Table(adUsers, adUsersTable, sqlConn, log);
                     log.addTrn("Query to find users to add", "Info");
-                    add = tools.QueryNotExists(sqlUsersTable, adUsersTable, sqlConn, "sAMAccountName", adUsers.Columns[0].ColumnName, log);
+                    add = tools.QueryNotExistsAllFields(sqlUsersTable, adUsersTable, sqlConn, "sAMAccountName", adUsers.Columns[0].ColumnName, log);
                     log.addTrn("Add all users", "Info");
                     tools.CreateUsersAccounts(usersyn.UserHoldingTank, add, usersyn.UniversalGroup, DC, usersyn, log);
                     add.Close();
@@ -5638,13 +5628,13 @@ namespace WindowsApplication1.utils
 
             // compare and add/remove
             log.addTrn("Query to find the users who need to be created", "Info");
-            add = tools.QueryNotExists(sqlUsersTable, gmailUsersTable, sqlConn, gusersyn.User_StuID, gmailUsers.Columns[0].ColumnName, log);
+            add = tools.QueryNotExistsByPkey(sqlUsersTable, gmailUsersTable, sqlConn, gusersyn.User_StuID, gmailUsers.Columns[0].ColumnName, log);
 
             log.addTrn("Adding users", "Info");
             tools.Create_Gmail_Users(service, gusersyn, add, log);
             add.Close();
 
-            //delete = tools.QueryNotExists(sqlUsersTable, gmailUsersTable, sqlConn, gusersyn.User_StuID, completeGmailKeys[0].ToString());
+            //delete = tools.QueryNotExistsAllFields(sqlUsersTable, gmailUsersTable, sqlConn, gusersyn.User_StuID, completeGmailKeys[0].ToString());
             // delete groups in AD
             //while (delete.Read())
             //{
@@ -6032,7 +6022,7 @@ namespace WindowsApplication1.utils
                             // find nicknames missing in AD
                             log.addTrn("Query to find AD users that need their nickname updated", "Info");
                             nicknamesToAddToAD = tools.CheckUpdate(nicknamesFilteredForDuplicatesTable, adNicknamesTable, nicknames.Columns[0].ColumnName, adPullKeys[0].ToString(), nicknameKeys, adMailUpdateKeys, sqlConn, log);
-                            //nicknamesToAddToAD = tools.QueryNotExists(nicknamesFromGmailTable, adNicknamesTable, sqlConn, nicknames.Columns[0].ColumnName, adPullKeys[0].ToString(), log);
+                            //nicknamesToAddToAD = tools.QueryNotExistsAllFields(nicknamesFromGmailTable, adNicknamesTable, sqlConn, nicknames.Columns[0].ColumnName, adPullKeys[0].ToString(), log);
                             // interate and update mail fields
                             log.addTrn("Updating nicknames in AD", "Info");
                             try
