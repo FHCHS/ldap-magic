@@ -3094,8 +3094,18 @@ namespace WindowsApplication1.utils
             //| 4             d             | 4              e          | NOT RETURNED      |
             //
             // SqlCommand sqlComm = new SqlCommand("Select Table1.* Into #Table3ADTransfer From " + Table1 + " AS Table1, " + Table2 + " AS Table2 Where Table1." + pkey1 + " = Table2." + pkey2 + " And Table2." + pkey2 + " is null", sqlConn);
-            //SqlCommand sqlComm = new SqlCommand("SELECT DISTINCT uptoDate.* FROM " + table1 + " uptoDate LEFT OUTER JOIN " + table2 + " outofDate ON outofDate." + pkey2 + " = uptoDate." + pkey1 + " WHERE outofDate." + pkey2 + " IS NULL;", sqlConn);
-            SqlCommand sqlComm = new SqlCommand("SELECT * FROM " + table1 + " uptoDate EXCEPT  SELECT * FROM " + table2 + " AS outofDate", sqlConn);
+            // SqlCommand sqlComm = new SqlCommand("SELECT DISTINCT uptoDate.* FROM " + table1 + " uptoDate LEFT OUTER JOIN " + table2 + " outofDate ON outofDate." + pkey2 + " = uptoDate." + pkey1 + " WHERE outofDate." + pkey2 + " IS NULL;", sqlConn);
+            // SqlCommand sqlComm = new SqlCommand("SELECT * FROM " + table1 + " uptoDate EXCEPT  SELECT * FROM " + table2 + " AS outofDate", sqlConn);
+            // Actual query
+            SqlCommand sqlComm = new SqlCommand("SELECT * " +
+                                                "FROM " + table1 +
+                                                " WHERE " + pkey1 + " in ( SELECT " +
+                                                                pkey1 +
+                                                            " FROM " + table1 +
+                                                            " EXCEPT " +
+                                                            " SELECT " +
+                                                                pkey2 +
+                                                            " FROM " + table2 + " )", sqlConn);
             // create the command object
             SqlDataReader r;
             try
