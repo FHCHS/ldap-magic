@@ -4008,6 +4008,24 @@ namespace WindowsApplication1.utils
         // Gmail tools
         public string GetNewUserNickname(AppsService service, string studentID, string firstName, string midName, string lastName, int i, bool complete)
         {
+            /**
+            * Comments By: Arlo Carreon, 12/12/11
+            * 
+            * GetNewUserNickname(): 
+            *  -This method tries different combinations of first.middle.last@domain.com
+            *  -In theory it should stop at the first combination it can successfully set for this user.
+            * 
+            * Problems:
+            *  -We are not certain whether or not the alias is created even though an exception is thrown.
+            *      - We are not aware of all the types of exceptions
+            *  -If a nickname already exists we quick the process. Maybe it is taken by someone else? Especially in the 
+            *   initial attempt of first.last@domain.edu.
+            *   
+            * Todo:
+            *  -Log some of these exceptions.
+            *  -Log when user not matched with an alias.
+            * 
+            */
             // this could really get screwed if there are enough duplicates it will be only do first.m.last f.middle.last
             // i can be used to start the process somewhere in the middle of the name
             string returnvalue = "";
@@ -4018,28 +4036,32 @@ namespace WindowsApplication1.utils
             {
                 int r = midName.Length + 1;
 
+                // First try will be full first and last name
                 if (i == 0)
                 {
                     returnvalue = firstName + "." + lastName;
                 }
                 else
                 {
+                    // Working on combinations for the middle name
                     if (i < r)
                     {
                         returnvalue = firstName + "." + midName.Substring(0, i) + "." + lastName;
                     }
                     else
                     {
+                        // Working on combinations for the firstname
                         if (i < (r + firstName.Length))
                         {
                             returnvalue = firstName.Substring(0, (i - r)) + "." + midName + "." + lastName;
                         }
+                        else
+                        {
+                            // We tried them all and we have no available match
+                            returnvalue = "failure";
+                            complete = true;
+                        }
                     }
-                }
-                if (i > (r + firstName.Length))
-                {
-                    returnvalue = "failure";
-                    complete = true;
                 }
 
 
@@ -4047,6 +4069,8 @@ namespace WindowsApplication1.utils
                 {
                     if (complete == false)
                     {
+                        // Attempting to save this combination as Alias
+                        // Assuming an exception is thrown only if not successful
                         returnvalue = Regex.Replace(Regex.Replace(returnvalue, @"[^a-z|^A-Z|^0-9|^\.|_|-]|[\^|\|]", ""), @"\.+", ".");
                         service.CreateNickname(studentID, returnvalue);
                         complete = true;
@@ -4058,6 +4082,7 @@ namespace WindowsApplication1.utils
                     if (apex.ErrorCode == "1301")
                     {
                         // this error about a non existent entry seems to indicate the nickname is already created
+                        // Arlo: What if it's taken by a different user? Should we quit?
                         complete = true;
                     }
                     i++;
