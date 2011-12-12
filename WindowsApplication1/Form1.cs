@@ -81,6 +81,7 @@ namespace WindowsApplication1
         LogFile log = new LogFile();
         ObjectADSqlsyncGroup groupSyncr = new ObjectADSqlsyncGroup();
         ObjectADGoogleSync gmailSyncr = new ObjectADGoogleSync();
+        
 
         public Form1()
         {
@@ -2780,6 +2781,30 @@ namespace WindowsApplication1
             {
                 log.addTrn("Failed SQL bulk copy " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Query");
             }
+        }
+
+        private void label169_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void txt_trb_gmail_alias_submit_Click(object sender, EventArgs e)
+        {
+            // Setup local vars
+            // From config files
+            AppsService service = new AppsService(guserconfig.Admin_domain, guserconfig.Admin_user + "@" + guserconfig.Admin_domain, guserconfig.Admin_password);
+
+            // Attempt to trigger our method using the optional paramLog parameter
+            tools.GetNewUserNickname( 
+                service, 
+                txt_trb_gmail_alias_studid.Text, 
+                txt_trb_gmail_alias_firstname.Text, 
+                txt_trb_gmail_alias_middlename.Text, 
+                txt_trb_gmail_alias_lastname.Text, 
+                0, 
+                false, 
+                txt_trb_output.Lines
+              );
         }
 
 

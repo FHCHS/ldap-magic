@@ -485,6 +485,20 @@ namespace WindowsApplication1
             this.execution_transactions = new System.Windows.Forms.Button();
             this.execution_errors_textbox = new System.Windows.Forms.RichTextBox();
             this.execution_transactions_warnings_textbox = new System.Windows.Forms.RichTextBox();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.groupBox20 = new System.Windows.Forms.GroupBox();
+            this.txt_trb_gmail_alias_studid = new System.Windows.Forms.TextBox();
+            this.txt_trb_gmail_alias_firstname = new System.Windows.Forms.TextBox();
+            this.txt_trb_gmail_alias_middlename = new System.Windows.Forms.TextBox();
+            this.label164 = new System.Windows.Forms.Label();
+            this.label165 = new System.Windows.Forms.Label();
+            this.label166 = new System.Windows.Forms.Label();
+            this.label167 = new System.Windows.Forms.Label();
+            this.txt_trb_gmail_alias_lastname = new System.Windows.Forms.TextBox();
+            this.txt_trb_gmail_alias_submit = new System.Windows.Forms.Button();
+            this.label168 = new System.Windows.Forms.Label();
+            this.label169 = new System.Windows.Forms.Label();
+            this.txt_trb_output = new System.Windows.Forms.RichTextBox();
             this.tabPage8.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -531,6 +545,8 @@ namespace WindowsApplication1
             this.groupBox13.SuspendLayout();
             this.groupBox12.SuspendLayout();
             this.Logs.SuspendLayout();
+            this.tabPage2.SuspendLayout();
+            this.groupBox20.SuspendLayout();
             this.SuspendLayout();
             // 
             // usermap_toOU
@@ -4324,6 +4340,7 @@ namespace WindowsApplication1
             this.user_group_source.Controls.Add(this.Configuration);
             this.user_group_source.Controls.Add(this.GmailProvisoner);
             this.user_group_source.Controls.Add(this.Logs);
+            this.user_group_source.Controls.Add(this.tabPage2);
             this.user_group_source.Dock = System.Windows.Forms.DockStyle.Fill;
             this.user_group_source.Location = new System.Drawing.Point(0, 0);
             this.user_group_source.Name = "user_group_source";
@@ -5153,6 +5170,142 @@ namespace WindowsApplication1
             this.execution_transactions_warnings_textbox.TabIndex = 2;
             this.execution_transactions_warnings_textbox.Text = "";
             // 
+            // tabPage2
+            // 
+            this.tabPage2.Controls.Add(this.txt_trb_output);
+            this.tabPage2.Controls.Add(this.label167);
+            this.tabPage2.Controls.Add(this.txt_trb_gmail_alias_lastname);
+            this.tabPage2.Controls.Add(this.groupBox20);
+            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(1123, 613);
+            this.tabPage2.TabIndex = 8;
+            this.tabPage2.Text = "Trouble Shooting";
+            this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // groupBox20
+            // 
+            this.groupBox20.Controls.Add(this.label169);
+            this.groupBox20.Controls.Add(this.label168);
+            this.groupBox20.Controls.Add(this.txt_trb_gmail_alias_submit);
+            this.groupBox20.Controls.Add(this.label166);
+            this.groupBox20.Controls.Add(this.label165);
+            this.groupBox20.Controls.Add(this.label164);
+            this.groupBox20.Controls.Add(this.txt_trb_gmail_alias_middlename);
+            this.groupBox20.Controls.Add(this.txt_trb_gmail_alias_firstname);
+            this.groupBox20.Controls.Add(this.txt_trb_gmail_alias_studid);
+            this.groupBox20.Location = new System.Drawing.Point(16, 16);
+            this.groupBox20.Name = "groupBox20";
+            this.groupBox20.Size = new System.Drawing.Size(204, 225);
+            this.groupBox20.TabIndex = 0;
+            this.groupBox20.TabStop = false;
+            this.groupBox20.Text = "Gmail Aliases";
+            // 
+            // txt_trb_gmail_alias_studid
+            // 
+            this.txt_trb_gmail_alias_studid.Location = new System.Drawing.Point(50, 24);
+            this.txt_trb_gmail_alias_studid.Name = "txt_trb_gmail_alias_studid";
+            this.txt_trb_gmail_alias_studid.Size = new System.Drawing.Size(140, 20);
+            this.txt_trb_gmail_alias_studid.TabIndex = 0;
+            // 
+            // txt_trb_gmail_alias_firstname
+            // 
+            this.txt_trb_gmail_alias_firstname.Location = new System.Drawing.Point(50, 54);
+            this.txt_trb_gmail_alias_firstname.Name = "txt_trb_gmail_alias_firstname";
+            this.txt_trb_gmail_alias_firstname.Size = new System.Drawing.Size(140, 20);
+            this.txt_trb_gmail_alias_firstname.TabIndex = 1;
+            // 
+            // txt_trb_gmail_alias_middlename
+            // 
+            this.txt_trb_gmail_alias_middlename.Location = new System.Drawing.Point(50, 82);
+            this.txt_trb_gmail_alias_middlename.Name = "txt_trb_gmail_alias_middlename";
+            this.txt_trb_gmail_alias_middlename.Size = new System.Drawing.Size(140, 20);
+            this.txt_trb_gmail_alias_middlename.TabIndex = 2;
+            // 
+            // label164
+            // 
+            this.label164.AutoSize = true;
+            this.label164.Location = new System.Drawing.Point(7, 26);
+            this.label164.Name = "label164";
+            this.label164.Size = new System.Drawing.Size(34, 13);
+            this.label164.TabIndex = 3;
+            this.label164.Text = "StuID";
+            // 
+            // label165
+            // 
+            this.label165.AutoSize = true;
+            this.label165.Location = new System.Drawing.Point(7, 54);
+            this.label165.Name = "label165";
+            this.label165.Size = new System.Drawing.Size(26, 13);
+            this.label165.TabIndex = 4;
+            this.label165.Text = "First";
+            // 
+            // label166
+            // 
+            this.label166.AutoSize = true;
+            this.label166.Location = new System.Drawing.Point(9, 85);
+            this.label166.Name = "label166";
+            this.label166.Size = new System.Drawing.Size(38, 13);
+            this.label166.TabIndex = 5;
+            this.label166.Text = "Middle";
+            // 
+            // label167
+            // 
+            this.label167.AutoSize = true;
+            this.label167.Location = new System.Drawing.Point(25, 130);
+            this.label167.Name = "label167";
+            this.label167.Size = new System.Drawing.Size(27, 13);
+            this.label167.TabIndex = 7;
+            this.label167.Text = "Last";
+            // 
+            // txt_trb_gmail_alias_lastname
+            // 
+            this.txt_trb_gmail_alias_lastname.Location = new System.Drawing.Point(66, 127);
+            this.txt_trb_gmail_alias_lastname.Name = "txt_trb_gmail_alias_lastname";
+            this.txt_trb_gmail_alias_lastname.Size = new System.Drawing.Size(140, 20);
+            this.txt_trb_gmail_alias_lastname.TabIndex = 6;
+            // 
+            // txt_trb_gmail_alias_submit
+            // 
+            this.txt_trb_gmail_alias_submit.Location = new System.Drawing.Point(50, 145);
+            this.txt_trb_gmail_alias_submit.Name = "txt_trb_gmail_alias_submit";
+            this.txt_trb_gmail_alias_submit.Size = new System.Drawing.Size(140, 23);
+            this.txt_trb_gmail_alias_submit.TabIndex = 6;
+            this.txt_trb_gmail_alias_submit.Text = "Test Nicknames";
+            this.txt_trb_gmail_alias_submit.UseVisualStyleBackColor = true;
+            this.txt_trb_gmail_alias_submit.Click += new System.EventHandler(this.txt_trb_gmail_alias_submit_Click);
+            // 
+            // label168
+            // 
+            this.label168.AutoSize = true;
+            this.label168.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label168.ForeColor = System.Drawing.Color.Maroon;
+            this.label168.Location = new System.Drawing.Point(10, 177);
+            this.label168.Name = "label168";
+            this.label168.Size = new System.Drawing.Size(40, 16);
+            this.label168.TabIndex = 7;
+            this.label168.Text = "Note:";
+            // 
+            // label169
+            // 
+            this.label169.AutoSize = true;
+            this.label169.Location = new System.Drawing.Point(49, 180);
+            this.label169.Name = "label169";
+            this.label169.Size = new System.Drawing.Size(155, 39);
+            this.label169.TabIndex = 8;
+            this.label169.Text = "To use this troubleshoot panel. \r\nYou must first load your gmail \r\nconfiguration " +
+                "file.";
+            this.label169.Click += new System.EventHandler(this.label169_Click);
+            // 
+            // txt_trb_output
+            // 
+            this.txt_trb_output.Location = new System.Drawing.Point(647, 0);
+            this.txt_trb_output.Name = "txt_trb_output";
+            this.txt_trb_output.Size = new System.Drawing.Size(475, 612);
+            this.txt_trb_output.TabIndex = 8;
+            this.txt_trb_output.Text = "Output will appear here";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -5239,6 +5392,10 @@ namespace WindowsApplication1
             this.groupBox12.PerformLayout();
             this.Logs.ResumeLayout(false);
             this.Logs.PerformLayout();
+            this.tabPage2.ResumeLayout(false);
+            this.tabPage2.PerformLayout();
+            this.groupBox20.ResumeLayout(false);
+            this.groupBox20.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -5701,6 +5858,20 @@ namespace WindowsApplication1
         private System.Windows.Forms.Button button7;
         private System.Windows.Forms.ComboBox users_user_CN;
         private System.Windows.Forms.Label label163;
+        private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.GroupBox groupBox20;
+        private System.Windows.Forms.Label label164;
+        private System.Windows.Forms.TextBox txt_trb_gmail_alias_middlename;
+        private System.Windows.Forms.TextBox txt_trb_gmail_alias_firstname;
+        private System.Windows.Forms.TextBox txt_trb_gmail_alias_studid;
+        private System.Windows.Forms.Label label165;
+        private System.Windows.Forms.Label label166;
+        private System.Windows.Forms.Label label167;
+        private System.Windows.Forms.TextBox txt_trb_gmail_alias_lastname;
+        private System.Windows.Forms.Button txt_trb_gmail_alias_submit;
+        private System.Windows.Forms.Label label169;
+        private System.Windows.Forms.Label label168;
+        private System.Windows.Forms.RichTextBox txt_trb_output;
     }
 }
 

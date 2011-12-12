@@ -4006,7 +4006,7 @@ namespace WindowsApplication1.utils
 
 
         // Gmail tools
-        public string GetNewUserNickname(AppsService service, string studentID, string firstName, string midName, string lastName, int i, bool complete)
+        public string GetNewUserNickname(AppsService service, string studentID, string firstName, string midName, string lastName, int i, bool complete,String[] optionalLog = NULL)
         {
             /**
             * Comments By: Arlo Carreon, 12/12/11
