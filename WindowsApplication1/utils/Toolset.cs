@@ -1904,6 +1904,35 @@ namespace WindowsApplication1.utils
     // tools for working with EVERYTHING
     public class ToolSet
     {
+        // Troubleshooting Log
+        public ArrayList troubleshootLog = new ArrayList();
+        public string[] getTroubleShootLog() {
+            /**
+             * This method does the dirty work of converting an Object[] to String[]
+             * 
+             * Why?:
+             * ArrayList.ToArray() method only returns on array of objects.
+             * The troubleShooting text array holds the entries in an array of strings.
+             * 
+             * When?:
+             * Use this method when you want to show the troubleShootingLog in an textarea.
+             */ 
+            string[] list = new string[troubleshootLog.Count];
+            object[] tmpList = troubleshootLog.ToArray();
+
+            // Iterate the troubleshootingLog
+            for( int i=0; i < tmpList.Length; i++){
+                list.SetValue(tmpList.GetValue(i), i);
+            }
+
+            // return string array
+            return list;
+        }
+
+        // Flags
+        public bool gmailConfig = false;
+        public bool usersConfig = false;
+        public bool groupsConfig = false;
 
         // AD Functions
         public string GetDomain()
@@ -4006,7 +4035,7 @@ namespace WindowsApplication1.utils
 
 
         // Gmail tools
-        public string GetNewUserNickname(AppsService service, string studentID, string firstName, string midName, string lastName, int i, bool complete,String[] optionalLog = NULL)
+        public string GetNewUserNickname(AppsService service, string studentID, string firstName, string midName, string lastName, int i, bool complete)
         {
             /**
             * Comments By: Arlo Carreon, 12/12/11
@@ -4028,6 +4057,10 @@ namespace WindowsApplication1.utils
             */
             // this could really get screwed if there are enough duplicates it will be only do first.m.last f.middle.last
             // i can be used to start the process somewhere in the middle of the name
+
+            // Log for trouble shooting purposes
+            troubleshootLog.Add("INIT: Following attempts are for user -> " + studentID.ToString());
+
             string returnvalue = "";
             firstName = firstName.Replace(".", "");
             lastName = lastName.Replace(".", "");
@@ -4060,6 +4093,8 @@ namespace WindowsApplication1.utils
                             // We tried them all and we have no available match
                             returnvalue = "failure";
                             complete = true;
+                            // Log for trouble shooting purposes
+                            troubleshootLog.Add("FAIL: Tried all combinations. No Match.");
                         }
                     }
                 }
@@ -4069,31 +4104,51 @@ namespace WindowsApplication1.utils
                 {
                     if (complete == false)
                     {
-                        // Attempting to save this combination as Alias
+                        
                         // Assuming an exception is thrown only if not successful
                         returnvalue = Regex.Replace(Regex.Replace(returnvalue, @"[^a-z|^A-Z|^0-9|^\.|_|-]|[\^|\|]", ""), @"\.+", ".");
+                        
+                        // Log for trouble shooting purposes
+                        troubleshootLog.Add("ATTEMPT: " + returnvalue);
+
+                        // Attempting to save this combination as Alias 
                         service.CreateNickname(studentID, returnvalue);
                         complete = true;
                     }
                 }
                 catch (AppsException apex)
                 {
-                    //MessageBox.Show("Nickname apps exception " + apex.ErrorCode.ToString() + "  +++  \n" + apex.Data.ToString() + "  +++  \n" + apex.Message.ToString() + "  +++  \n" + apex.Reason.ToString() + "  +++  \n" + apex.Source.ToString());
-                    if (apex.ErrorCode == "1301")
+                    if (apex.ErrorCode == "1300")
                     {
-                        // this error about a non existent entry seems to indicate the nickname is already created
-                        // Arlo: What if it's taken by a different user? Should we quit?
+                        // User already has this nickname
                         complete = true;
+
+                        // Log for trouble shooting purposes
+                        troubleshootLog.Add("GOOGLE EXCEPTION " + apex.ErrorCode.ToString() + ": " + apex.Message.ToString() + " (already set for user)");
+                    }
+                    else if (apex.ErrorCode == "1301")
+                    {
+                        // Log for trouble shooting purposes
+                        troubleshootLog.Add("GOOGLE EXCEPTION " + apex.ErrorCode.ToString() + ": " + apex.Message.ToString() + " (someone else has this alias)");
+                    }
+                    else
+                    {
+                        // Log for trouble shooting purposes
+                        troubleshootLog.Add("GOOGLE EXCEPTION " + apex.ErrorCode.ToString() + ": " + apex.Message.ToString());
                     }
                     i++;
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
                     //MessageBox.Show("Nickname issue " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString());
                     i++;
                     complete = false;
+                    // Log for trouble shooting purposes
+                    troubleshootLog.Add("EXCEPTION: " + e.Message.ToString());
                 }
             }
+            // Log for trouble shooting purposes
+            troubleshootLog.Add("DONE: " + returnvalue.Trim());
             return returnvalue.Trim();
         }
         public DataTable Create_Gmail_Users(AppsService service, GmailUsers gusersyn, SqlDataReader users, LogFile log)
@@ -4153,7 +4208,7 @@ namespace WindowsApplication1.utils
                         //if (gusersyn.Levenshtein == true)
                         //{
                             // create user ailas here
-                            userNickName = GetNewUserNickname(service, studentID, first_name, middle_name, last_name, 0, false);
+                            userNickName = GetNewUserNickname(service, studentID, first_name, middle_name, last_name, 0, false );
 
                             row[0] = studentID;
                             if (userNickName != "failure")
@@ -6072,7 +6127,7 @@ namespace WindowsApplication1.utils
                         additionalKeys.Add(nicknamesFilteredForDuplicatesTable + "." + nicknames.Columns[2].ColumnName + ", ");
                         log.addTrn("Query to find new send as aliases", "Info");
                         sendAsAliases = tools.QueryInnerJoin(sqlUsersTable, nicknamesFilteredForDuplicatesTable, gusersyn.User_StuID, nicknames.Columns[0].ColumnName, additionalKeys, sqlConn, log);
-                        // tools.CreateSendAs(gusersyn, sendAsAliases, nicknames.Columns[2].ColumnName, nicknames.Columns[2].ColumnName, log);
+                        tools.CreateSendAs(gusersyn, sendAsAliases, nicknames.Columns[2].ColumnName, nicknames.Columns[2].ColumnName, log);
 
                     }
                 }
