@@ -81,6 +81,7 @@ namespace WindowsApplication1
         LogFile log = new LogFile();
         ObjectADSqlsyncGroup groupSyncr = new ObjectADSqlsyncGroup();
         ObjectADGoogleSync gmailSyncr = new ObjectADGoogleSync();
+        
 
         public Form1()
         {
@@ -678,6 +679,7 @@ namespace WindowsApplication1
             settingsconfig.Load(properties);
             }
             Form1.ActiveForm.Text = "LDAP Magic Users : " + openFileDialog1.FileName;
+            tools.usersConfig = true;
         }
 
 
@@ -1091,6 +1093,7 @@ namespace WindowsApplication1
             settingsconfig.Load(properties);
             }
             Form1.ActiveForm.Text = "LDAP Magic Groups : " + openFileDialog1.FileName;
+            tools.groupsConfig = true;
         }
         private void group_execute_now_Click(object sender, EventArgs e)
 		{
@@ -2204,7 +2207,8 @@ namespace WindowsApplication1
             settingsconfig.Load(properties);
             }
 
-            Form1.ActiveForm.Text = "LDAP Magic Gmail : " + openFileDialog1.FileName;			
+            Form1.ActiveForm.Text = "LDAP Magic Gmail : " + openFileDialog1.FileName;
+            tools.gmailConfig = true;
 		}
 		private void mail_execute_Click(object sender, EventArgs e)
 
@@ -2779,6 +2783,47 @@ namespace WindowsApplication1
             catch (Exception ex)
             {
                 log.addTrn("Failed SQL bulk copy " + ex.Message.ToString() + "\n" + ex.StackTrace.ToString(), "Query");
+            }
+        }
+
+        private void label169_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        // TROUBLESHOOT TAB
+
+        private void txt_trb_gmail_alias_submit_Click(object sender, EventArgs e)
+        {
+            // Setup local vars
+            // From config files
+            AppsService service = new AppsService(guserconfig.Admin_domain, guserconfig.Admin_user + "@" + guserconfig.Admin_domain, guserconfig.Admin_password);
+            
+            // Clear troubleshoot log
+            tools.troubleshootLog.Clear();
+
+            // Attempt to trigger our method using the optional paramLog parameter
+            tools.GetNewUserNickname( 
+                service, 
+                txt_trb_gmail_alias_studid.Text, 
+                txt_trb_gmail_alias_firstname.Text, 
+                txt_trb_gmail_alias_middlename.Text, 
+                txt_trb_gmail_alias_lastname.Text, 
+                0, 
+                false
+              );
+            
+            // Show output on the screen
+            txt_trb_output.Lines = tools.getTroubleShootLog();
+        }
+
+        private void user_group_source_Selected(object sender, TabControlEventArgs e)
+        {
+            // Make sure we have certain configs loaded
+            // This will unlock certain sections of trouble shoot
+            if( tools.gmailConfig ) {
+                // Enable [unlock] all sections that depend on gmail configuration
+                grpbx_gmailAlias.Enabled = true;
             }
         }
 
