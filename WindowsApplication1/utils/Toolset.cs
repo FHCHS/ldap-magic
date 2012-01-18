@@ -4120,21 +4120,21 @@ namespace WindowsApplication1.utils
                 {
                     if (apex.ErrorCode == "1300")
                     {
-                        // User already has this nickname
-                        complete = true;
-
                         // Log for trouble shooting purposes
-                        troubleshootLog.Add("GOOGLE EXCEPTION " + apex.ErrorCode.ToString() + ": " + apex.Message.ToString() + " (already set for user)");
+                        troubleshootLog.Add("GOOGLE EXCEPTION " + apex.ErrorCode.ToString() + ": " + apex.Reason.ToString() + " (Nickname already in use)");
                     }
                     else if (apex.ErrorCode == "1301")
                     {
+                        // User does not exist
+                        complete = true;
+
                         // Log for trouble shooting purposes
-                        troubleshootLog.Add("GOOGLE EXCEPTION " + apex.ErrorCode.ToString() + ": " + apex.Message.ToString() + " (someone else has this alias)");
+                        troubleshootLog.Add("GOOGLE EXCEPTION " + apex.ErrorCode.ToString() + ": " + apex.Reason.ToString() + " (Cannot set nickname for nonexistant user)");
                     }
                     else
                     {
                         // Log for trouble shooting purposes
-                        troubleshootLog.Add("GOOGLE EXCEPTION " + apex.ErrorCode.ToString() + ": " + apex.Message.ToString());
+                        troubleshootLog.Add("GOOGLE EXCEPTION " + apex.ErrorCode.ToString() + ": " + apex.Reason.ToString());
                     }
                     i++;
                 }

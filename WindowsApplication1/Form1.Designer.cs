@@ -5206,7 +5206,7 @@ namespace WindowsApplication1
             this.txt_trb_gmail_alias_lastname.Location = new System.Drawing.Point(66, 127);
             this.txt_trb_gmail_alias_lastname.Name = "txt_trb_gmail_alias_lastname";
             this.txt_trb_gmail_alias_lastname.Size = new System.Drawing.Size(140, 20);
-            this.txt_trb_gmail_alias_lastname.TabIndex = 6;
+            this.txt_trb_gmail_alias_lastname.TabIndex = 3;
             // 
             // grpbx_gmailAlias
             // 
